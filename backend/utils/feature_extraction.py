@@ -42,8 +42,12 @@ def _mean_color(img: Image.Image) -> Tuple[float, float, float]:
     # Si l’image est en niveaux de gris → étendre sur 3 canaux
     if arr.ndim == 2:
         arr = np.stack([arr] * 3, axis=-1)
+    # Si l’image a un canal alpha, on garde que les trois premiers
+    if arr.shape[-1] > 3:
+        arr = arr[..., :3]
     mean_rgb = arr.mean(axis=(0, 1))
-    return tuple(float(x) for x in mean_rgb)
+    return tuple(float(x) for x in mean_rgb[:3])
+
 
 
 def _histogram(img: Image.Image, bins: int = 256) -> List[int]:
