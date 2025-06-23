@@ -1,0 +1,40 @@
+[
+  {
+    "name": "poubelle_pleine",
+    "message": "💡 Poubelle probablement pleine",
+    "enabled": true,
+    "conditions": [
+      { "key": "contour_count", "op": ">", "value": 15 },
+      { "key": "rms_contrast", "op": ">", "value": 30 }
+    ]
+  },
+  {
+    "name": "poubelle_vide",
+    "message": "✅ Poubelle probablement vide",
+    "enabled": true,
+    "conditions": [
+      { "key": "contour_count", "op": "<", "value": 5 },
+      { "key": "rms_contrast", "op": "<", "value": 15 }
+    ]
+  },
+  {
+    "name": "image_sombre_et_lourde",
+    "message": "🔴 Image sombre et lourde – poubelle probablement pleine",
+    "enabled": true,
+    "conditions": [
+      { "key": "mean_r", "op": "<", "value": 100 },
+      { "key": "mean_g", "op": "<", "value": 100 },
+      { "key": "mean_b", "op": "<", "value": 100 },
+      { "key": "file_size", "op": ">", "value": 1000000 }
+    ]
+  },
+  {
+    "name": "image_trop_petite",
+    "message": "⚠️ Image trop petite – résolution à revoir",
+    "enabled": true,
+    "conditions": [
+      { "key": "width", "op": "<", "value": 300 },
+      { "key": "height", "op": "<", "value": 300 }
+    ]
+  }
+]
