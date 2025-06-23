@@ -79,14 +79,27 @@ def apply_rules(features: Dict[str, Any]) -> List[str]:
 
 def classify_image(features: Dict[str, Any]) -> Optional[str]:
     """
-    Classification simple : retourne "pleine", "vide" ou None.
-    Basé sur les règles définies.
+    Retourne 'pleine', 'vide' ou None en fonction des règles déclenchées.
+    Prend en compte les noms de règles contenant 'poubelle_pleine' ou 'poubelle_vide'.
     """
-    if any(rule.name == "poubelle_pleine" and rule.evaluate(features) for rule in RULES):
-        return "pleine"
-    elif any(rule.name == "poubelle_vide" and rule.evaluate(features) for rule in RULES):
+    matches = {
+        "pleine": [],
+        "vide": []
+    }
+
+    for rule in RULES:
+        if rule.enabled and rule.evaluate(features):
+            if "poubelle_pleine" in rule.name:
+                matches["pleine"].append(rule)
+            elif "poubelle_vide" in rule.name:
+                matches["vide"].append(rule)
+
+    if matches["vide"]:
         return "vide"
-    return None
+    elif matches["pleine"]:
+        return "pleine"
+    else:
+        return None
 
 
 # ────────────────────────────────────────────────────────────────────────────────
