@@ -1,93 +1,62 @@
-"""
-Moteur de recommandations CleanSight
-====================================
-
-Ce module :
-    - Extrait les features d'une image ou d'un dossier d'images
-    - Applique les règles métiers depuis rules.json
-    - Génère un label ("pleine"/"vide") et des messages d'action
-    - Calcule éventuellement un score d'hygiène ("cleanscore")
-
-Dépendances : feature_extraction.py, rules.py, rules.json
-"""
-import os
-from typing import Dict, List, Any, Optional
+import sys
+from pathlib import Path
+import json
+from tqdm import tqdm
 
 from backend.utils.feature_extraction import extract_features
 from backend.utils.rules import load_rules_from_json, apply_rules, classify_image
 
 RULES_PATH = "backend/utils/rules.json"
 
-def recommend_for_image(image_path: str) -> Dict[str, Any]:
-    """
-    Traite une image : extraction features, classification, recommandations.
-    """
-    # 1. Extraction des features
-    feats = extract_features(image_path, resize=True)
-    if feats is None:
-        return {
-            "image_path": image_path,
-            "error": "Extraction des features impossible"
-        }
+# Dictionnaire de correspondance message rules → recommandation terrain
+MESSAGE_TO_RECOMMENDATION = {
+    "💡 Poubelle probablement pleine (fichier lourd)": "⚠️ À surveiller : risque de débordement, planifier une collecte rapidement.",
+    "💡 Poubelle probablement pleine (fichier léger, couleur sombre)": "⚠️ Image suspecte (sombre), vérifier sur le terrain si la poubelle est vraiment pleine.",
+    "💡 Poubelle probablement pleine (faible nombre de contours)": "⚠️ Collecte à planifier : poubelle probablement pleine malgré peu de contours.",
+    "💡 Poubelle probablement pleine (beaucoup de contours)": "⚠️ Surcharge possible, intervention recommandée rapidement.",
+    "✅ Poubelle probablement vide (fichier léger, couleur claire)": "RAS : pas d’action requise, poubelle probablement vide.",
+    "✅ Poubelle probablement vide (contours intermédiaires)": "RAS : poubelle à surveiller, mais pas d’intervention urgente.",
+}
 
-    # 2. Application des règles
-    label = classify_image(feats)
-    recommendations = apply_rules(feats)
-    # 3. Score simple : plus il y a de règles “critiques” déclenchées, plus le cleanscore baisse
-    cleanscore = 100
-    if any("pleine" in r for r in recommendations):
-        cleanscore -= 50
-    if any("sombre" in r for r in recommendations):
-        cleanscore -= 25
-    if any("trop petite" in r for r in recommendations):
-        cleanscore -= 10
+def remap_messages_to_recommendations(messages):
+    recommendations = []
+    for msg in messages:
+        reco = MESSAGE_TO_RECOMMENDATION.get(msg)
+        if reco:
+            recommendations.append(reco)
+        else:
+            # Si pas de mapping, renvoyer le message original
+            recommendations.append(f"(À relire) {msg}")
+    return recommendations
 
-    return {
-        "image_path": image_path,
-        "features": feats,
-        "label": label,
-        "recommendations": recommendations,
-        "cleanscore": cleanscore
-    }
+def main(folder):
+    load_rules_from_json(RULES_PATH)
+    folder = Path(folder)
+    images = [f for f in folder.iterdir() if f.is_file() and not ("_resized" in f.name or "_compressed" in f.name)]
 
-def recommend_batch(images: List[str]) -> List[Dict[str, Any]]:
-    """
-    Traite une liste d'images.
-    """
     results = []
-    for img_path in images:
-        results.append(recommend_for_image(img_path))
-    return results
+    for img in tqdm(images, desc="Recommandations"):
+        feats = extract_features(str(img), resize=False)
+        if feats:
+            label = classify_image(feats)
+            triggered_messages = apply_rules(feats)
+            recommendations = remap_messages_to_recommendations(triggered_messages)
+
+            results.append({
+                "filename": img.name,
+                "label": label,
+                "rules_messages": triggered_messages,
+                "recommendations": recommendations,
+            })
+
+    # Sortie en JSON
+    with open("recommendations.json", "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+
+    print("✅ Recommandations terrain générées dans recommendations.json")
 
 if __name__ == "__main__":
-    import argparse
-    from pathlib import Path
-    from tqdm import tqdm
-
-    parser = argparse.ArgumentParser(description="CleanSight Recommendation Engine")
-    parser.add_argument("path", help="Image ou dossier à traiter")
-    parser.add_argument("--rules", default=RULES_PATH, help="Chemin rules.json")
-    args = parser.parse_args()
-
-    load_rules_from_json(args.rules)
-
-    path = Path(args.path)
-    images = []
-    if path.is_dir():
-        for ext in ["jpg", "jpeg", "png"]:
-            images += list(path.glob(f"**/*.{ext}"))
-        print(f"{len(images)} images trouvées.")
+    if len(sys.argv) < 2:
+        print("Usage: python recommendation_engine.py <folder>")
     else:
-        images = [path]
-
-    results = []
-    for img_path in tqdm(images, desc="Recommandations"):
-        result = recommend_for_image(str(img_path))
-        results.append(result)
-        print(f"{os.path.basename(str(img_path))}: {result['label']} — {', '.join(result['recommendations'])}")
-
-    # Optionnel: sauvegarder en CSV/JSON
-    import json
-    with open("recommendations.json", "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
-    print("✅ Recommandations terminées et sauvegardées dans recommendations.json")
+        main(sys.argv[1])
