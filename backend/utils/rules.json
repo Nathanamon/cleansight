@@ -1,58 +1,52 @@
 [
   {
-    "name": "poubelle_pleine_fichier_lourd",
-    "message": "💡 Poubelle probablement pleine (fichier lourd)",
+    "name": "poubelle_vide",
+    "message": "✅ Poubelle probablement vide",
     "enabled": true,
     "conditions": [
-      { "key": "file_size", "op": ">", "value": 100051 }
+      { "key": "height", "op": ">", "value": 516.5 },
+      { "key": "height", "op": "<=", "value": 750.5 },
+      { "key": "file_size", "op": "<=", "value": 108973.0 },
+      { "key": "mean_g", "op": "<=", "value": 140.83 }
     ]
   },
   {
-    "name": "poubelle_pleine_petit_fichier_sombre",
-    "message": "💡 Poubelle probablement pleine (fichier léger, couleur sombre)",
+    "name": "poubelle_pleine_1",
+    "message": "💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)",
     "enabled": true,
     "conditions": [
-      { "key": "file_size", "op": "<=", "value": 29089.5 },
-      { "key": "mean_g", "op": "<=", "value": 125.41 }
+      { "key": "height", "op": "<=", "value": 516.5 },
+      { "key": "contour_count", "op": "<=", "value": 1425.5 },
+      { "key": "mean_b", "op": "<=", "value": 150.08 }
     ]
   },
   {
-    "name": "poubelle_vide_petit_fichier_clair",
-    "message": "✅ Poubelle probablement vide (fichier léger, couleur claire)",
+    "name": "poubelle_vide_haute_resolution",
+    "message": "✅ Poubelle probablement vide (haute résolution, beaucoup de contours)",
     "enabled": true,
     "conditions": [
-      { "key": "file_size", "op": "<=", "value": 29089.5 },
-      { "key": "mean_g", "op": ">", "value": 125.41 }
+      { "key": "height", "op": "<=", "value": 516.5 },
+      { "key": "contour_count", "op": ">", "value": 1425.5 }
     ]
   },
   {
-    "name": "poubelle_pleine_contours_faibles",
-    "message": "💡 Poubelle probablement pleine (faible nombre de contours)",
+    "name": "poubelle_pleine_hauteur_moyenne",
+    "message": "💡 Poubelle pleine (hauteur moyenne, fichier lourd, faible rouge)",
     "enabled": true,
     "conditions": [
-      { "key": "file_size", "op": "<=", "value": 100051 },
-      { "key": "file_size", "op": ">", "value": 29089.5 },
-      { "key": "contour_count", "op": "<=", "value": 546.5 }
+      { "key": "height", "op": "<=", "value": 750.5 },
+      { "key": "file_size", "op": ">", "value": 108973.0 },
+      { "key": "mean_r", "op": "<=", "value": 116.24 }
     ]
   },
   {
-    "name": "poubelle_vide_contours_intermediaires",
-    "message": "✅ Poubelle probablement vide (contours intermédiaires)",
+    "name": "poubelle_pleine_grande_image",
+    "message": "💡 Poubelle pleine (grande image, rouge faible)",
     "enabled": true,
     "conditions": [
-      { "key": "file_size", "op": "<=", "value": 100051 },
-      { "key": "file_size", "op": ">", "value": 29089.5 },
-      { "key": "contour_count", "op": ">", "value": 546.5 },
-      { "key": "contour_count", "op": "<=", "value": 2206 }
-    ]
-  },
-  {
-    "name": "poubelle_pleine_beaucoup_de_contours",
-    "message": "💡 Poubelle probablement pleine (beaucoup de contours)",
-    "enabled": true,
-    "conditions": [
-      { "key": "file_size", "op": "<=", "value": 100051 },
-      { "key": "contour_count", "op": ">", "value": 2206 }
+      { "key": "height", "op": ">", "value": 750.5 },
+      { "key": "width", "op": "<=", "value": 5280.0 },
+      { "key": "mean_r", "op": "<=", "value": 134.74 }
     ]
   }
 ]
