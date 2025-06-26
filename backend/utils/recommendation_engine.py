@@ -5,20 +5,6 @@ from tqdm import tqdm
 from backend.utils.feature_extraction import extract_features
 from backend.utils.rules import load_rules_from_json, classify_image, apply_rules
 
-# Mapping messages → recommandations actionnables
-MESSAGE_TO_ACTION = {
-    "✅ Poubelle probablement vide":
-        "ℹ️ Surveillance minimale requise, collecte non prioritaire.",
-    "💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)":
-        "⚠️ Collecte à planifier rapidement (poubelle probablement pleine, basse hauteur, faible luminosité).",
-    "✅ Poubelle probablement vide (haute résolution, beaucoup de contours)":
-        "🟢 Image de bonne qualité, poubelle probablement vide : surveillance simple.",
-    "💡 Poubelle pleine (hauteur moyenne, fichier lourd, faible rouge)":
-        "⚠️ Collecte à prévoir : fichier lourd et faible valeur de rouge détecté.",
-    "💡 Poubelle pleine (grande image, rouge faible)":
-        "⚠️ Contrôle manuel conseillé (grande poubelle détectée, rouge faible)."
-}
-
 def is_image_file(filename):
     ext = filename.lower().split('.')[-1]
     return ext in {"jpg", "jpeg", "png", "bmp", "webp", "tiff"}
@@ -27,6 +13,7 @@ def main(images_dir, rules_json="rules.json"):
     # Charge les règles
     load_rules_from_json(rules_json)
 
+    # Liste des images à traiter
     images = [
         f for f in os.listdir(images_dir)
         if is_image_file(f) and "_resized" not in f and "_compressed" not in f
@@ -41,14 +28,29 @@ def main(images_dir, rules_json="rules.json"):
 
     for img_name in tqdm(images, desc="Recommandations"):
         img_path = str(Path(images_dir) / img_name)
-        feats = extract_features(img_path)
+        feats = extract_features(img_path, resize=False)
         if feats is None:
             print(f"❌ Extraction impossible sur {img_name}")
             continue
 
-        # Appliquer règles + recommandations
+        # Appliquer règles
         triggered_msgs = apply_rules(feats)
-        reco = [MESSAGE_TO_ACTION.get(m, m) for m in triggered_msgs]
+
+        # Générer recommandations orientées collectivités
+        reco = []
+        for m in triggered_msgs:
+            if m.startswith("✅ Poubelle vide"):
+                reco.append(
+                    "ℹ️ Surveillance minimale requise, collecte non prioritaire."
+                )
+            elif m.startswith("💡 Poubelle pleine"):
+                reco.append(
+                    "⚠️ Collecte prioritaire à planifier immédiatement (poubelle probablement pleine)."
+                )
+            else:
+                # Cas générique
+                reco.append(f"⚠️ Action requise : {m}")
+
         label = classify_image(feats)
 
         output.append({
@@ -58,6 +60,11 @@ def main(images_dir, rules_json="rules.json"):
             "recommendations": reco
         })
 
+        # Affichage console
+        msgs = ", ".join(triggered_msgs) if triggered_msgs else "Aucune recommandation"
+        print(f"{img_name}: {label or 'non déterminé'} — {msgs}")
+
+    # Sauvegarde des recommandations
     with open("recommendations.json", "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
@@ -71,4 +78,3 @@ if __name__ == "__main__":
         images_dir = sys.argv[1]
         rules_path = sys.argv[2] if len(sys.argv) > 2 else "rules.json"
         main(images_dir, rules_path)
-
