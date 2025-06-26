@@ -1,52 +1,63 @@
 [
   {
-    "name": "poubelle_vide",
-    "message": "✅ Poubelle probablement vide",
+    "name": "poubelle_pleine_gfaible",
+    "message": "💡 Poubelle pleine (peu de contours, mean_g ≤ 109.21)",
     "enabled": true,
     "conditions": [
-      { "key": "height", "op": ">", "value": 516.5 },
-      { "key": "height", "op": "<=", "value": 750.5 },
-      { "key": "file_size", "op": "<=", "value": 108973.0 },
-      { "key": "mean_g", "op": "<=", "value": 140.83 }
+      { "key": "contour_count", "op": "<=", "value": 2205.0 },
+      { "key": "mean_g",        "op": "<=", "value": 109.21 }
     ]
   },
   {
-    "name": "poubelle_pleine_1",
-    "message": "💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)",
+    "name": "poubelle_pleine_gsup_fs_inf_binf",
+    "message": "💡 Poubelle pleine (mean_g > 109.21, file_size ≤ 27828.5, mean_b ≤ 114.51)",
     "enabled": true,
     "conditions": [
-      { "key": "height", "op": "<=", "value": 516.5 },
-      { "key": "contour_count", "op": "<=", "value": 1425.5 },
-      { "key": "mean_b", "op": "<=", "value": 150.08 }
+      { "key": "contour_count", "op": "<=", "value": 2205.0 },
+      { "key": "mean_g",        "op": ">",  "value": 109.21 },
+      { "key": "file_size",     "op": "<=", "value": 27828.5 },
+      { "key": "mean_b",        "op": "<=", "value": 114.51 }
     ]
   },
   {
-    "name": "poubelle_vide_haute_resolution",
-    "message": "✅ Poubelle probablement vide (haute résolution, beaucoup de contours)",
+    "name": "poubelle_vide_gsup_fs_inf_bsup",
+    "message": "✅ Poubelle vide (mean_g > 109.21, file_size ≤ 27828.5, mean_b > 114.51)",
     "enabled": true,
     "conditions": [
-      { "key": "height", "op": "<=", "value": 516.5 },
-      { "key": "contour_count", "op": ">", "value": 1425.5 }
+      { "key": "contour_count", "op": "<=", "value": 2205.0 },
+      { "key": "mean_g",        "op": ">",  "value": 109.21 },
+      { "key": "file_size",     "op": "<=", "value": 27828.5 },
+      { "key": "mean_b",        "op": ">",  "value": 114.51 }
     ]
   },
   {
-    "name": "poubelle_pleine_hauteur_moyenne",
-    "message": "💡 Poubelle pleine (hauteur moyenne, fichier lourd, faible rouge)",
+    "name": "poubelle_vide_gsup_fs_sup",
+    "message": "✅ Poubelle vide (mean_g > 109.21, file_size > 27828.5)",
     "enabled": true,
     "conditions": [
-      { "key": "height", "op": "<=", "value": 750.5 },
-      { "key": "file_size", "op": ">", "value": 108973.0 },
-      { "key": "mean_r", "op": "<=", "value": 116.24 }
+      { "key": "contour_count", "op": "<=", "value": 2205.0 },
+      { "key": "mean_g",        "op": ">",  "value": 109.21 },
+      { "key": "file_size",     "op": ">",  "value": 27828.5 }
     ]
   },
   {
-    "name": "poubelle_pleine_grande_image",
-    "message": "💡 Poubelle pleine (grande image, rouge faible)",
+    "name": "poubelle_pleine_cntsup_rinf",
+    "message": "💡 Poubelle pleine (beaucoup de contours, mean_r ≤ 132.38)",
     "enabled": true,
     "conditions": [
-      { "key": "height", "op": ">", "value": 750.5 },
-      { "key": "width", "op": "<=", "value": 5280.0 },
-      { "key": "mean_r", "op": "<=", "value": 134.74 }
+      { "key": "contour_count", "op": ">",  "value": 2205.0 },
+      { "key": "mean_r",        "op": "<=", "value": 132.38 }
+    ]
+  },
+  {
+    "name": "poubelle_vide_cntsup_rsup",
+    "message": "✅ Poubelle vide (beaucoup de contours, mean_r > 132.38)",
+    "enabled": true,
+    "conditions": [
+      { "key": "contour_count", "op": ">", "value": 2205.0 },
+      { "key": "mean_r",        "op": ">", "value": 132.38 }
     ]
   }
 ]
+
+
