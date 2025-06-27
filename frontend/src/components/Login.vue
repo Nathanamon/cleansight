@@ -2,7 +2,7 @@
   <div class="container">
     <div class="login-box">
       <div class="logo-section">
-        <img src="@/assets/logo_clean.png" alt="CleanSight Logo" class="logo" />
+        <img src="@/assets/logo.png" alt="CleanSight Logo" class="logo" />
         <h1>CleanSight</h1>
         <p class="slogan">TOUS VIGILANTS, TOUS PROPRE</p>
       </div>
@@ -12,10 +12,20 @@
 
       <form @submit.prevent="handleLogin">
         <label>Email</label>
-        <input type="email" v-model="email" placeholder="votre@email.com" required />
+        <input
+          type="email"
+          v-model="email"
+          placeholder="votre@email.com"
+          required
+        />
 
         <label>Mot de passe</label>
-        <input type="password" v-model="password" placeholder="••••••••" required />
+        <input
+          type="password"
+          v-model="password"
+          placeholder="••••••••"
+          required
+        />
 
         <div class="options">
           <label>
@@ -29,12 +39,8 @@
 
         <div class="divider">ou</div>
 
-        <button class="social-btn google">
-          Continuer avec Google
-        </button>
-        <button class="social-btn facebook">
-          Continuer avec Facebook
-        </button>
+        <button class="social-btn google">Continuer avec Google</button>
+        <button class="social-btn facebook">Continuer avec Facebook</button>
 
         <p class="signup">
           Pas encore de compte ? <a href="#">Créer un compte</a>
@@ -51,15 +57,15 @@ export default {
     return {
       email: "",
       password: "",
-      remember: false
+      remember: false,
     };
   },
   methods: {
     handleLogin() {
       // Remplace ceci par ta logique réelle de connexion
       console.log("Connexion avec :", this.email, this.password, this.remember);
-    }
-  }
+    },
+  },
 };
 </script>
 
