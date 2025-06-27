@@ -1,48 +1,45 @@
+# backend/routes/upload.py
+
 import os
+from datetime import datetime
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
-from models.image import Image
-from PIL import Image as PILImage
+from app import db                # instance SQLAlchemy unique
+from models.image import Image    # votre modèle
 
 upload_bp = Blueprint("upload", __name__)
 
 @upload_bp.route("/upload", methods=["POST"])
 def upload():
-    from app import db  # ✅ Import local pour éviter les erreurs circulaires
-
-    # Vérifie que le champ 'image' est bien présent dans le formulaire
+    # vérification
     if 'image' not in request.files or 'annotation' not in request.form:
         return jsonify({"error": "Image et annotation sont obligatoires"}), 400
 
-    # Récupère le fichier et l’annotation
     image_file = request.files['image']
     annotation = request.form['annotation']
-
-    # Sécurise le nom du fichier (évite les injections de chemin)
     filename = secure_filename(image_file.filename)
 
-    # Enregistre le fichier dans le dossier d'uploads
-    upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-    image_file.save(upload_path)
+    # chemin complet
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+    path = os.path.join(upload_folder, filename)
+    image_file.save(path)
 
-    # Ouvre l’image avec PIL pour extraire les dimensions
-    pil_image = PILImage.open(upload_path)
-    largeur, hauteur = pil_image.size
-    taille = os.path.getsize(upload_path)
-    couleur_moyenne = str(pil_image.resize((1,1)).getpixel((0,0)))  # simple estimation
+    # lecture pour extraire taille et dimensions
+    from PIL import Image as PILImage
+    pil = PILImage.open(path)
+    largeur, hauteur = pil.size
+    taille = os.path.getsize(path)
 
-    # Crée une instance du modèle Image
-    image = Image(
+    # création de l’objet SQLAlchemy
+    img = Image(
         filename=filename,
+        date_upload=datetime.utcnow(),
         annotation=annotation,
-        taille=taille,
         largeur=largeur,
         hauteur=hauteur,
-        couleur_moyenne=couleur_moyenne
+        taille=taille
     )
-
-    # Sauvegarde en base
-    db.session.add(image)
+    db.session.add(img)
     db.session.commit()
 
-    return jsonify({"message": "Image bien enregistrée"}), 201
+    return jsonify({"message": "Image enregistrée avec succès"}), 201
