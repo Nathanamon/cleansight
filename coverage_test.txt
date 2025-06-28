@@ -1,0 +1,13 @@
+60 clean, 180 dirty images analysées.
+
+=== Couverture des règles ===
+Règle                                                   | Clean | Dirty
+----------------------------------------------------------------------
+✅ Poubelle probablement vide                            |    13 |     1
+💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue) |    43 |   159
+💡 Poubelle pleine (grande image, rouge faible)          |     3 |    10
+✅ Poubelle probablement vide (haute résolution, beaucoup de contours) |     0 |     8
+💡 Poubelle pleine (hauteur moyenne, fichier lourd, faible rouge) |     0 |     1
+----------------------------------------------------------------------
+Non classés (clean): 1 / 60
+Non classés (dirty): 1 / 180

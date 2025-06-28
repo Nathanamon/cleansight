@@ -93,8 +93,8 @@ async function predict() {
       body: formData
     })
     const data = await res.json()
-    prediction.value = data.label
-    annotation.value = data.label
+    prediction.value = data.label || 'vide'   // ou 'pleine' selon ce que tu veux par défaut
+    annotation.value = prediction.value
   } catch (e) {
     message.value = "Erreur lors de la prédiction."
   } finally {

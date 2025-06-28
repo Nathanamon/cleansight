@@ -1,0 +1,240 @@
+00204_00.jpg:
+  Features: height=600, contour_count=1134, mean_b=121.97, mean_g=127.3, mean_r=122.39, file_size=70724
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+00204_00_resized.jpg:
+  Features: height=400, contour_count=583, mean_b=121.99, mean_g=127.22, mean_r=122.47, file_size=35135
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00204_00_resized_compressed.jpg:
+  Features: height=400, contour_count=583, mean_b=121.99, mean_g=127.22, mean_r=122.47, file_size=34711
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00207_03.jpg:
+  Features: height=600, contour_count=742, mean_b=129.66, mean_g=132.25, mean_r=130.69, file_size=48321
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+00207_03_resized.jpg:
+  Features: height=400, contour_count=344, mean_b=129.67, mean_g=132.22, mean_r=130.77, file_size=24444
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00207_03_resized_compressed.jpg:
+  Features: height=400, contour_count=344, mean_b=129.67, mean_g=132.22, mean_r=130.77, file_size=23914
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00217_05.jpg:
+  Features: height=600, contour_count=1747, mean_b=106.12, mean_g=117.21, mean_r=112.9, file_size=72875
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+00217_05_resized.jpg:
+  Features: height=400, contour_count=825, mean_b=106.19, mean_g=117.19, mean_r=112.92, file_size=35922
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00217_05_resized_compressed.jpg:
+  Features: height=400, contour_count=825, mean_b=106.19, mean_g=117.19, mean_r=112.93, file_size=35395
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00517_04.jpg:
+  Features: height=600, contour_count=1079, mean_b=108.39, mean_g=114.69, mean_r=112.64, file_size=61738
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+00517_04_resized.jpg:
+  Features: height=400, contour_count=569, mean_b=108.41, mean_g=114.67, mean_r=112.68, file_size=31579
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00517_04_resized_compressed.jpg:
+  Features: height=400, contour_count=570, mean_b=108.41, mean_g=114.67, mean_r=112.68, file_size=31145
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00543_02.jpg:
+  Features: height=600, contour_count=1266, mean_b=116.23, mean_g=117.13, mean_r=117.64, file_size=70238
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+00543_02_resized.jpg:
+  Features: height=400, contour_count=711, mean_b=116.26, mean_g=117.12, mean_r=117.66, file_size=34559
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00543_02_resized_compressed.jpg:
+  Features: height=400, contour_count=711, mean_b=116.26, mean_g=117.13, mean_r=117.66, file_size=33995
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00547_06.jpg:
+  Features: height=600, contour_count=1487, mean_b=109.11, mean_g=113.72, mean_r=114.25, file_size=73344
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+00547_06_resized.jpg:
+  Features: height=400, contour_count=725, mean_b=109.11, mean_g=113.64, mean_r=114.35, file_size=36041
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00547_06_resized_compressed.jpg:
+  Features: height=400, contour_count=727, mean_b=109.11, mean_g=113.64, mean_r=114.35, file_size=35516
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00566_03.jpg:
+  Features: height=600, contour_count=1653, mean_b=119.64, mean_g=120.65, mean_r=117.66, file_size=79962
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+00566_03_resized.jpg:
+  Features: height=400, contour_count=911, mean_b=119.67, mean_g=120.63, mean_r=117.66, file_size=40390
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+00566_03_resized_compressed.jpg:
+  Features: height=400, contour_count=911, mean_b=119.68, mean_g=120.63, mean_r=117.66, file_size=39871
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+0e02598e-acbb-423e-912e-cf2b922b5bd7.jpeg:
+  Features: height=803, contour_count=842, mean_b=111.43, mean_g=119.74, mean_r=130.77, file_size=49548
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (grande image, rouge faible)']
+------------------------------------------------------------
+0e02598e-acbb-423e-912e-cf2b922b5bd7_resized.jpg:
+  Features: height=400, contour_count=332, mean_b=111.49, mean_g=119.48, mean_r=130.76, file_size=29363
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+0e02598e-acbb-423e-912e-cf2b922b5bd7_resized_compressed.jpg:
+  Features: height=400, contour_count=327, mean_b=111.46, mean_g=119.45, mean_r=130.69, file_size=28899
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+3f53a459-b46f-4e87-90ac-f9e43cc23320.jpeg:
+  Features: height=803, contour_count=551, mean_b=116.33, mean_g=118.75, mean_r=120.87, file_size=44039
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (grande image, rouge faible)']
+------------------------------------------------------------
+3f53a459-b46f-4e87-90ac-f9e43cc23320_resized.jpg:
+  Features: height=400, contour_count=297, mean_b=116.17, mean_g=118.59, mean_r=120.58, file_size=27360
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+3f53a459-b46f-4e87-90ac-f9e43cc23320_resized_compressed.jpg:
+  Features: height=400, contour_count=296, mean_b=116.08, mean_g=118.52, mean_r=120.47, file_size=26878
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+401.full.jpeg:
+  Features: height=3000, contour_count=3358, mean_b=126.67, mean_g=129.29, mean_r=135.23, file_size=1865576
+  Prédit: non déterminé — Règle(s): []
+------------------------------------------------------------
+401.full_resized.jpg:
+  Features: height=400, contour_count=573, mean_b=126.63, mean_g=129.26, mean_r=135.25, file_size=30762
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+401.full_resized_compressed.jpg:
+  Features: height=400, contour_count=575, mean_b=126.63, mean_g=129.26, mean_r=135.26, file_size=30161
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+86cd7cf4-726f-40c5-9788-89c890be3914.jpeg:
+  Features: height=682, contour_count=1120, mean_b=109.98, mean_g=119.73, mean_r=125.29, file_size=77107
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+86cd7cf4-726f-40c5-9788-89c890be3914_resized.jpg:
+  Features: height=400, contour_count=510, mean_b=110.03, mean_g=119.71, mean_r=125.14, file_size=33938
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+86cd7cf4-726f-40c5-9788-89c890be3914_resized_compressed.jpg:
+  Features: height=400, contour_count=505, mean_b=110.02, mean_g=119.71, mean_r=125.12, file_size=33264
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.03.37 PM (6).jpeg:
+  Features: height=449, contour_count=378, mean_b=115.66, mean_g=126.69, mean_r=129.29, file_size=24475
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.03.37 PM (6)_resized.jpg:
+  Features: height=400, contour_count=289, mean_b=115.73, mean_g=126.65, mean_r=129.24, file_size=24768
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.03.37 PM (6)_resized_compressed.jpg:
+  Features: height=400, contour_count=293, mean_b=115.71, mean_g=126.64, mean_r=129.22, file_size=24215
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.03.38 PM (1).jpeg:
+  Features: height=748, contour_count=887, mean_b=135.82, mean_g=127.73, mean_r=127.3, file_size=69069
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.03.38 PM (1)_resized.jpg:
+  Features: height=400, contour_count=431, mean_b=135.81, mean_g=127.67, mean_r=127.38, file_size=27518
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.03.38 PM (1)_resized_compressed.jpg:
+  Features: height=400, contour_count=428, mean_b=135.79, mean_g=127.67, mean_r=127.38, file_size=26901
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.03.38 PM (3).jpeg:
+  Features: height=323, contour_count=1191, mean_b=110.31, mean_g=120.55, mean_r=129.33, file_size=52434
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.03.38 PM (3)_resized.jpg:
+  Features: height=400, contour_count=1000, mean_b=110.29, mean_g=120.49, mean_r=129.15, file_size=43231
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.03.38 PM (3)_resized_compressed.jpg:
+  Features: height=400, contour_count=1005, mean_b=110.28, mean_g=120.47, mean_r=129.12, file_size=42496
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.08.14 PM (6).jpeg:
+  Features: height=686, contour_count=1254, mean_b=113.87, mean_g=122.99, mean_r=121.55, file_size=61402
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.08.14 PM (6)_resized.jpg:
+  Features: height=400, contour_count=454, mean_b=113.83, mean_g=122.92, mean_r=121.66, file_size=27188
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.08.14 PM (6)_resized_compressed.jpg:
+  Features: height=400, contour_count=454, mean_b=113.83, mean_g=122.92, mean_r=121.66, file_size=26578
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.08.14 PM.jpeg:
+  Features: height=391, contour_count=219, mean_b=105.17, mean_g=111.9, mean_r=111.08, file_size=29541
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.08.14 PM_resized.jpg:
+  Features: height=400, contour_count=186, mean_b=105.22, mean_g=111.86, mean_r=111.03, file_size=22555
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.08.14 PM_resized_compressed.jpg:
+  Features: height=400, contour_count=185, mean_b=105.21, mean_g=111.85, mean_r=111.01, file_size=21926
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.08.15 PM (2).jpeg:
+  Features: height=546, contour_count=2111, mean_b=114.43, mean_g=114.28, mean_r=116.28, file_size=84871
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.08.15 PM (2)_resized.jpg:
+  Features: height=400, contour_count=914, mean_b=114.32, mean_g=114.22, mean_r=116.22, file_size=42535
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 2.08.15 PM (2)_resized_compressed.jpg:
+  Features: height=400, contour_count=906, mean_b=114.31, mean_g=114.2, mean_r=116.2, file_size=41974
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 3.57.59 PM.jpeg:
+  Features: height=529, contour_count=300, mean_b=105.04, mean_g=114.13, mean_r=106.65, file_size=36301
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 3.57.59 PM_resized.jpg:
+  Features: height=400, contour_count=193, mean_b=104.99, mean_g=114.02, mean_r=106.68, file_size=20150
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 3.57.59 PM_resized_compressed.jpg:
+  Features: height=400, contour_count=198, mean_b=104.97, mean_g=114.0, mean_r=106.66, file_size=19377
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 9.56.49 AM (2).jpeg:
+  Features: height=688, contour_count=746, mean_b=120.12, mean_g=121.58, mean_r=122.54, file_size=59152
+  Prédit: vide — Règle(s): ['✅ Poubelle probablement vide']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 9.56.49 AM (2)_resized.jpg:
+  Features: height=400, contour_count=439, mean_b=120.16, mean_g=121.5, mean_r=122.64, file_size=27755
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-05-09 at 9.56.49 AM (2)_resized_compressed.jpg:
+  Features: height=400, contour_count=439, mean_b=120.16, mean_g=121.5, mean_r=122.64, file_size=27104
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-10-04 at 10.35.23 AM (6).jpeg:
+  Features: height=1496, contour_count=1608, mean_b=101.31, mean_g=109.9, mean_r=111.27, file_size=197259
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (grande image, rouge faible)']
+------------------------------------------------------------
+WhatsApp Image 2020-10-04 at 10.35.23 AM (6)_resized.jpg:
+  Features: height=400, contour_count=372, mean_b=101.26, mean_g=109.83, mean_r=111.28, file_size=24797
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------
+WhatsApp Image 2020-10-04 at 10.35.23 AM (6)_resized_compressed.jpg:
+  Features: height=400, contour_count=373, mean_b=101.25, mean_g=109.82, mean_r=111.28, file_size=24164
+  Prédit: pleine — Règle(s): ['💡 Poubelle pleine (petite hauteur, peu de contours, basse luminosité bleue)']
+------------------------------------------------------------

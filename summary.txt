@@ -1,0 +1,25 @@
+CleanSight - Rapport d'extraction automatique
+Généré le : 2025-06-23 13:35:47
+
+Images totales traitées : 1200
+    - Succès        : 1200
+    - Échecs        : 0
+    - Label 'pleine': 1174
+    - Label 'vide'  : 0
+    - Autres/None   : 26
+
+CSV complet : pipeline_results.csv
+Log erreurs : errors.log
+
+Premiers labels (échantillon) :
+                       filename auto_label                                                            recommendations
+  with_label\dirty\00511_01.jpg     pleine                                             💡 Poubelle probablement pleine
+  with_label\dirty\00874_01.jpg     pleine                                             💡 Poubelle probablement pleine
+with_label\dirty\1495.full.jpeg     pleine                                             💡 Poubelle probablement pleine
+with_label\dirty\1616.full.jpeg     pleine                                             💡 Poubelle probablement pleine
+with_label\dirty\1620.full.jpeg     pleine                                             💡 Poubelle probablement pleine
+with_label\dirty\1820.full.jpeg     pleine                                             💡 Poubelle probablement pleine
+with_label\dirty\2632.full.jpeg     pleine                                             💡 Poubelle probablement pleine
+ with_label\dirty\279.full.jpeg     pleine                                             💡 Poubelle probablement pleine
+with_label\dirty\3586.full.jpeg     pleine                                             💡 Poubelle probablement pleine
+     with_label\dirty\3675.jpeg     pleine 💡 Poubelle probablement pleine; ⚠️ Image trop petite – résolution à revoir
