@@ -2,7 +2,7 @@
   <div class="container">
     <div class="login-box">
       <div class="logo-section">
-        <img src="@/assets/logo_clean.png" alt="CleanSight Logo" class="logo" />
+        <img src="@/assets/logo.png" alt="CleanSight Logo" class="logo" />
         <h1>CleanSight</h1>
         <p class="slogan">TOUS VIGILANTS, TOUS PROPRE</p>
       </div>

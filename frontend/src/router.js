@@ -5,6 +5,11 @@ const routes = [
     name: "Home",
     component: () => import("./components/Home.vue"),
   },
+  {
+    path: "/",
+    name: "Login",
+    component: () => import("./components/Login.vue"),
+  },
 ];
 
 const router = createRouter({
