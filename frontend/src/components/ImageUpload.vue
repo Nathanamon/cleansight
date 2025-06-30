@@ -93,10 +93,12 @@ async function predict() {
       body: formData
     })
     const data = await res.json()
-    prediction.value = data.label
-    annotation.value = data.label
+    // Correction : utilisation d'une valeur par défaut si data.label est undefined/null
+    prediction.value = data.label || 'vide'
+    annotation.value = prediction.value
   } catch (e) {
     message.value = "Erreur lors de la prédiction."
+    console.error('Erreur prédiction:', e)
   } finally {
     loading.value = false
   }
@@ -127,6 +129,7 @@ async function validate() {
     }
   } catch (e) {
     message.value = "Erreur réseau."
+    console.error('Erreur validation:', e)
   } finally {
     loading.value = false
   }

@@ -1,4 +1,4 @@
-# backend/routes/upload.py
+(# backend/routes/upload.py
 
 import os
 from datetime import datetime
@@ -42,4 +42,4 @@ def upload():
     db.session.add(img)
     db.session.commit()
 
-    return jsonify({"message": "Image enregistrée avec succès"}), 201
+    return jsonify({"message": "Image enregistrée avec succès"}), 201)

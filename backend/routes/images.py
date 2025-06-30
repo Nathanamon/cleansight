@@ -3,6 +3,8 @@
 from flask import Blueprint, jsonify
 from app import db
 from models.image import Image
+from utils.feature_extraction import extract_features
+from utils.rules import load_rules_from_json, classify_image, apply_rules
 
 images_bp = Blueprint("images", __name__)
 
