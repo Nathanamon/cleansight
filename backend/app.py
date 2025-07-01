@@ -4,6 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from config import Config
 from utils.rules import load_rules_from_json
+from flask_mail import Mail
+
+
+mail = Mail() 
 
 # créez une unique instance de SQLAlchemy
 db = SQLAlchemy()
@@ -11,6 +15,7 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    mail.init_app(app)
 
     # création du dossier d'upload si besoin
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
@@ -34,6 +39,6 @@ def create_app():
     from routes.validate import validate_bp
     app.register_blueprint(validate_bp)
     from routes.auth import auth_bp
-    app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp, url_prefix="/auth")
 
     return app
