@@ -6,12 +6,15 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
+    SECRET_KEY = os.environ.get("SECRET_KEY", "change-this-en-prod")
     """Configuration de l'application Flask."""
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get("DATABASE_URL")
-        or "postgresql://postgres:123456@localhost/poubelle_db"
+        or "postgresql://postgres:informatitien@localhost/poubelle_db"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # dossier où on sauvegarde les uploads
     UPLOAD_FOLDER = os.path.join(basedir, "uploads")
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SECURE = False

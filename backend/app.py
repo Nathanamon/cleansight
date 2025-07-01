@@ -33,5 +33,7 @@ def create_app():
     app.register_blueprint(predict_bp)
     from routes.validate import validate_bp
     app.register_blueprint(validate_bp)
+    from routes.auth import auth_bp
+    app.register_blueprint(auth_bp)
 
     return app
