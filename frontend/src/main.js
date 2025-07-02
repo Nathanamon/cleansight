@@ -7,3 +7,6 @@ import router from "./router";
 
 // ✅ Monte l'app avec le router
 createApp(App).use(router).mount("#app");
+
+// Installation Leaflet Map
+import 'leaflet/dist/leaflet.css'

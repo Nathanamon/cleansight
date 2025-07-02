@@ -1,13 +1,20 @@
-<script setup>
-// ✅ Plus besoin d'importer HelloWorld
-// ✅ Plus besoin d'importer Home ici : c'est le router qui gère
-</script>
-
 <template>
-  <!-- ✅ Affiche la page en fonction de la route -->
-  <router-view />
+  <div id="app">
+    <Header />
+    <router-view />
+    <Footer />
+  </div>
 </template>
 
-<style scoped>
-/* Ton style global pour App.vue, optionnel */
-</style>
+<script>
+import Header from './components/Header.vue'
+import Footer from './components/Footer.vue'
+
+export default {
+  name: 'App',
+  components: {
+    Header,
+    Footer
+  }
+}
+</script>
