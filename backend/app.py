@@ -3,6 +3,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_mail import Mail
+from flask_jwt_extended import JWTManager
+
 
 from config import Config
 from utils.rules import load_rules_from_json
@@ -10,6 +12,8 @@ from utils.rules import load_rules_from_json
 # — Extensions globales —————————————————————————————————————————————
 db   = SQLAlchemy()
 mail = Mail()
+jwt  = JWTManager()   # <-- AJOUTE CETTE LIGNE
+
 
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
@@ -21,6 +25,7 @@ def create_app():
     # Init des extensions
     db.init_app(app)
     mail.init_app(app)
+    jwt.init_app(app)
     CORS(
         app,
         resources={r"/*": {"origins": "http://localhost:5173"}},  # votre front Vite

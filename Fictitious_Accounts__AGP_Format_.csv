@@ -1,0 +1,12 @@
+id,email,agent_code,password
+1,agent0001@paris.fr,AGP-0001,passw0rd1!
+2,agent0002@paris.fr,AGP-0002,passw0rd2!
+3,agent0003@paris.fr,AGP-0003,passw0rd3!
+4,agent0004@paris.fr,AGP-0004,passw0rd4!
+5,agent0005@paris.fr,AGP-0005,passw0rd5!
+6,agent0006@paris.fr,AGP-0006,passw0rd6!
+7,agent0007@paris.fr,AGP-0007,passw0rd7!
+8,agent0008@paris.fr,AGP-0008,passw0rd8!
+9,agent0009@paris.fr,AGP-0009,passw0rd9!
+10,agent0010@paris.fr,AGP-0010,passw0rd10!
+
