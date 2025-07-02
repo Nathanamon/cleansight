@@ -356,18 +356,19 @@ export default {
       this.loading = true;
       
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/signup`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
+       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
+          method:      "POST",
+          credentials: "include",              // si besoin de cookies
+          headers:     { "Content-Type": "application/json" },
+          body:        JSON.stringify({
             firstName: this.firstName,
-            lastName: this.lastName,
-            email: this.email, 
-            password: this.password,
-            newsletter: this.acceptNewsletter
+            lastName:  this.lastName,
+            email:     this.email,
+            password:  this.password,
+            newsletter:this.acceptNewsletter
           })
         });
-        
+
         const data = await res.json();
         
         if (res.ok) {

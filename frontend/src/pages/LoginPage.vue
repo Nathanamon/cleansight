@@ -240,16 +240,16 @@ export default {
       this.loading = true
       
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            email: this.email, 
-            password: this.password,
-            remember: this.remember
-          })
-        })
-        
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/auth/login`,
+          {
+            method: "POST",
+            credentials: "include",      // <— indispensable
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: this.email, password: this.password })
+          }
+        )
+
         const data = await res.json()
         
         if (res.ok) {
