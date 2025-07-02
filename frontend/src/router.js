@@ -15,10 +15,20 @@ const routes = [
     name: "Upload",
     component: () => import("./pages/UploadPage.vue"),
   },
-   {
-    path: "/carte",
-    name: "Carte",
-    component: () => import("./pages/CartePoubelles.vue"),
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component: () => import("./pages/Dashboard.vue"),
+  },
+  {
+    path: "/images",
+    name: "Images",
+    component: () => import("./pages/Images.vue"),
+  },
+  {
+    path: "/recommendations",
+    name: "Recommendations",
+    component: () => import("./pages/Recommendations.vue"),
   },
 ];
 
