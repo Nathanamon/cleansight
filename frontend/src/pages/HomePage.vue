@@ -30,21 +30,21 @@
             </button>
           </div>
         </div>
-        <div class="flex justify-center">
-          <div class="bg-white rounded-3xl p-12 shadow-2xl border border-green-200/20 animate-bounce w-full max-w-md">
-            <div class="flex items-center gap-3 mb-6 font-bold text-gray-800 text-lg">
-              <div class="w-4 h-4 rounded-full bg-red-500 animate-pulse"></div>
-              <span>Poubelle Détectée</span>
-            </div>
-            <div class="space-y-4">
-              <div class="bg-gray-50 p-6 rounded-xl text-xl">
-                🗑️ État: <strong>Pleine</strong>
-              </div>
-              <div class="text-gray-600 text-base">📍 Rue de la République</div>
-              <div class="text-gray-600 text-base">⏰ Il y a 5 minutes</div>
-            </div>
-          </div>
-        </div>
+        <div class="hidden lg:flex justify-center">
+  <div class="bg-white rounded-3xl p-12 shadow-2xl border border-green-200/20 animate-bounce w-full max-w-md">
+    <div class="flex items-center gap-3 mb-6 font-bold text-gray-800 text-lg">
+      <div class="w-4 h-4 rounded-full bg-red-500 animate-pulse"></div>
+      <span>Poubelle Détectée</span>
+    </div>
+    <div class="space-y-4">
+      <div class="bg-gray-50 p-6 rounded-xl text-xl">
+        🗑️ État: <strong>Pleine</strong>
+      </div>
+      <div class="text-gray-600 text-base">📍 Rue de la République</div>
+      <div class="text-gray-600 text-base">⏰ Il y a 5 minutes</div>
+    </div>
+  </div>
+</div>
       </div>
       <div class="absolute bottom-0 left-0 w-full h-24 bg-white" 
            style="clip-path: polygon(0 60%, 100% 0%, 100% 100%, 0% 100%);">

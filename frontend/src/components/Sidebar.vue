@@ -54,7 +54,8 @@ export default {
       tabs: [
         { id: 'dashboard', name: 'Dashboard', icon: 'fas fa-tachometer-alt' },
         { id: 'images', name: 'Images', icon: 'fas fa-images' },
-        { id: 'recommendation', name: 'Recommandations', icon: 'fas fa-lightbulb' }
+        { id: 'recommendations', name: 'Recommandations', icon: 'fas fa-lightbulb' },
+        { id: 'rules', name: 'Règles', icon: 'fas fa-lightbulb' }
       ]
     }
   }
