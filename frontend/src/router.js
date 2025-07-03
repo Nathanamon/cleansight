@@ -30,6 +30,11 @@ const routes = [
     name: "Recommendations",
     component: () => import("./pages/Recommendations.vue"),
   },
+  {
+    path: "/rules",
+    name: "Rules",
+    component: () => import("./pages/Rules.vue"),
+  },
 ];
 
 const router = createRouter({
