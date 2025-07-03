@@ -164,10 +164,10 @@
               prévenant les dépôts sauvages avant qu'ils ne se forment.
             </p>
             <ul class="space-y-4">
-              <li class="text-gray-600 text-lg">✅ Réduction des déchets abandonnés</li>
-              <li class="text-gray-600 text-lg">✅ Optimisation des tournées de collecte</li>
-              <li class="text-gray-600 text-lg">✅ Amélioration du cadre de vie urbain</li>
-              <li class="text-gray-600 text-lg">✅ Sensibilisation citoyenne</li>
+              <li class="text-gray-600 text-lg">- Réduction des déchets abandonnés</li>
+              <li class="text-gray-600 text-lg">- Optimisation des tournées de collecte</li>
+              <li class="text-gray-600 text-lg">- Amélioration du cadre de vie urbain</li>
+              <li class="text-gray-600 text-lg">- Sensibilisation citoyenne</li>
             </ul>
           </div>
           <div class="flex justify-center items-center">

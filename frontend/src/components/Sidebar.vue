@@ -5,9 +5,9 @@
       <div class="p-6 border-b border-gray-200">
         <h1 class="text-2xl font-extrabold text-green-600 flex items-center">
           <i class="fas fa-recycle mr-2"></i>
-          EcoTrash
+          CleanSight
         </h1>
-        <p class="text-sm text-gray-500 mt-1">Gestion intelligente</p>
+        <p class="text-sm text-gray-500 mt-1">Tous vigilants, tous propres</p>
       </div>
 
       <!-- Navigation -->
@@ -40,8 +40,8 @@
 
     <!-- Footer -->
     <div class="p-4 border-t border-gray-200 text-center text-xs text-gray-400">
-      <p>© 2025 <span class="font-semibold text-green-600">EcoTrash</span></p>
-      <p>Version 1.0.0</p>
+      <p>© 2025 <span class="font-semibold text-green-600">CleanSight</span></p>
+      <p>GreenAI Collective</p>
     </div>
   </div>
 </template>
