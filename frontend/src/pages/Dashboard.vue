@@ -102,7 +102,64 @@
             :options="districtChartOptions"
           />
         </div>
+        <!-- Correlation Météo / Poubelles pleines -->
+<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+  <h3 class="text-lg font-semibold text-gray-900 mb-4">
+    <i class="fas fa-cloud-sun-rain mr-2 text-blue-500"></i>
+    Corrélation Météo / Poubelles pleines
+  </h3>
+  <chart-component
+    chart-id="weatherTrashChart"
+    type="bar"
+    :data="weatherTrashChartData"
+    :options="weatherTrashChartOptions"
+  />
+</div>
+<!-- Taux moyen de remplissage par arrondissement -->
+<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+  <h3 class="text-lg font-semibold text-gray-900 mb-4">
+    <i class="fas fa-chart-bar mr-2 text-indigo-500"></i>
+    Taux moyen de remplissage par arrondissement
+  </h3>
+  <chart-component
+    chart-id="fillRateChart"
+    type="bar"
+    :data="fillRateChartData"
+    :options="fillRateChartOptions"
+  />
+</div>
+<!-- Heures de pic de remplissage -->
+<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+  <h3 class="text-lg font-semibold text-gray-900 mb-4">
+    <i class="fas fa-clock mr-2 text-orange-500"></i>
+    Heures de pic de remplissage
+  </h3>
+  <chart-component
+    chart-id="peakHoursChart"
+    type="radar"
+    :data="peakHoursChartData"
+    :options="peakHoursChartOptions"
+  />
+</div>
+<!-- Fiabilité de la classification automatique -->
+<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+  <h3 class="text-lg font-semibold text-gray-900 mb-4">
+    <i class="fas fa-robot mr-2"></i>
+    Fiabilité de la classification automatique
+  </h3>
+  <chart-component
+    chart-id="accuracyChart"
+    type="bar"
+    :data="classificationAccuracyData"
+    :options="classificationAccuracyOptions"
+  />
+</div>
+
+
+
+
       </div>
+      
 
       <!-- Recent Images Section -->
       <recent-images
@@ -123,6 +180,7 @@ import ChartComponent from '../components/ChartComponent.vue'
 import RecentImages from '../components/RecentImages.vue'
 import { map } from 'leaflet'
 
+
 export default {
   name: 'Dashboard',
   components: {
@@ -130,7 +188,8 @@ export default {
     StatCard,
     ChartComponent,
     RecentImages,
-    TrashMap
+    TrashMap,
+    /* TrashWeatherStats */
   },
   data() {
     return {
@@ -144,6 +203,172 @@ export default {
         emptyTrend: 5,
         fullTrend: -8
       },
+      weatherTrashChartData: {
+  labels: ['01/07', '02/07', '03/07', '04/07', '05/07'],
+  datasets: [
+    {
+      label: 'Poubelles pleines',
+      data: [12, 8, 16, 20, 10],
+      backgroundColor: 'rgba(34, 197, 94, 0.6)',
+      yAxisID: 'y'
+    },
+    {
+      label: 'Pluie (mm)',
+      data: [5, 0, 15, 30, 2],
+      backgroundColor: 'rgba(59, 130, 246, 0.6)',
+      yAxisID: 'y1'
+    }
+  ]
+},
+weatherTrashChartOptions: {
+  responsive: true,
+  interaction: {
+    mode: 'index',
+    intersect: false
+  },
+  stacked: false,
+  scales: {
+    y: {
+      type: 'linear',
+      position: 'left',
+      title: {
+        display: true,
+        text: 'Poubelles pleines'
+      },
+      beginAtZero: true
+    },
+    y1: {
+      type: 'linear',
+      position: 'right',
+      title: {
+        display: true,
+        text: 'Pluie (mm)'
+      },
+      beginAtZero: true,
+      grid: {
+        drawOnChartArea: false
+      }
+    }
+  },
+  plugins: {
+    tooltip: {
+      mode: 'index',
+      intersect: false
+    },
+    legend: {
+      position: 'top'
+    }
+  }
+},
+fillRateChartData: {
+  labels: ['3e', '7e', '10e', '13e', '15e', '17e', '18e', '19e'],
+  datasets: [
+    {
+      label: 'Taux de remplissage (%)',
+      data: [62, 75, 90, 68, 81, 50, 87, 72],
+      backgroundColor: 'rgba(99, 102, 241, 0.6)'
+    }
+  ]
+},
+fillRateChartOptions: {
+  indexAxis: 'y',
+  scales: {
+    x: {
+      beginAtZero: true,
+      max: 100,
+      title: {
+        display: true,
+        text: 'Pourcentage (%)'
+      }
+    }
+  },
+  plugins: {
+    legend: {
+      display: false
+    },
+    tooltip: {
+      callbacks: {
+        label: ctx => `${ctx.raw}%`
+      }
+    }
+  }
+},
+peakHoursChartData: {
+  labels: ['00h-06h', '06h-09h', '09h-12h', '12h-15h', '15h-18h', '18h-21h', '21h-00h'],
+  datasets: [
+    {
+      label: 'Remplissage',
+      data: [20, 35, 65, 80, 70, 50, 30],
+      backgroundColor: 'rgba(249, 115, 22, 0.3)',
+      borderColor: 'rgb(249, 115, 22)',
+      pointBackgroundColor: 'rgb(249, 115, 22)'
+    }
+  ]
+},
+peakHoursChartOptions: {
+  scales: {
+    r: {
+      beginAtZero: true,
+      max: 100,
+      ticks: {
+        stepSize: 20
+      },
+      pointLabels: {
+        font: {
+          size: 12
+        }
+      }
+    }
+  },
+  plugins: {
+    legend: {
+      position: 'top'
+    }
+  }
+},
+classificationAccuracyData: {
+  labels: ['27/06', '28/06', '29/06', '30/06', '01/07'],
+  datasets: [
+    {
+      label: 'Correctement classées',
+      data: [80, 90, 85, 88, 92],
+      backgroundColor: 'rgba(132, 204, 22, 0.8)'
+    },
+    {
+      label: 'Corrigées manuellement',
+      data: [20, 10, 15, 12, 8],
+      backgroundColor: 'rgba(251, 191, 36, 0.8)'
+    }
+  ]
+},
+classificationAccuracyOptions: {
+  responsive: true,
+  plugins: {
+    tooltip: {
+      mode: 'index',
+      intersect: false
+    },
+    legend: {
+      position: 'top'
+    }
+  },
+  scales: {
+    x: {
+      stacked: true
+    },
+    y: {
+      stacked: true,
+      beginAtZero: true,
+      max: 100,
+      title: {
+        display: true,
+        text: 'Pourcentage des images'
+      }
+    }
+  }
+},
+
+
       mapPoubelles: [
         { id: 1, latitude: 48.8566, longitude: 2.3522, etat: 'vide', timestamp: '2025-06-30T12:00:00Z' },
         { id: 2, latitude: 48.857, longitude: 2.355, etat: 'pleine', timestamp: '2025-06-30T12:05:00Z' },
@@ -268,6 +493,7 @@ export default {
       };
     }
   },
+  
   methods: {
     async refreshData() {
       this.isLoading = true;

@@ -15,6 +15,7 @@
 
       <!-- Desktop Navigation -->
       <div class="hidden lg:flex items-center gap-8">
+        <!-- Navigation links (shown for both states) -->
         <span 
           class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
           @click="scrollToSection('features')"
@@ -33,18 +34,91 @@
         >
           Impact
         </span>
-        <button 
-          class="bg-gradient-to-r from-green-600 to-green-400 text-white border-none py-3 px-6 rounded-full cursor-pointer font-semibold transition-transform duration-300 text-sm mr-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-600/30"
-          @click="navigateToUpload"
-        >
-          Analyser Image
-        </button>
-        <button 
-          class="bg-transparent text-green-600 border-2 border-green-600 py-3 px-6 rounded-full cursor-pointer font-semibold transition-all duration-300 text-sm hover:bg-green-600 hover:text-white hover:-translate-y-1"
-          @click="navigateToDashboard"
-        >
-          Connexion
-        </button>
+
+        <!-- Actions based on authentication state -->
+        <div v-if="!isAuthenticated" class="flex items-center gap-4">
+          <button 
+            class="bg-gradient-to-r from-green-600 to-green-400 text-white border-none py-3 px-6 rounded-full cursor-pointer font-semibold transition-transform duration-300 text-sm mr-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-600/30"
+            @click="navigateToUpload"
+          >
+            Analyser Image
+          </button>
+          <button 
+            class="bg-transparent text-green-600 border-2 border-green-600 py-3 px-6 rounded-full cursor-pointer font-semibold transition-all duration-300 text-sm hover:bg-green-600 hover:text-white hover:-translate-y-1"
+            @click="navigateToDashboard"
+          >
+            Connexion
+          </button>
+        </div>
+
+        <!-- Authenticated user menu -->
+        <div v-else class="flex items-center gap-4">
+          <button 
+            class="bg-gradient-to-r from-green-600 to-green-400 text-white border-none py-3 px-6 rounded-full cursor-pointer font-semibold transition-transform duration-300 text-sm hover:-translate-y-1 hover:shadow-lg hover:shadow-green-600/30"
+            @click="navigateToUpload"
+          >
+            Analyser Image
+          </button>
+          <button 
+            class="bg-blue-600 text-white border-none py-3 px-6 rounded-full cursor-pointer font-semibold transition-all duration-300 text-sm hover:bg-blue-700 hover:-translate-y-1"
+            @click="navigateToDashboard"
+          >
+            Mon Dashboard
+          </button>
+          
+          <!-- User menu dropdown -->
+          <div class="relative">
+            <button 
+              class="flex items-center gap-2 p-2 rounded-full hover:bg-gray-100 transition-colors duration-300"
+              @click="toggleUserMenu"
+            >
+              <div class="w-10 h-10 bg-gradient-to-r from-green-600 to-green-400 rounded-full flex items-center justify-center text-white font-semibold">
+                {{ userInitials }}
+              </div>
+              <svg 
+                class="w-4 h-4 text-gray-600 transition-transform duration-300"
+                :class="{ 'rotate-180': isUserMenuOpen }"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <!-- Dropdown menu -->
+            <div 
+              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 transition-all duration-300 ease-in-out"
+              :class="isUserMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'"
+            >
+              <div class="py-2">
+                <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+                  <div class="font-medium">{{ userName }}</div>
+                  <div class="text-gray-500">{{ userEmail }}</div>
+                </div>
+                <button 
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                  @click="navigateToProfile"
+                >
+                  Mon Profil
+                </button>
+                <button 
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                  @click="navigateToSettings"
+                >
+                  Paramètres
+                </button>
+                <hr class="my-1">
+                <button 
+                  class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                  @click="logout"
+                >
+                  Déconnexion
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Mobile Navigation Buttons (visible on medium screens) -->
@@ -56,10 +130,18 @@
           Analyser
         </button>
         <button 
+          v-if="!isAuthenticated"
           class="bg-transparent text-green-600 border-2 border-green-600 py-2 px-4 rounded-full cursor-pointer font-semibold transition-all duration-300 text-sm hover:bg-green-600 hover:text-white hover:-translate-y-1"
           @click="navigateToDashboard"
         >
           Connexion
+        </button>
+        <button 
+          v-else
+          class="bg-blue-600 text-white border-none py-2 px-4 rounded-full cursor-pointer font-semibold transition-all duration-300 text-sm hover:bg-blue-700 hover:-translate-y-1"
+          @click="navigateToDashboard"
+        >
+          Dashboard
         </button>
       </div>
 
@@ -120,6 +202,19 @@
           </div>
         </div>
 
+        <!-- User info for authenticated mobile users -->
+        <div v-if="isAuthenticated" class="border-b border-gray-100 pb-3">
+          <div class="flex items-center gap-3 py-2">
+            <div class="w-10 h-10 bg-gradient-to-r from-green-600 to-green-400 rounded-full flex items-center justify-center text-white font-semibold">
+              {{ userInitials }}
+            </div>
+            <div>
+              <div class="font-medium text-gray-800">{{ userName }}</div>
+              <div class="text-sm text-gray-500">{{ userEmail }}</div>
+            </div>
+          </div>
+        </div>
+
         <!-- Action Buttons -->
         <div class="space-y-3 pt-4">
           <button 
@@ -128,12 +223,35 @@
           >
             Analyser Image
           </button>
+          
           <button 
+            v-if="!isAuthenticated"
             class="w-full bg-transparent text-green-600 border-2 border-green-600 py-3 px-6 rounded-full cursor-pointer font-semibold transition-all duration-300 text-sm hover:bg-green-600 hover:text-white hover:-translate-y-1"
             @click="navigateToDashboard"
           >
             Connexion
           </button>
+          
+          <div v-else class="space-y-2">
+            <button 
+              class="w-full bg-blue-600 text-white border-none py-3 px-6 rounded-full cursor-pointer font-semibold transition-all duration-300 text-sm hover:bg-blue-700 hover:-translate-y-1"
+              @click="navigateToDashboard"
+            >
+              Mon Dashboard
+            </button>
+            <button 
+              class="w-full bg-gray-600 text-white border-none py-3 px-6 rounded-full cursor-pointer font-semibold transition-all duration-300 text-sm hover:bg-gray-700 hover:-translate-y-1"
+              @click="navigateToProfile"
+            >
+              Mon Profil
+            </button>
+            <button 
+              class="w-full bg-red-600 text-white border-none py-3 px-6 rounded-full cursor-pointer font-semibold transition-all duration-300 text-sm hover:bg-red-700 hover:-translate-y-1"
+              @click="logout"
+            >
+              Déconnexion
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -141,7 +259,7 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from "vue-router";
 
 export default {
@@ -149,10 +267,70 @@ export default {
   setup() {
     const router = useRouter();
     const isMobileMenuOpen = ref(false);
+    const isUserMenuOpen = ref(false);
+    
+    // États d'authentification (à connecter avec votre store/service d'auth)
+    const isAuthenticated = ref(false);
+    const user = ref({
+      name: '',
+      email: '',
+      firstName: '',
+      lastName: ''
+    });
 
-    const scrollToSection = (sectionId) => {
-      // Fermer le menu mobile après clic
+    // Computed properties pour l'affichage utilisateur
+    const userName = computed(() => {
+      return user.value.name || `${user.value.firstName} ${user.value.lastName}`.trim();
+    });
+
+    const userEmail = computed(() => {
+      return user.value.email;
+    });
+
+    const userInitials = computed(() => {
+      if (user.value.firstName && user.value.lastName) {
+        return `${user.value.firstName.charAt(0)}${user.value.lastName.charAt(0)}`.toUpperCase();
+      }
+      if (user.value.name) {
+        const names = user.value.name.split(' ');
+        return names.length > 1 
+          ? `${names[0].charAt(0)}${names[names.length - 1].charAt(0)}`.toUpperCase()
+          : names[0].charAt(0).toUpperCase();
+      }
+      return user.value.email ? user.value.email.charAt(0).toUpperCase() : 'U';
+    });
+
+    // Méthodes d'authentification (à adapter selon votre système)
+    const checkAuthStatus = () => {
+      // Exemple : vérifier le token dans localStorage ou appeler votre service d'auth
+      const token = localStorage.getItem('authToken');
+      const userData = localStorage.getItem('userData');
+      
+      if (token && userData) {
+        isAuthenticated.value = true;
+        user.value = JSON.parse(userData);
+      }
+    };
+
+    const logout = () => {
+      // Nettoyer l'authentification
+      isAuthenticated.value = false;
+      user.value = { name: '', email: '', firstName: '', lastName: '' };
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userData');
+      
+      // Fermer les menus
       isMobileMenuOpen.value = false;
+      isUserMenuOpen.value = false;
+      
+      // Rediriger vers la page d'accueil
+      router.push('/');
+    };
+
+    // Méthodes de navigation existantes
+    const scrollToSection = (sectionId) => {
+      isMobileMenuOpen.value = false;
+      isUserMenuOpen.value = false;
       
       if (router.currentRoute.value.path === "/") {
         const element = document.getElementById(sectionId);
@@ -166,31 +344,85 @@ export default {
 
     const navigateToUpload = () => {
       isMobileMenuOpen.value = false;
+      isUserMenuOpen.value = false;
       router.push("/upload");
     };
 
     const navigateToDashboard = () => {
       isMobileMenuOpen.value = false;
-      router.push("/login");
+      isUserMenuOpen.value = false;
+      router.push(isAuthenticated.value ? "/dashboard" : "/login");
     };
 
-    const navigateToCarte = () => {
+    const navigateToProfile = () => {
       isMobileMenuOpen.value = false;
-      router.push("/carte");
+      isUserMenuOpen.value = false;
+      router.push("/profile");
+    };
+
+    const navigateToSettings = () => {
+      isMobileMenuOpen.value = false;
+      isUserMenuOpen.value = false;
+      router.push("/settings");
     };
 
     const toggleMobileMenu = () => {
       isMobileMenuOpen.value = !isMobileMenuOpen.value;
+      if (isMobileMenuOpen.value) {
+        isUserMenuOpen.value = false;
+      }
+    };
+
+    const toggleUserMenu = () => {
+      isUserMenuOpen.value = !isUserMenuOpen.value;
+    };
+
+    // Fermer les menus quand on clique ailleurs
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.relative')) {
+        isUserMenuOpen.value = false;
+      }
+    };
+
+    onMounted(() => {
+      checkAuthStatus();
+      document.addEventListener('click', handleClickOutside);
+    });
+
+    // Méthode publique pour mettre à jour l'état d'authentification
+    const setAuthenticationState = (authenticated, userData = null) => {
+      isAuthenticated.value = authenticated;
+      if (userData) {
+        user.value = userData;
+      }
     };
 
     return {
       isMobileMenuOpen,
+      isUserMenuOpen,
+      isAuthenticated,
+      user,
+      userName,
+      userEmail,
+      userInitials,
       scrollToSection,
       navigateToUpload,
       navigateToDashboard,
-      navigateToCarte,
+      navigateToProfile,
+      navigateToSettings,
       toggleMobileMenu,
+      toggleUserMenu,
+      logout,
+      setAuthenticationState,
+      checkAuthStatus
     };
   },
 };
 </script>
+
+<style scoped>
+/* Ajout d'une transition pour le dropdown */
+.relative .absolute {
+  z-index: 1000;
+}
+</style>
