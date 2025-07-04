@@ -4,9 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from config import Config
 from utils.rules import load_rules_from_json
+from flask_mail import Mail
+from flask_jwt_extended import JWTManager
 
 # Une unique instance de SQLAlchemy
 db = SQLAlchemy()
+mail = Mail()
+jwt = JWTManager()
 
 def create_app():
     # 1. Création de l’app Flask
@@ -17,7 +21,13 @@ def create_app():
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
     # 3. CORS (toutes origines autorisées)
-    CORS(app, resources={r"/*": {"origins": "*"}})
+    CORS(
+        app,
+        resources={r"/*": {"origins": "http://localhost:5173"}},  # votre front Vite
+        supports_credentials=True,
+        allow_headers=["Content-Type"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    )
 
     # 4. Init de SQLAlchemy
     db.init_app(app)
@@ -43,6 +53,9 @@ def create_app():
     # → Validate (POST /validate)
     from routes.validate import validate_bp
     app.register_blueprint(validate_bp)
+    
+    from routes.auth     import auth_bp
+    app.register_blueprint(auth_bp, url_prefix="/auth")
 
     return app
 

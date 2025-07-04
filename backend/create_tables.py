@@ -1,9 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from models.image import db  # à adapter selon l’arborescence exacte
+from app import create_app, db
+# on importe vos modèles pour qu'ils soient pris en compte par SQLAlchemy
+import models.image  
+import models.user  
+from app import create_app, db
 
-app = Flask(__name__)
-app.config.from_pyfile('../../.env', silent=True)  # ou adapte si tu utilises config.py
+app = create_app()
 
 with app.app_context():
     db.create_all()
