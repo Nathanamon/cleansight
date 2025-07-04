@@ -318,7 +318,8 @@ export default {
           body: JSON.stringify({
             agent_code: this.agentCode,
             email: this.email,
-            password: this.password
+            password: this.password,
+            remember_me: this.remember
           })
         });
         const data = await res.json();
