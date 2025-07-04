@@ -96,18 +96,6 @@
                   <div class="font-medium">{{ userName }}</div>
                   <div class="text-gray-500">{{ userEmail }}</div>
                 </div>
-                <button 
-                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-                  @click="navigateToProfile"
-                >
-                  Mon Profil
-                </button>
-                <button 
-                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-                  @click="navigateToSettings"
-                >
-                  Paramètres
-                </button>
                 <hr class="my-1">
                 <button 
                   class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
