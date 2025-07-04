@@ -1,5 +1,31 @@
 <template>
   <div class="space-y-6">
+    <!-- Popup de confirmation -->
+    <div
+      v-if="showUploadPopup"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      @click="showUploadPopup = false"
+    >
+      <div 
+        class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl"
+        @click.stop
+      >
+        <div class="flex items-center justify-center mb-4">
+          <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-center mb-2">Image uploadée !</h3>
+        <p class="text-gray-600 text-center mb-4">Votre image a été chargée avec succès.</p>
+        <button
+          @click="showUploadPopup = false"
+          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+
     <!-- Étape 1 : Zone de téléchargement -->
     <div v-if="!prediction">
       <div
@@ -64,6 +90,7 @@ const annotation = ref(null)
 const loading = ref(false)
 const message = ref('')
 const fileInput = ref(null)
+const showUploadPopup = ref(false)
 
 function onFileChange(e) {
   fichier.value = e.target.files[0]
@@ -71,6 +98,8 @@ function onFileChange(e) {
   prediction.value = null
   annotation.value = null
   message.value = ''
+  // Afficher le popup de confirmation
+  showUploadPopup.value = true
 }
 
 function handleDrop(e) {
@@ -81,6 +110,8 @@ function handleDrop(e) {
   prediction.value = null
   annotation.value = null
   message.value = ''
+  // Afficher le popup de confirmation
+  showUploadPopup.value = true
 }
 
 async function predict() {
