@@ -1,86 +1,249 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md border border-green-100 relative overflow-hidden">
-      
-      <!-- Décoration d'arrière-plan -->
-      <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-green-100 to-transparent rounded-full -translate-y-16 translate-x-16 opacity-50"></div>
-      <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-emerald-100 to-transparent rounded-full translate-y-12 -translate-x-12 opacity-50"></div>
-      
-      <!-- Section logo -->
-      <div class="w-30 h-30 mx-auto mb-4 rounded-2xl overflow-hidden shadow-lg">
-        <img 
-          src="../assets/logo.png" 
-          alt="CleanSight Logo" 
-          class="w-full h-full object-cover"
-        />
+  <div class="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-4 relative overflow-hidden">
+    <!-- Éléments de fond animés -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-green-200/20 to-emerald-200/20 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-emerald-200/20 to-green-200/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay:2s;"></div>
+    </div>
+
+    <div class="bg-white/60 backdrop-blur-2xl rounded-3xl shadow-3xl p-8 w-full max-w-md border border-green-100/60 relative overflow-hidden transform transition-all duration-500 hover:shadow-3xl animate-fade-in-up glass-card">
+      <!-- Décorations flottantes -->
+      <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-green-100/60 to-transparent rounded-full -translate-y-16 translate-x-16 animate-float"></div>
+      <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-emerald-100/60 to-transparent rounded-full translate-y-12 -translate-x-12 animate-float-reverse"></div>
+      <!-- Barre de progression en haut -->
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-emerald-500 transform origin-left scale-x-0 animate-scale-x"></div>
+
+      <!-- Logo animé -->
+      <div class="w-24 h-24 mx-auto mb-6 rounded-2xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-110 hover:rotate-2 animate-bounce-in logo-glow">
+        <img src="../assets/logo.png" alt="CleanSight Logo" class="w-full h-full object-cover" />
       </div>
 
-      <!-- Titre de connexion -->
-      <div class="text-center mb-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">Connexion</h2>
-        <p class="text-gray-600 text-sm">Accédez à votre espace personnel</p>
+      <!-- En-tête -->
+      <div class="text-center mb-8 animate-fade-in-up shimmer-text" style="animation-delay:0.3s;">
+        <h2 class="text-3xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent mb-3">Connexion</h2>
+        <p class="text-gray-600 text-sm transform transition-all duration-300 hover:text-gray-700">Accédez à votre espace personnel</p>
       </div>
 
-      <!-- Formulaire -->
-      <form @submit.prevent="handleLogin" class="space-y-6">
-        
+      <!-- Feedback -->
+      <transition
+        enter-active-class="transition-all duration-300"
+        enter-from-class="opacity-0 transform -translate-y-2"
+        enter-to-class="opacity-100 transform translate-y-0"
+        leave-active-class="transition-all duration-200"
+        leave-from-class="opacity-100 transform translate-y-0"
+        leave-to-class="opacity-0 transform -translate-y-2"
+      >
+        <div v-if="message" class="mb-6 p-4 rounded-xl border animate-shake" :class="messageClasses" role="alert" aria-live="polite">
+          <div class="flex items-center">
+            <span v-if="messageType==='error'" class="text-red-400 mr-2" aria-label="Erreur">⚠️</span>
+            <span v-else class="text-green-600 mr-2">✅</span>
+            <span>{{ message }}</span>
+          </div>
+        </div>
+      </transition>
+
+      <!-- Formulaire de connexion -->
+      <form @submit.prevent="handleLogin" class="space-y-6 animate-fade-in-up" style="animation-delay:0.5s;">
+        <!-- Code agent -->
+        <div class="space-y-2 relative">
+          <label for="agentCode" class="block text-sm font-semibold text-gray-700 transition-colors duration-200" :class="{'text-green-600':agentCodeFocused}">Code agent Paris <span class="text-red-500">*</span></label>
+          <input
+            id="agentCode"
+            v-model="agentCode"
+            type="text"
+            required
+            maxlength="10"
+            placeholder="AGP-0001"
+            autocomplete="off"
+            @focus="agentCodeFocused=true"
+            @blur="agentCodeFocused=false"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-300 focus:border-green-500 transition-all duration-300 pl-12"
+            :class="{'border-green-500 shadow-lg':agentCodeFocused}"
+            aria-describedby="agentHelp"
+          />
+          <svg class="absolute left-3 top-10 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h2a4 4 0 014 4v2" />
+            <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+          <p id="agentHelp" class="text-xs text-red-500 mt-1" v-if="agentCode && !isValidAgentCode">
+            Format attendu : <b>AGP-xxxx</b>
+          </p>
+        </div>
+
         <!-- Email -->
         <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700">Email</label>
-          <div class="relative">
+          <label for="email" class="block text-sm font-semibold text-gray-700 transition-colors duration-200" :class="{'text-green-600':emailFocused}">Adresse email professionnelle <span class="text-red-500">*</span></label>
+          <div class="relative group">
             <input
-              type="email"
+              id="email"
               v-model="email"
-              placeholder="votre@email.com"
-              required
-              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 pl-11"
+              type="email"
+                required
+                placeholder="prenom.nom@paris.fr"
+              autocomplete="off"
+              @focus="emailFocused=true"
+              @blur="emailFocused=false"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-300 focus:border-green-500 transition-all duration-300 pl-12 hover:border-gray-300 group-hover:shadow-md"
+              :class="{'border-green-500 shadow-lg':emailFocused}"
+              aria-describedby="emailHelp"
             />
-            <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+            <svg
+              class="absolute left-3 top-3.5 w-5 h-5 transition-colors duration-300"
+              :class="emailFocused?'text-green-500':'text-gray-400'"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+              />
             </svg>
+            <transition enter-active-class="transition-all duration-200" enter-from-class="opacity-0 scale-50" enter-to-class="opacity-100 scale-100">
+              <svg
+                v-if="email && isValidEmail"
+                class="absolute right-3 top-3.5 w-5 h-5 text-green-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </transition>
+            <p id="emailHelp" class="text-xs text-red-500 mt-1" v-if="email && !isValidEmail">
+              L’email doit se terminer par <b>@paris.fr</b>
+            </p>
           </div>
         </div>
 
         <!-- Mot de passe -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700">Mot de passe</label>
-          <div class="relative">
-            <input
-              type="password"
-              v-model="password"
-              placeholder="••••••••"
-              required
-              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 pl-11"
-            />
-            <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+        <div class="space-y-2 relative">
+          <label for="password" class="block text-sm font-semibold text-gray-700 transition-colors duration-200" :class="{'text-green-600':passwordFocused}">Mot de passe <span class="text-red-500">*</span></label>
+          <input
+            id="password"
+            :type="showPassword ? 'text' : 'password'"
+            v-model="password"
+            required
+            placeholder="••••••••"
+            @focus="passwordFocused=true"
+            @blur="passwordFocused=false"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-300 focus:border-green-500 transition-all duration-300 pr-12 pl-12"
+            :class="{'border-green-500 shadow-lg':passwordFocused}"
+            aria-describedby="pwdHelp"
+          />
+          <button
+            type="button"
+            @click="showPassword = !showPassword"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-300 rounded flex items-center justify-center"
+            :aria-label="showPassword ? 'Masquer' : 'Afficher'"
+            tabindex="-1"
+          >
+            <svg
+              v-if="showPassword"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              class="w-5 h-5"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
             </svg>
+            <svg
+              v-else
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              class="w-5 h-5"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+          <!-- Password strength bar -->
+          <div class="h-1 w-full bg-gray-200 rounded mt-2 overflow-hidden">
+            <div
+              :class="passwordStrengthClass"
+              :style="{ width: passwordStrength + '%' }"
+              class="h-full transition-all duration-300"
+            ></div>
           </div>
         </div>
 
-        <!-- Options -->
-        <div class="flex items-center justify-between text-sm">
-          <label class="flex items-center space-x-2 cursor-pointer">
-            <input 
-              type="checkbox" 
-              v-model="remember" 
-              class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+        <!-- Souvenir / Mot oublié -->
+        <div class="flex items-center justify-between text-sm pt-2">
+          <label class="flex items-center space-x-2 cursor-pointer group">
+            <input
+              type="checkbox"
+              v-model="remember"
+              class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
             />
-            <span class="text-gray-700">Se souvenir de moi</span>
+            <span class="text-gray-700 group-hover:text-gray-900">Se souvenir de moi</span>
           </label>
-          <a href="#" class="text-green-600 hover:text-green-700 font-medium transition-colors duration-200">
-            Mot de passe oublié ?
-          </a>
+          <router-link to="/forgot-password" class="text-green-600 hover:underline font-medium">Mot de passe oublié ?</router-link>
         </div>
 
-        <!-- Bouton de connexion -->
-        <button 
-          type="submit" 
-          class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl"
+        <!-- Bouton Connexion -->
+        <button
+          type="submit"
+          :disabled="loading || !isFormValid"
+          class="w-full mt-6 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transform hover:scale-[1.02] transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group ripple"
         >
-          Se connecter
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+          <span v-if="loading" class="flex items-center justify-center relative z-10">
+            <svg
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            Connexion en cours...
+          </span>
+          <span v-else class="relative z-10">Se connecter</span>
         </button>
       </form>
+
+      <!-- Séparateur stylisé -->
+      <div class="flex items-center my-8 animate-fade-in-up" style="animation-delay:0.7s;">
+        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        <span class="px-4 text-xs text-gray-500 bg-white rounded-full border border-gray-200">ou</span>
+        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+      </div>
+
+      <!-- Bouton d'inscription -->
+      <button
+        @click="goToSignup"
+        class="w-full border-2 border-green-600 text-green-600 py-3 rounded-xl font-semibold hover:bg-green-50 hover:border-green-700 hover:text-green-700 transform hover:scale-[1.02] transition-all duration-300 shadow-sm hover:shadow-md animate-fade-in-up"
+        style="animation-delay:0.9s;"
+      >
+        <span class="flex items-center justify-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+          Créer un compte
+        </span>
+      </button>
+
+      <!-- Badge de sécurité -->
+      <div class="text-center mt-6 animate-fade-in-up" style="animation-delay:1.1s;">
+        <div class="inline-flex items-center space-x-2 text-xs text-gray-500 bg-gray-50 px-3 py-2 rounded-full">
+          <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+          </svg>
+          <span>Connexion sécurisée SSL</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -90,16 +253,116 @@ export default {
   name: "LoginPage",
   data() {
     return {
+      agentCode: "",
       email: "",
       password: "",
       remember: false,
+      loading: false,
+      message: "",
+      messageType: "error",
+      agentCodeFocused: false,
+      emailFocused: false,
+      passwordFocused: false,
+      showPassword: false
     };
   },
-  methods: {
-    handleLogin() {
-      // Remplace ceci par ta logique réelle de connexion
-      console.log("Connexion avec :", this.email, this.password, this.remember);
+  computed: {
+    isValidAgentCode() {
+      return /^AGP-\d{4}$/i.test(this.agentCode);
     },
+    isValidEmail() {
+      return /^[a-z0-9._-]+@paris\.fr$/i.test(this.email);
+    },
+    isFormValid() {
+      return this.isValidAgentCode && this.isValidEmail && this.password;
+    },
+    messageClasses() {
+      return this.messageType === 'error'
+        ? 'bg-red-50 border-red-200 text-red-600'
+        : 'bg-green-50 border-green-200 text-green-600';
+    },
+    passwordStrength() {
+      // Simple strength: length + number + letter
+      let score = 0;
+      if (this.password.length >= 8) score += 40;
+      if (/[A-Z]/.test(this.password)) score += 20;
+      if (/[a-z]/.test(this.password)) score += 20;
+      if (/\d/.test(this.password)) score += 10;
+      if (/[^A-Za-z0-9]/.test(this.password)) score += 10;
+      return Math.min(score, 100);
+    },
+    passwordStrengthClass() {
+      if (this.passwordStrength > 80) return 'bg-green-500';
+      if (this.passwordStrength > 50) return 'bg-yellow-400';
+      if (this.passwordStrength > 0) return 'bg-red-400';
+      return '';
+    }
   },
+  methods: {
+    async handleLogin() {
+      this.message = "";
+      this.loading = true;
+
+      if (!this.isFormValid) {
+        this.message = "Merci de vérifier vos informations.";
+        this.messageType = "error";
+        this.loading = false;
+        return;
+      }
+
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            agent_code: this.agentCode,
+            email: this.email,
+            password: this.password
+          })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          this.messageType = "success";
+          this.message = "Connexion réussie !";
+          setTimeout(() => this.$router.push("/dashboard"), 1000);
+        } else {
+          this.messageType = "error";
+          this.message = data.error || "Identifiants invalides";
+        }
+      } catch (err) {
+        this.messageType = "error";
+        this.message = "Erreur réseau, veuillez réessayer.";
+      } finally {
+        this.loading = false;
+      }
+    },
+    goToSignup() {
+      this.$router.push("/signup");
+    }
+  }
 };
 </script>
+
+<style scoped>
+@keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bounce-in { 0% { opacity: 0; transform: scale(0.3); } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes scale-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes float { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-10px) rotate(5deg); } }
+@keyframes float-reverse { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(10px) rotate(-5deg); } }
+@keyframes pulse-slow { 0%,100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+.animate-fade-in-up { animation: fade-in-up 0.6s ease-out forwards; opacity: 0; }
+.animate-bounce-in { animation: bounce-in 0.8s ease-out forwards; }
+.animate-scale-x { animation: scale-x 2s ease-out forwards; animation-delay: 0.5s; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-float-reverse { animation: float-reverse 8s ease-in-out infinite; }
+.animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+.animate-shake { animation: shake 0.5s ease-in-out; }
+.shadow-3xl { box-shadow: 0 35px 60px -12px rgba(0,0,0,0.25); }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: linear-gradient(to bottom,#10b981,#059669); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(to bottom,#059669,#047857); }
+</style>
