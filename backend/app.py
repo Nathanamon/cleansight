@@ -12,6 +12,7 @@ db = SQLAlchemy()
 mail = Mail()
 jwt = JWTManager()
 
+
 def create_app():
     # 1. Création de l’app Flask
     app = Flask(__name__)
@@ -26,7 +27,7 @@ def create_app():
         resources={r"/*": {"origins": "http://localhost:5173"}},  # votre front Vite
         supports_credentials=True,
         allow_headers=["Content-Type"],
-        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     )
 
     # 4. Init de SQLAlchemy
@@ -55,11 +56,15 @@ def create_app():
     # → Validate (POST /validate)
     from routes.validate import validate_bp
     app.register_blueprint(validate_bp)
-    
+
     # → Dashboard data (GET /dashboard/*)
     from routes.dashboard import dashboard_bp
     app.register_blueprint(dashboard_bp)
-    from routes.auth     import auth_bp
+    from routes.rules import rules_bp
+
+    app.register_blueprint(rules_bp)
+    from routes.auth import auth_bp
+
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
     return app

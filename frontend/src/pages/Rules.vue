@@ -35,7 +35,7 @@
                 Exporter JSON
               </button>
               <button
-                @click="saveToServer"
+                @click="saveRulesToServer"
                 class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,43 +386,27 @@ export default {
     const inactiveRulesCount = computed(() => rules.value.filter(r => !r.enabled).length)
 
     // Méthodes
-    const loadInitialRules = () => {
-      const initialRules = [
-        {
-          "name": "poubelle_pleine_gfaible",
-          "message": "💡 Poubelle pleine (peu de contours, mean_g ≤ 109.21)",
-          "enabled": true,
-          "conditions": [
-            { "key": "contour_count", "op": "<=", "value": 2205.0 },
-            { "key": "mean_g", "op": "<=", "value": 109.21 }
-          ]
-        },
-        {
-          "name": "poubelle_pleine_gsup_fs_inf_binf",
-          "message": "💡 Poubelle pleine (mean_g > 109.21, file_size ≤ 27828.5, mean_b ≤ 114.51)",
-          "enabled": true,
-          "conditions": [
-            { "key": "contour_count", "op": "<=", "value": 2205.0 },
-            { "key": "mean_g", "op": ">", "value": 109.21 },
-            { "key": "file_size", "op": "<=", "value": 27828.5 },
-            { "key": "mean_b", "op": "<=", "value": 114.51 }
-          ]
-        },
-        {
-          "name": "poubelle_vide_gsup_fs_inf_bsup",
-          "message": "✅ Poubelle vide (mean_g > 109.21, file_size ≤ 27828.5, mean_b > 114.51)",
-          "enabled": true,
-          "conditions": [
-            { "key": "contour_count", "op": "<=", "value": 2205.0 },
-            { "key": "mean_g", "op": ">", "value": 109.21 },
-            { "key": "file_size", "op": "<=", "value": 27828.5 },
-            { "key": "mean_b", "op": ">", "value": 114.51 }
-          ]
+    const loadInitialRules = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/rules`)
+        if (res.ok) {
+          rules.value = await res.json()
         }
-      ]
-      rules.value = initialRules
+      } catch (e) {
+        console.error('Erreur chargement des règles:', e)
+      }
     }
-
+    const saveRulesToServer = async () => {
+      try {
+        await fetch(`${import.meta.env.VITE_API_URL}/rules`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(rules.value)
+        })
+      } catch (e) {
+        console.error('Erreur sauvegarde règles:', e)
+      }
+    }  
     const openModal = (rule = null) => {
       if (rule) {
         editingRule.value = rule
@@ -451,7 +435,7 @@ export default {
     }
 
     const saveRule = () => {
-      if (!newRule.value.name || !newRule.value.message || 
+      if (!newRule.value.name || !newRule.value.message ||
           newRule.value.conditions.some(c => !c.key || c.value === '')) {
         alert('Veuillez remplir tous les champs obligatoires')
         return
@@ -468,11 +452,13 @@ export default {
         rules.value.push({ ...newRule.value })
       }
       closeModal()
+      saveRulesToServer()
     }
 
     const deleteRule = (ruleName) => {
       if (confirm('Êtes-vous sûr de vouloir supprimer cette règle ?')) {
         rules.value = rules.value.filter(rule => rule.name !== ruleName)
+        saveRulesToServer()
       }
     }
 
@@ -480,6 +466,7 @@ export default {
       const rule = rules.value.find(r => r.name === ruleName)
       if (rule) {
         rule.enabled = !rule.enabled
+        saveRulesToServer()
       }
     }
 
@@ -541,6 +528,7 @@ export default {
       addCondition,
       removeCondition,
       exportRules,
+      saveRulesToServer,
       getRuleTypeColor,
       getRuleTypeIcon,
       getRuleTypeLabel
