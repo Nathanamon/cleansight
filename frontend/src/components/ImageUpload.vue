@@ -2,14 +2,14 @@
   <div class="space-y-6">
     <!-- Popup de confirmation -->
     <div
-      v-if="showValidationPopup"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      @click="showValidationPopup = false"
-    >
-      <div 
-        class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl"
-        @click.stop
-      >
+  v-if="showValidationPopup"
+  class="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50"
+  @click="showValidationPopup = false"
+>
+  <div 
+    class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl transform transition-all duration-300 scale-100"
+    @click.stop
+  >
         <div class="flex items-center justify-center mb-4">
           <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
