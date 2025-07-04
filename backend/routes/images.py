@@ -1,7 +1,8 @@
 # backend/routes/images.py
 
 from datetime import datetime
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app, send_from_directory
+
 
 images_bp = Blueprint("images", __name__)
 
@@ -39,3 +40,10 @@ def get_images():
             "couleur_moyenne":  img.couleur_moyenne
         })
     return jsonify(data), 200
+
+
+@images_bp.route('/uploads/<path:filename>', methods=['GET'])
+def serve_image(filename):
+    """Return an uploaded image file."""
+    folder = current_app.config['UPLOAD_FOLDER']
+    return send_from_directory(folder, filename)
