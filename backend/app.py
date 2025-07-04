@@ -56,6 +56,9 @@ def create_app():
     from routes.validate import validate_bp
     app.register_blueprint(validate_bp)
     
+    # → Dashboard data (GET /dashboard/*)
+    from routes.dashboard import dashboard_bp
+    app.register_blueprint(dashboard_bp)
     from routes.auth     import auth_bp
     app.register_blueprint(auth_bp, url_prefix="/auth")
 

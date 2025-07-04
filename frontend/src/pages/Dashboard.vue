@@ -196,12 +196,12 @@ export default {
       isLoading: false,
       selectedPeriod: '7',
       statistics: {
-        totalImages: 1247,
-        emptyBins: 856,
-        fullBins: 391,
-        imagesTrend: 12,
-        emptyTrend: 5,
-        fullTrend: -8
+        totalImages: 0,
+        emptyBins: 0,
+        fullBins: 0,
+        imagesTrend: 0,
+        emptyTrend: 0,
+        fullTrend: 0
       },
       weatherTrashChartData: {
   labels: ['01/07', '02/07', '03/07', '04/07', '05/07'],
@@ -374,48 +374,7 @@ classificationAccuracyOptions: {
         { id: 2, latitude: 48.857, longitude: 2.355, etat: 'pleine', timestamp: '2025-06-30T12:05:00Z' },
         { id: 3, latitude: 48.858, longitude: 2.360, etat: 'débordante', timestamp: '2025-06-30T12:10:00Z' }
       ],
-      recentImages: [
-        {
-          id: 1,
-          filename: 'poubelle_001.jpg',
-          status: 'pleine',
-          location: '15ème arrondissement',
-          uploadTime: 'Il y a 5 minutes',
-          thumbnail: null
-        },
-        {
-          id: 2,
-          filename: 'poubelle_002.jpg',
-          status: 'vide',
-          location: '7ème arrondissement',
-          uploadTime: 'Il y a 12 minutes',
-          thumbnail: null
-        },
-        {
-          id: 3,
-          filename: 'poubelle_003.jpg',
-          status: 'pleine',
-          location: '11ème arrondissement',
-          uploadTime: 'Il y a 18 minutes',
-          thumbnail: null
-        },
-        {
-          id: 4,
-          filename: 'poubelle_004.jpg',
-          status: 'vide',
-          location: '3ème arrondissement',
-          uploadTime: 'Il y a 25 minutes',
-          thumbnail: null
-        },
-        {
-          id: 5,
-          filename: 'poubelle_005.jpg',
-          status: 'vide',
-          location: '16ème arrondissement',
-          uploadTime: 'Il y a 32 minutes',
-          thumbnail: null
-        }
-      ]
+      recentImages: []
     }
   },
   computed: {
@@ -494,14 +453,40 @@ classificationAccuracyOptions: {
     }
   },
   
+  async mounted() {
+    await this.loadDashboardData()
+  },
+
   methods: {
+    async loadDashboardData() {
+      try {
+        const res = await fetch(import.meta.env.VITE_API_URL + '/dashboard/summary')
+        if (res.ok) {
+          const data = await res.json()
+          this.statistics.totalImages = data.total_images
+          this.statistics.emptyBins = data.empty_bins
+          this.statistics.fullBins = data.full_bins
+        }
+        const rec = await fetch(import.meta.env.VITE_API_URL + '/dashboard/recent')
+        if (rec.ok) {
+          const imgs = await rec.json()
+          this.recentImages = imgs.map(img => ({
+            id: img.id,
+            filename: img.filename,
+            status: img.annotation,
+            location: 'Paris',
+            uploadTime: new Date(img.date_upload).toLocaleString('fr-FR'),
+            thumbnail: null
+          }))
+        }
+      } catch (e) {
+        console.error('Erreur chargement dashboard:', e)
+      }
+    },
     async refreshData() {
       this.isLoading = true;
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        this.statistics.totalImages += Math.floor(Math.random() * 10);
-        this.statistics.emptyBins = Math.floor(Math.random() * 100) + 800;
-        this.statistics.fullBins = Math.floor(Math.random() * 100) + 350;
+        this.loadDashboardData();
         this.$emit('show-notification', {
           type: 'success',
           message: 'Données actualisées avec succès'
