@@ -88,7 +88,7 @@
       <!-- Grid View -->
       <div v-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <div
-          v-for="image in filteredImages"
+          v-for="image in paginatedImages"
           :key="image.id"
           class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
           @click="openImageModal(image)"
@@ -198,53 +198,7 @@ export default {
       selectedDate: '',
       currentPage: 1,
       itemsPerPage: 12,
-      images: [
-        {
-          id: 1,
-          filename: 'poubelle_001.jpg',
-          status: 'pleine',
-          location: '15ème arrondissement',
-          uploadDate: '2025-07-02T10:30:00',
-          size: '2.3 MB',
-          thumbnail: null
-        },
-        {
-          id: 2,
-          filename: 'poubelle_002.jpg',
-          status: 'vide',
-          location: '7ème arrondissement',
-          uploadDate: '2025-07-02T09:15:00',
-          size: '1.8 MB',
-          thumbnail: null
-        },
-        {
-          id: 3,
-          filename: 'poubelle_003.jpg',
-          status: 'pleine',
-          location: '11ème arrondissement',
-          uploadDate: '2025-07-02T08:45:00',
-          size: '2.1 MB',
-          thumbnail: null
-        },
-        {
-          id: 4,
-          filename: 'poubelle_004.jpg',
-          status: 'vide',
-          location: '3ème arrondissement',
-          uploadDate: '2025-07-01T16:20:00',
-          size: '1.9 MB',
-          thumbnail: null
-        },
-        {
-          id: 5,
-          filename: 'poubelle_005.jpg',
-          status: 'maintenance',
-          location: '16ème arrondissement',
-          uploadDate: '2025-07-01T14:10:00',
-          size: '2.0 MB',
-          thumbnail: null
-        }
-      ]
+      images: [], // This will be populated with images from the backend
     }
   },
   computed: {
@@ -282,7 +236,29 @@ export default {
       return this.filteredImages.slice(this.startIndex, this.endIndex);
     }
   },
+  async mounted() {
+    await this.loadImages()
+  },
   methods: {
+    async loadImages() {
+      try {
+        const res = await fetch(import.meta.env.VITE_API_URL + '/images')
+        if (res.ok) {
+          const data = await res.json()
+          this.images = data.map(img => ({
+            id: img.id,
+            filename: img.filename,
+            status: img.annotation,
+            location: 'Paris',
+            uploadDate: img.date_upload,
+            size: img.taille ? `${(img.taille / 1024).toFixed(0)} KB` : '',
+            thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${img.filename}`
+          }))
+        }
+      } catch (e) {
+        console.error('Erreur chargement images:', e)
+      }
+    },
     openUploadModal() {
       console.log('Ouvrir modal d\'upload');
     },
