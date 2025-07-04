@@ -476,7 +476,7 @@ classificationAccuracyOptions: {
             status: img.annotation,
             location: 'Paris',
             uploadTime: new Date(img.date_upload).toLocaleString('fr-FR'),
-            thumbnail: null
+            thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${img.filename}`
           }))
         }
       } catch (e) {
