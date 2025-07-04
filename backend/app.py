@@ -31,6 +31,8 @@ def create_app():
 
     # 4. Init de SQLAlchemy
     db.init_app(app)
+    mail.init_app(app)
+    jwt.init_app(app)
 
     # 5. Chargement des règles métier dès le démarrage
     rules_path = os.path.join(app.root_path, "utils", "rules.json")
