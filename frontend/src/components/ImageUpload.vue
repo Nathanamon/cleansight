@@ -1,30 +1,32 @@
 <template>
   <div class="space-y-6">
     <!-- Popup de confirmation -->
-    <div
-  v-if="showValidationPopup"
-  class="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50"
-  @click="showValidationPopup = false"
->
-  <div 
-    class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl transform transition-all duration-300 scale-100"
-    @click.stop
-  >
-        <div class="flex items-center justify-center mb-4">
-          <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-center mb-2">Image enregistrée !</h3>
-        <p class="text-gray-600 text-center mb-4">Votre image a été validée et enregistrée avec succès.</p>
-        <button
-          @click="showValidationPopup = false"
-          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+    <transition name="popup">
+      <div
+        v-if="showValidationPopup"
+        class="fixed inset-0 backdrop-blur-sm bg-white bg-opacity-10 flex items-center justify-center z-50"
+        @click="showValidationPopup = false"
+      >
+        <div 
+          class="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-2xl border transform transition-all duration-300"
+          @click.stop
         >
-          OK
-        </button>
+          <div class="flex items-center justify-center mb-4">
+            <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-center mb-2">Image enregistrée !</h3>
+          <p class="text-gray-600 text-center mb-4">Votre image a été validée et enregistrée avec succès.</p>
+          <button
+            @click="showValidationPopup = false"
+            class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          >
+            OK
+          </button>
+        </div>
       </div>
-    </div>
+    </transition>
 
     <!-- Étape 1 : Zone de téléchargement -->
     <div v-if="!prediction">
@@ -170,5 +172,25 @@ async function validate() {
 <style scoped>
 input[type='radio'] {
   margin-right: 4px;
+}
+
+/* Transitions pour le popup */
+.popup-enter-active, .popup-leave-active {
+  transition: all 0.3s ease;
+}
+
+.popup-enter-from {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.popup-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.popup-enter-to {
+  opacity: 1;
+  transform: scale(1);
 }
 </style>
