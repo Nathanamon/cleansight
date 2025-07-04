@@ -87,6 +87,7 @@ def login():
     email = (data.get("email") or "").strip().lower()
     password = data.get("password", "")
     agent_code = (data.get("agent_code") or "").strip().upper()
+    remember_me = data.get("remember_me", False)
 
     # Champs requis
     if not email or not password or not agent_code:
@@ -102,9 +103,15 @@ def login():
     if not user or not user.check_password(password):
         return jsonify(error="Identifiants invalides"), 401
 
+    # ——— DUREE SELON "remember_me" ———
+    if remember_me:
+        expires = timedelta(days=14)       # 2 semaines si souvenir
+    else:
+        expires = timedelta(hours=2)       # 2h sinon
+
     # Créer tokens
-    access_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=2))
-    refresh_token = create_refresh_token(identity=user.id)
+    access_token = create_access_token(identity=user.id, expires_delta=expires)
+    refresh_token = create_refresh_token(identity=user.id, expires_delta=expires)
 
     resp = jsonify(message="Connecté")
     # Cookie JWT
@@ -113,15 +120,17 @@ def login():
         httponly=True,
         secure=current_app.config.get("JWT_COOKIE_SECURE", False),
         samesite=current_app.config.get("JWT_COOKIE_SAMESITE", 'Lax'),
-        max_age=2 * 3600
+        max_age=int(expires.total_seconds())
     )
     resp.set_cookie(
         "refresh_token_cookie", refresh_token,
         httponly=True,
         secure=current_app.config.get("JWT_COOKIE_SECURE", False),
-        samesite=current_app.config.get("JWT_COOKIE_SAMESITE", 'Lax')
+        samesite=current_app.config.get("JWT_COOKIE_SAMESITE", 'Lax'),
+        max_age=int(expires.total_seconds())
     )
     return resp, 200
+
 
 # ——— Refresh token ———————————————————————————————————————————————————
 @auth_bp.route("/refresh", methods=["POST"])
