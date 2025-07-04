@@ -203,6 +203,8 @@ export default {
         emptyTrend: 0,
         fullTrend: 0
       },
+      dailyData: { labels: [], full: [], empty: [] },
+      accuracyData: { labels: [], correct: [], incorrect: [] },
       weatherTrashChartData: {
   labels: ['01/07', '02/07', '03/07', '04/07', '05/07'],
   datasets: [
@@ -326,21 +328,7 @@ peakHoursChartOptions: {
     }
   }
 },
-classificationAccuracyData: {
-  labels: ['27/06', '28/06', '29/06', '30/06', '01/07'],
-  datasets: [
-    {
-      label: 'Correctement classées',
-      data: [80, 90, 85, 88, 92],
-      backgroundColor: 'rgba(132, 204, 22, 0.8)'
-    },
-    {
-      label: 'Corrigées manuellement',
-      data: [20, 10, 15, 12, 8],
-      backgroundColor: 'rgba(251, 191, 36, 0.8)'
-    }
-  ]
-},
+
 classificationAccuracyOptions: {
   responsive: true,
   plugins: {
@@ -382,13 +370,13 @@ classificationAccuracyOptions: {
       return new Date().toLocaleString('fr-FR');
     },
     dailyChartData() {
-      const labels = this.generateDateLabels();
+      
       return {
-        labels,
+        labels: this.dailyData.labels,
         datasets: [
           {
             label: 'Poubelles Pleines',
-            data: this.generateRandomData(labels.length, 10, 30),
+            data: this.dailyData.full,
             borderColor: 'rgb(239, 68, 68)',
             backgroundColor: 'rgba(239, 68, 68, 0.1)',
             tension: 0.4,
@@ -396,7 +384,7 @@ classificationAccuracyOptions: {
           },
           {
             label: 'Poubelles Vides',
-            data: this.generateRandomData(labels.length, 20, 50),
+            data: this.dailyData.empty,
             borderColor: 'rgb(34, 197, 94)',
             backgroundColor: 'rgba(34, 197, 94, 0.1)',
             tension: 0.4,
@@ -433,6 +421,23 @@ classificationAccuracyOptions: {
           hoverBorderWidth: 2,
           hoverBorderColor: '#fff'
         }]
+      };
+    },
+    classificationAccuracyData() {
+      return {
+        labels: this.accuracyData.labels,
+        datasets: [
+          {
+            label: 'Correctement classées',
+            data: this.accuracyData.correct,
+            backgroundColor: 'rgba(132, 204, 22, 0.8)'
+          },
+          {
+            label: 'Corrigées manuellement',
+            data: this.accuracyData.incorrect,
+            backgroundColor: 'rgba(251, 191, 36, 0.8)'
+          }
+        ]
       };
     },
     districtChartOptions() {
@@ -479,6 +484,14 @@ classificationAccuracyOptions: {
             thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${img.filename}`
           }))
         }
+        const daily = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}`)
+        if (daily.ok) {
+          this.dailyData = await daily.json()
+        }
+        const acc = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/accuracy`)
+        if (acc.ok) {
+          this.accuracyData = await acc.json()
+        }
       } catch (e) {
         console.error('Erreur chargement dashboard:', e)
       }
@@ -501,23 +514,9 @@ classificationAccuracyOptions: {
       }
     },
     updateChartData() {
-      console.log('Mise à jour des données pour la période:', this.selectedPeriod);
-    },
-    generateDateLabels() {
-      const days = parseInt(this.selectedPeriod);
-      const labels = [];
-      const today = new Date();
-      for (let i = days - 1; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        labels.push(date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' }));
-      }
-      return labels;
-    },
-    generateRandomData(length, min, max) {
-      return Array.from({ length }, () =>
-        Math.floor(Math.random() * (max - min + 1)) + min
-      );
+      fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d) this.dailyData = d; });
     },
     handleViewImage(image) {
       console.log('Voir image:', image);
