@@ -300,44 +300,68 @@ export default {
   },
   methods: {
     async handleLogin() {
-      this.message = "";
-      this.loading = true;
+  this.message = "";
+  this.loading = true;
 
-      if (!this.isFormValid) {
-        this.message = "Merci de vérifier vos informations.";
-        this.messageType = "error";
-        this.loading = false;
-        return;
-      }
+  if (!this.isFormValid) {
+    this.message = "Merci de vérifier vos informations.";
+    this.messageType = "error";
+    this.loading = false;
+    return;
+  }
 
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            agent_code: this.agentCode,
-            email: this.email,
-            password: this.password
-          })
-        });
-        const data = await res.json();
+  try {
+    // Étape 1 — Connexion
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        agent_code: this.agentCode,
+        email: this.email,
+        password: this.password
+      })
+    });
 
-        if (res.ok) {
-          this.messageType = "success";
-          this.message = "Connexion réussie !";
-          setTimeout(() => this.$router.push("/dashboard"), 1000);
-        } else {
-          this.messageType = "error";
-          this.message = data.error || "Identifiants invalides";
-        }
-      } catch (err) {
-        this.messageType = "error";
-        this.message = "Erreur réseau, veuillez réessayer.";
-      } finally {
-        this.loading = false;
-      }
-    },
+    const data = await res.json();
+
+    if (!res.ok) {
+      this.messageType = "error";
+      this.message = data.error || "Identifiants invalides";
+      return;
+    }
+
+    // Étape 2 — Récupérer les infos utilisateur
+    const meRes = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+      method: "GET",
+      credentials: "include"
+    });
+
+    const userData = await meRes.json();
+
+    if (!meRes.ok || !userData.user) {
+      this.messageType = "error";
+      this.message = "Impossible de récupérer vos informations.";
+      return;
+    }
+
+    // Étape 3 — Stockage local & état global
+    localStorage.setItem("userData", JSON.stringify(userData.user));
+    this.$root.$.setupState.setAuthenticationState(true, userData.user); // met à jour ton header
+
+    // Étape 4 — Feedback & redirection
+    this.messageType = "success";
+    this.message = "Connexion réussie !";
+    setTimeout(() => this.$router.push("/dashboard"), 1000);
+
+  } catch (err) {
+    this.messageType = "error";
+    this.message = "Erreur réseau, veuillez réessayer.";
+  } finally {
+    this.loading = false;
+  }
+},
+
     goToSignup() {
       this.$router.push("/signup");
     }

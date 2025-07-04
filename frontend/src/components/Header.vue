@@ -268,70 +268,93 @@ export default {
     const router = useRouter();
     const isMobileMenuOpen = ref(false);
     const isUserMenuOpen = ref(false);
-    
-    // États d'authentification (à connecter avec votre store/service d'auth)
+
     const isAuthenticated = ref(false);
-    const user = ref({
-      name: '',
-      email: '',
-      firstName: '',
-      lastName: ''
-    });
+    const user = ref({ name: '', email: '', firstName: '', lastName: '' });
 
-    // Computed properties pour l'affichage utilisateur
-    const userName = computed(() => {
-      return user.value.name || `${user.value.firstName} ${user.value.lastName}`.trim();
-    });
+    const userName = computed(() =>
+      user.value.name || `${user.value.firstName} ${user.value.lastName}`.trim()
+    );
 
-    const userEmail = computed(() => {
-      return user.value.email;
-    });
+    const userEmail = computed(() => user.value.email);
 
     const userInitials = computed(() => {
       if (user.value.firstName && user.value.lastName) {
-        return `${user.value.firstName.charAt(0)}${user.value.lastName.charAt(0)}`.toUpperCase();
+        return `${user.value.firstName[0]}${user.value.lastName[0]}`.toUpperCase();
       }
       if (user.value.name) {
         const names = user.value.name.split(' ');
-        return names.length > 1 
-          ? `${names[0].charAt(0)}${names[names.length - 1].charAt(0)}`.toUpperCase()
-          : names[0].charAt(0).toUpperCase();
+        return names.length > 1
+          ? `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase()
+          : names[0][0].toUpperCase();
       }
-      return user.value.email ? user.value.email.charAt(0).toUpperCase() : 'U';
+      return user.value.email ? user.value.email[0].toUpperCase() : 'U';
     });
 
-    // Méthodes d'authentification (à adapter selon votre système)
-    const checkAuthStatus = () => {
-      // Exemple : vérifier le token dans localStorage ou appeler votre service d'auth
-      const token = localStorage.getItem('authToken');
-      const userData = localStorage.getItem('userData');
-      
-      if (token && userData) {
-        isAuthenticated.value = true;
-        user.value = JSON.parse(userData);
+    // ✅ Login depuis formulaire
+    const login = async (email, password, agent_code) => {
+      try {
+        const res = await fetch(import.meta.env.VITE_API_URL + '/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password, agent_code })
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Erreur de connexion');
+        }
+
+        const me = await fetch(import.meta.env.VITE_API_URL + '/auth/me', {
+          credentials: 'include'
+        });
+        const userData = await me.json();
+        localStorage.setItem('userData', JSON.stringify(userData.user));
+        setAuthenticationState(true, userData.user);
+
+      } catch (err) {
+        console.error('Erreur login:', err.message);
+        throw err;
       }
     };
 
-    const logout = () => {
-      // Nettoyer l'authentification
-      isAuthenticated.value = false;
-      user.value = { name: '', email: '', firstName: '', lastName: '' };
-      localStorage.removeItem('authToken');
+    // ✅ Logout
+    const logout = async () => {
+      await fetch(import.meta.env.VITE_API_URL + '/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
       localStorage.removeItem('userData');
-      
-      // Fermer les menus
-      isMobileMenuOpen.value = false;
-      isUserMenuOpen.value = false;
-      
-      // Rediriger vers la page d'accueil
+      setAuthenticationState(false);
       router.push('/');
     };
 
-    // Méthodes de navigation existantes
+    // ✅ Vérifie si un utilisateur est déjà connecté
+    const checkAuthStatus = async () => {
+      try {
+        const res = await fetch(import.meta.env.VITE_API_URL + '/auth/me', {
+          credentials: 'include'
+        });
+
+        if (!res.ok) throw new Error("Non authentifié");
+        const data = await res.json();
+        setAuthenticationState(true, data.user);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+      } catch {
+        setAuthenticationState(false);
+        localStorage.removeItem("userData");
+      }
+    };
+
+    const setAuthenticationState = (authenticated, userData = null) => {
+      isAuthenticated.value = authenticated;
+      user.value = userData || { name: '', email: '', firstName: '', lastName: '' };
+    };
+
     const scrollToSection = (sectionId) => {
       isMobileMenuOpen.value = false;
       isUserMenuOpen.value = false;
-      
       if (router.currentRoute.value.path === "/") {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -368,16 +391,13 @@ export default {
 
     const toggleMobileMenu = () => {
       isMobileMenuOpen.value = !isMobileMenuOpen.value;
-      if (isMobileMenuOpen.value) {
-        isUserMenuOpen.value = false;
-      }
+      if (isMobileMenuOpen.value) isUserMenuOpen.value = false;
     };
 
     const toggleUserMenu = () => {
       isUserMenuOpen.value = !isUserMenuOpen.value;
     };
 
-    // Fermer les menus quand on clique ailleurs
     const handleClickOutside = (event) => {
       if (!event.target.closest('.relative')) {
         isUserMenuOpen.value = false;
@@ -389,14 +409,6 @@ export default {
       document.addEventListener('click', handleClickOutside);
     });
 
-    // Méthode publique pour mettre à jour l'état d'authentification
-    const setAuthenticationState = (authenticated, userData = null) => {
-      isAuthenticated.value = authenticated;
-      if (userData) {
-        user.value = userData;
-      }
-    };
-
     return {
       isMobileMenuOpen,
       isUserMenuOpen,
@@ -405,6 +417,9 @@ export default {
       userName,
       userEmail,
       userInitials,
+      login,
+      logout,
+      checkAuthStatus,
       scrollToSection,
       navigateToUpload,
       navigateToDashboard,
@@ -412,13 +427,12 @@ export default {
       navigateToSettings,
       toggleMobileMenu,
       toggleUserMenu,
-      logout,
-      setAuthenticationState,
-      checkAuthStatus
+      setAuthenticationState
     };
   },
 };
 </script>
+
 
 <style scoped>
 /* Ajout d'une transition pour le dropdown */
