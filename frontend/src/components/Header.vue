@@ -259,7 +259,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from "vue-router";
 
 export default {
@@ -318,6 +318,7 @@ export default {
       user.value = { name: '', email: '', firstName: '', lastName: '' };
       localStorage.removeItem('authToken');
       localStorage.removeItem('userData');
+      window.dispatchEvent(new CustomEvent('auth-changed', { detail: { authenticated: false } }));
       
       // Fermer les menus
       isMobileMenuOpen.value = false;
@@ -383,10 +384,20 @@ export default {
         isUserMenuOpen.value = false;
       }
     };
+    
+    const handleAuthChanged = (e) => {
+      setAuthenticationState(e.detail.authenticated, e.detail.user);
+    };
 
     onMounted(() => {
       checkAuthStatus();
       document.addEventListener('click', handleClickOutside);
+      window.addEventListener('auth-changed', handleAuthChanged);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('auth-changed', handleAuthChanged);
     });
 
     // Méthode publique pour mettre à jour l'état d'authentification
