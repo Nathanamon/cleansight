@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from app import db
 from models.image import Image
 from utils.feature_extraction import extract_features
+from utils.metadata_generator import generate_metadata
 # (PIL n'est plus utilisé directement ici)
 
 validate_bp = Blueprint("validate", __name__)
@@ -17,7 +18,7 @@ def validate():
 
     img_file = request.files['image']
     label    = request.form['label']
-    annotation_auto = request.form.get('prediction')  # <--- tu peux le passer depuis le front si besoin
+    annotation_auto = request.form.get('annotation_auto') or request.form.get('prediction')
     fname    = secure_filename(img_file.filename)
 
     folder = current_app.config["UPLOAD_FOLDER"]
@@ -25,11 +26,12 @@ def validate():
     img_file.save(fullpath)
 
     features = extract_features(fullpath)
+    metadata = generate_metadata()
 
     if not features:
         return jsonify({"error": "Impossible d'extraire les caractéristiques"}), 400
     
-    annotation_auto = request.form.get("annotation_auto", None)
+    
 
     record = Image(
         filename    = fname,
@@ -41,10 +43,15 @@ def validate():
         contraste   = features["rms_contrast"],     # anciennement 'contraste'
         annotation_auto = annotation_auto,
         couleur_moyenne = f"{features['mean_r']:.1f},{features['mean_g']:.1f},{features['mean_b']:.1f}",  # string RGB
+        metadata_json = metadata               # JSON des métadonnées
         # tu peux stocker d’autres features si tu veux...
     )
     db.session.add(record)
     db.session.commit()
 
 
-    return jsonify({"message": "Image enregistrée avec succès"}), 201
+    return jsonify({
+        "message": "Image enregistrée avec succès",
+        "id": record.id,
+        "metadata": metadata,
+    }), 201

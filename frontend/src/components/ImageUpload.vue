@@ -142,6 +142,7 @@ async function validate() {
   formData.append('image', fichier.value)
   formData.append('label', annotation.value)
   formData.append('annotation_auto', prediction.value || '')
+
   loading.value = true
   try {
     const res = await fetch(import.meta.env.VITE_API_URL + '/validate', {
