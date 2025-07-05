@@ -115,3 +115,31 @@ def classification_accuracy():
         current += timedelta(days=1)
 
     return jsonify({"labels": labels, "correct": correct, "incorrect": incorrect}), 200
+
+
+@dashboard_bp.route("/map", methods=["GET"])
+def map_data():
+    """Return list of trash bins with coordinates."""
+    images = (
+        Image.query
+        .filter(Image.metadata.isnot(None))
+        .order_by(Image.date_upload.desc())
+        .all()
+    )
+    data = []
+    for img in images:
+        try:
+            lat = img.metadata.get("location", {}).get("lat")
+            lon = img.metadata.get("location", {}).get("lon")
+        except AttributeError:
+            lat = lon = None
+
+        if lat is not None and lon is not None:
+            data.append({
+                "id": img.id,
+                "latitude": lat,
+                "longitude": lon,
+                "etat": img.annotation,
+                "timestamp": img.date_upload.isoformat(),
+            })
+    return jsonify(data), 200

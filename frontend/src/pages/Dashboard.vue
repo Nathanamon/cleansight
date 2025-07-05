@@ -357,11 +357,7 @@ classificationAccuracyOptions: {
 },
 
 
-      mapPoubelles: [
-        { id: 1, latitude: 48.8566, longitude: 2.3522, etat: 'vide', timestamp: '2025-06-30T12:00:00Z' },
-        { id: 2, latitude: 48.857, longitude: 2.355, etat: 'pleine', timestamp: '2025-06-30T12:05:00Z' },
-        { id: 3, latitude: 48.858, longitude: 2.360, etat: 'débordante', timestamp: '2025-06-30T12:10:00Z' }
-      ],
+      mapPoubelles: [],
       recentImages: []
     }
   },
@@ -460,6 +456,7 @@ classificationAccuracyOptions: {
   
   async mounted() {
     await this.loadDashboardData()
+    await this.loadMapData()
   },
 
   methods: {
@@ -496,10 +493,21 @@ classificationAccuracyOptions: {
         console.error('Erreur chargement dashboard:', e)
       }
     },
+    async loadMapData() {
+      try {
+        const res = await fetch(import.meta.env.VITE_API_URL + '/dashboard/map')
+        if (res.ok) {
+          this.mapPoubelles = await res.json()
+        }
+      } catch (e) {
+        console.error('Erreur chargement carte:', e)
+      }
+    },
     async refreshData() {
       this.isLoading = true;
       try {
-        this.loadDashboardData();
+        await this.loadDashboardData();
+        await this.loadMapData();
         this.$emit('show-notification', {
           type: 'success',
           message: 'Données actualisées avec succès'
