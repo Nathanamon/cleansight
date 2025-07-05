@@ -336,21 +336,24 @@ export default {
             })
           );
 
-          window.dispatchEvent(
-            new CustomEvent('auth-changed', {
-              detail: {
-                authenticated: true,
-                user: {
-                  email: data.user.email,
-                  firstName: data.user.first_name,
-                  lastName: data.user.last_name,
-                },
-              },
-            })
-          );
+
           this.messageType = "success";
           this.message = "Connexion réussie !";
-          setTimeout(() => this.$router.push("/dashboard"), 1000);
+          setTimeout(() => {
+            this.$router.push("/dashboard");
+            window.dispatchEvent(
+              new CustomEvent('auth-changed', {
+                detail: {
+                  authenticated: true,
+                  user: {
+                    email: data.user.email,
+                    firstName: data.user.first_name,
+                    lastName: data.user.last_name,
+                  },
+                },
+              })
+            );
+          }, 1000);
         } else {
           this.messageType = "error";
           this.message = data.error || "Identifiants invalides";
