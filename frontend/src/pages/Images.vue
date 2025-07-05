@@ -242,7 +242,9 @@ export default {
   methods: {
     async loadImages() {
       try {
-        const res = await fetch(import.meta.env.VITE_API_URL + '/images')
+        const res = await fetch(import.meta.env.VITE_API_URL + '/images', {
+          credentials: 'include'
+        })
         if (res.ok) {
           const data = await res.json()
           this.images = data.map(img => ({
