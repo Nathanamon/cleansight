@@ -262,9 +262,31 @@ export default {
         if (res.ok) {
           this.messageType = "success"
           this.message = "Compte agent créé avec succès !"
-          // Récupère la destination de redirection depuis les query params ou met une valeur par défaut
           const redirect = this.$route.query.redirect || "/dashboard"
-          setTimeout(() => this.$router.push(redirect), 1600)
+          setTimeout(() => {
+            this.$router.push(redirect)
+            localStorage.setItem('authToken', 'true')
+            localStorage.setItem(
+              'userData',
+              JSON.stringify({
+                email: this.email,
+                firstName: this.firstName,
+                lastName: this.lastName
+              })
+            )
+            window.dispatchEvent(
+              new CustomEvent('auth-changed', {
+                detail: {
+                  authenticated: true,
+                  user: {
+                    email: this.email,
+                    firstName: this.firstName,
+                    lastName: this.lastName
+                  }
+                }
+              })
+            )
+          }, 1600)
         } else {
           this.messageType = "error"
           this.message = data.error || "Erreur lors de l’inscription"
