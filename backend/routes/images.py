@@ -2,11 +2,13 @@
 
 from datetime import datetime
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 images_bp = Blueprint("images", __name__)
 
 @images_bp.route("/images", methods=["GET"])
+@jwt_required()
 def get_images():
     from app import db
     from models.image import Image
@@ -16,7 +18,8 @@ def get_images():
     df  = request.args.get("date_from")
     dt  = request.args.get("date_to")
 
-    q = Image.query
+    user_id = get_jwt_identity()
+    q = Image.query.filter_by(user_id=user_id)
     if ann in ("pleine", "vide"):
         q = q.filter_by(annotation=ann)
     if df:
