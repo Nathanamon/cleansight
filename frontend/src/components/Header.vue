@@ -16,24 +16,27 @@
       <!-- Desktop Navigation -->
       <div class="hidden lg:flex items-center gap-8">
         <!-- Navigation links (shown for both states) -->
-        <span 
+        <button
+          type="button"
           class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
           @click="scrollToSection('features')"
         >
           Fonctionnalités
-        </span>
-        <span 
+        </button>
+        <button
+          type="button"
           class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
           @click="scrollToSection('dashboard')"
         >
           Dashboard
-        </span>
-        <span 
+        </button>
+        <button
+          type="button"
           class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
           @click="scrollToSection('impact')"
         >
           Impact
-        </span>
+        </button>
 
         <!-- Actions based on authentication state -->
         <div v-if="!isAuthenticated" class="flex items-center gap-4">
@@ -170,24 +173,27 @@
       <div class="px-4 py-4 space-y-4">
         <!-- Navigation Links -->
         <div class="space-y-3">
-          <div 
-            class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600 border-b border-gray-100 pb-2"
+          <button
+            type="button"
+            class="w-full text-left text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600 border-b border-gray-100 pb-2"
             @click="scrollToSection('features')"
           >
             Fonctionnalités
-          </div>
-          <div 
-            class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600 border-b border-gray-100 pb-2"
+          </button>
+          <button
+            type="button"
+            class="w-full text-left text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600 border-b border-gray-100 pb-2"
             @click="scrollToSection('dashboard')"
           >
             Dashboard
-          </div>
-          <div 
-            class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600 border-b border-gray-100 pb-2"
+          </button>
+          <button
+            type="button"
+            class="w-full text-left text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600 border-b border-gray-100 pb-2"
             @click="scrollToSection('impact')"
           >
             Impact
-          </div>
+          </button>
         </div>
 
         <!-- User info for authenticated mobile users -->
