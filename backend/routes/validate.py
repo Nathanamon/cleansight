@@ -18,7 +18,7 @@ def validate():
 
     img_file = request.files['image']
     label    = request.form['label']
-    annotation_auto = request.form.get('prediction')  # <--- tu peux le passer depuis le front si besoin
+    annotation_auto = request.form.get('annotation_auto') or request.form.get('prediction')
     fname    = secure_filename(img_file.filename)
 
     folder = current_app.config["UPLOAD_FOLDER"]
@@ -31,7 +31,7 @@ def validate():
     if not features:
         return jsonify({"error": "Impossible d'extraire les caractéristiques"}), 400
     
-    annotation_auto = request.form.get("annotation_auto", None)
+    
 
     record = Image(
         filename    = fname,
@@ -52,5 +52,6 @@ def validate():
 
     return jsonify({
         "message": "Image enregistrée avec succès",
+        "id": record.id,
         "metadata": metadata,
-        }), 201
+    }), 201

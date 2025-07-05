@@ -14,6 +14,7 @@
           <div class="text-sm">
             <p><strong>ID :</strong> {{ p.id }}</p>
             <p><strong>État :</strong> {{ p.etat }}</p>
+            <p><strong>Adresse :</strong> {{ p.address || 'Adresse inconnue' }}</p>
             <p><strong>Heure :</strong> {{ formatDate(p.timestamp) }}</p>
           </div>
         </l-popup>
@@ -60,6 +61,8 @@ const props = defineProps({
 })
 
 const { poubelles, center, zoom } = toRefs(props)
+
+
 
 // Constantes Leaflet
 const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'

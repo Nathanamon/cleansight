@@ -30,11 +30,17 @@ def recent():
     )
     data = []
     for img in images:
+        location = None
+        if img.metadata_json:
+            loc = img.metadata_json.get("location", {})
+            location = loc.get("address")
+
         data.append({
             "id": img.id,
             "filename": img.filename,
             "annotation": img.annotation,
             "date_upload": img.date_upload.isoformat(),
+            "location": location,
         })
     return jsonify(data), 200
 
@@ -129,16 +135,23 @@ def map_data():
     data = []
     for img in images:
         try:
-            lat = img.metadata_json.get("location", {}).get("lat")
-            lon = img.metadata_json.get("location", {}).get("lon")
-        except AttributeError:
-            lat = lon = None
+            location = img.metadata_json.get("location", {})
+            lat = location.get("lat")
+            lon = location.get("lon")
+            address = location.get("address")
+            if lat is not None:
+                lat = float(lat)
+            if lon is not None:
+                lon = float(lon)
+        except (AttributeError, ValueError, TypeError):
+            lat = lon = address = None
 
         if lat is not None and lon is not None:
             data.append({
                 "id": img.id,
                 "latitude": lat,
                 "longitude": lon,
+                "adresse": address,
                 "etat": img.annotation,
                 "timestamp": img.date_upload.isoformat(),
             })

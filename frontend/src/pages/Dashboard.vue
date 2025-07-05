@@ -59,7 +59,7 @@
     <i class="fas fa-map-marked-alt mr-2 text-green-600"></i>
     Carte des poubelles
   </h3>
-  <TrashMap :poubelles="mapPoubelles" :center="[48.8566, 2.3522]" />
+  <TrashMap :poubelles="mapPoubelles" :center="mapCenter" />
 </div>
 
       <!-- Charts Section -->
@@ -365,6 +365,14 @@ classificationAccuracyOptions: {
     lastUpdate() {
       return new Date().toLocaleString('fr-FR');
     },
+    mapCenter() {
+      if (this.mapPoubelles.length > 0) {
+        const avgLat = this.mapPoubelles.reduce((s, p) => s + p.latitude, 0) / this.mapPoubelles.length;
+        const avgLon = this.mapPoubelles.reduce((s, p) => s + p.longitude, 0) / this.mapPoubelles.length;
+        return [avgLat, avgLon];
+      }
+      return [48.8566, 2.3522];
+    },
     dailyChartData() {
       
       return {
@@ -476,7 +484,7 @@ classificationAccuracyOptions: {
             id: img.id,
             filename: img.filename,
             status: img.annotation,
-            location: 'Paris',
+            location: img.location || 'Paris',
             uploadTime: new Date(img.date_upload).toLocaleString('fr-FR'),
             thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${img.filename}`
           }))
@@ -497,7 +505,12 @@ classificationAccuracyOptions: {
       try {
         const res = await fetch(import.meta.env.VITE_API_URL + '/dashboard/map')
         if (res.ok) {
-          this.mapPoubelles = await res.json()
+          const items = await res.json()
+          this.mapPoubelles = items.map(p => ({
+            ...p,
+            latitude: parseFloat(p.latitude),
+            longitude: parseFloat(p.longitude)
+          }))
         }
       } catch (e) {
         console.error('Erreur chargement carte:', e)
