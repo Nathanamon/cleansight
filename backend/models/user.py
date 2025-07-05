@@ -1,7 +1,9 @@
 # backend/models/user.py
 from datetime import datetime
 from app import db
+from models.image import Image
 from werkzeug.security import generate_password_hash, check_password_hash
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -15,6 +17,7 @@ class User(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, nullable=True)
+    images = db.relationship('Image', backref='user', lazy=True)
 
 
     def __repr__(self):
