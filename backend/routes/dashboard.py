@@ -122,15 +122,15 @@ def map_data():
     """Return list of trash bins with coordinates."""
     images = (
         Image.query
-        .filter(Image.metadata.isnot(None))
+        .filter(Image.metadata_json.isnot(None))
         .order_by(Image.date_upload.desc())
         .all()
     )
     data = []
     for img in images:
         try:
-            lat = img.metadata.get("location", {}).get("lat")
-            lon = img.metadata.get("location", {}).get("lon")
+            lat = img.metadata_json.get("location", {}).get("lat")
+            lon = img.metadata_json.get("location", {}).get("lon")
         except AttributeError:
             lat = lon = None
 
