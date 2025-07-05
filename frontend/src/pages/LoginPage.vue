@@ -327,11 +327,27 @@ export default {
         if (res.ok) {
           // Stocker un indicateur d'authentification simple
           localStorage.setItem('authToken', 'true');
-          localStorage.setItem('userData', JSON.stringify({ email: this.email }));
+          localStorage.setItem(
+            'userData',
+            JSON.stringify({
+              email: data.user.email,
+              firstName: data.user.first_name,
+              lastName: data.user.last_name,
+            })
+          );
 
-          window.dispatchEvent(new CustomEvent('auth-changed', {
-            detail: { authenticated: true, user: { email: this.email } }
-          }));
+          window.dispatchEvent(
+            new CustomEvent('auth-changed', {
+              detail: {
+                authenticated: true,
+                user: {
+                  email: data.user.email,
+                  firstName: data.user.first_name,
+                  lastName: data.user.last_name,
+                },
+              },
+            })
+          );
           this.messageType = "success";
           this.message = "Connexion réussie !";
           setTimeout(() => this.$router.push("/dashboard"), 1000);

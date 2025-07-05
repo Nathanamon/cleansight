@@ -39,10 +39,12 @@ def signup():
     email = (data.get("email") or "").strip().lower()
     password = data.get("password", "")
     agent_code = (data.get("agent_code") or "").strip().upper()
+    first_name = (data.get("first_name") or "").strip()
+    last_name = (data.get("last_name") or "").strip()
 
     # Champs requis
-    if not email or not password or not agent_code:
-        return jsonify(error="Email, mot de passe et code agent obligatoires"), 400
+    if not email or not password or not agent_code or not first_name or not last_name:
+        return jsonify(error="Email, mot de passe, nom et code agent obligatoires"), 400
 
     # Validation email
     if not re.fullmatch(r"[a-z0-9._-]+@paris\.fr", email):
@@ -57,7 +59,12 @@ def signup():
         return jsonify(error="Cet email est déjà utilisé"), 409
 
     # Création utilisateur
-    user = User(email=email, agent_code=agent_code)
+    user = User(
+        email=email,
+        agent_code=agent_code,
+        first_name=first_name,
+        last_name=last_name,
+    )
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
@@ -113,7 +120,14 @@ def login():
     access_token = create_access_token(identity=user.id, expires_delta=expires)
     refresh_token = create_refresh_token(identity=user.id, expires_delta=expires)
 
-    resp = jsonify(message="Connecté")
+    resp = jsonify(
+        message="Connecté",
+        user={
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+        },
+    )
     # Cookie JWT
     resp.set_cookie(
         "access_token_cookie", access_token,
@@ -164,7 +178,15 @@ def me():
     user = User.query.get(user_id)
     if not user:
         return jsonify(user=None), 404
-    return jsonify(user={"id": user.id, "email": user.email, "agent_code": user.agent_code}), 200
+    return jsonify(
+        user={
+            "id": user.id,
+            "email": user.email,
+            "agent_code": user.agent_code,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+        }
+    ), 200
 
 # ——— Mot de passe oublié ——————————————————————————————————————————————————————
 @auth_bp.route("/forgot-password", methods=["POST"])

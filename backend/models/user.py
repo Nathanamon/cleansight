@@ -8,14 +8,19 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(180), unique=True, nullable=False)
+    first_name = db.Column(db.String(100), nullable=False)
+    last_name = db.Column(db.String(100), nullable=False)
     agent_code = db.Column(db.String(20), nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, nullable=True)
 
+
     def __repr__(self):
-        return f"<User {self.email} | Agent {self.agent_code}>"
+        return (
+            f"<User {self.email} | {self.first_name} {self.last_name} | Agent {self.agent_code}>"
+        )
 
     def set_password(self, password: str) -> None:
         """

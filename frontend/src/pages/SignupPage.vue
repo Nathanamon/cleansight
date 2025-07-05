@@ -78,6 +78,28 @@
             />
             <p id="emailHelp" v-if="email && !isValidEmail" class="text-xs text-red-500 mt-1">L’email doit se terminer par <b>@paris.fr</b></p>
           </div>
+          <!-- Prénom -->
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Prénom <span class="text-red-500">*</span></label>
+            <input
+              v-model="firstName"
+              type="text"
+              required
+              placeholder="Jean"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-green-100 focus:border-green-500 transition-all"
+            />
+          </div>
+          <!-- Nom -->
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Nom <span class="text-red-500">*</span></label>
+            <input
+              v-model="lastName"
+              type="text"
+              required
+              placeholder="Dupont"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-green-100 focus:border-green-500 transition-all"
+            />
+          </div>
           <!-- Mot de passe -->
           <div>
             <label class="block text-xs font-bold text-gray-700 mb-1">Mot de passe <span class="text-red-500">*</span></label>
@@ -168,6 +190,8 @@ export default {
     return {
       agentCode: "",
       email: "",
+      firstName: "",
+      lastName: "",
       password: "",
       confirmPassword: "",
       acceptTerms: false,
@@ -192,6 +216,8 @@ export default {
       return (
         this.isValidAgentCode &&
         this.isValidEmail &&
+        this.firstName &&
+        this.lastName &&
         this.password &&
         this.confirmPassword &&
         this.password === this.confirmPassword &&
@@ -226,7 +252,9 @@ export default {
             body: JSON.stringify({
               email: this.email,
               password: this.password,
-              agent_code: this.agentCode
+              agent_code: this.agentCode,
+              first_name: this.firstName,
+              last_name: this.lastName
             })
           }
         )
