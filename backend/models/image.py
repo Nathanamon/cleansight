@@ -15,4 +15,5 @@ class Image(db.Model):
     hauteur         = db.Column(db.Integer)
     contraste       = db.Column(db.Float)
     couleur_moyenne = db.Column(db.String(20))
+    metadata_json   = db.Column(db.JSON)
 

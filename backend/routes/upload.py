@@ -10,6 +10,7 @@ from app import db
 from models.image import Image
 from feature_extraction import extract_features
 from classification import classify_image
+from utils.metadata_generator import generate_metadata
 
 
 upload_bp = Blueprint("upload", __name__)
@@ -29,6 +30,8 @@ def upload():
 
     features = extract_features(path)
     auto_ann = classify_image(features)
+    metadata = generate_metadata()
+
 
     img = Image(
         filename=filename,
@@ -39,12 +42,14 @@ def upload():
         largeur=features["largeur"],
         hauteur=features["hauteur"],
         contraste=features["contraste"],
-        couleur_moyenne=features["couleur_moyenne"]
+        couleur_moyenne=features["couleur_moyenne"],
+        metadata_json=metadata
     )
     db.session.add(img)
     db.session.commit()
 
     return jsonify({
         "message": "Image enregistrée avec succès",
-        "annotation_auto": auto_ann
+        "annotation_auto": auto_ann,
+        "metadata": metadata,
     }), 201
