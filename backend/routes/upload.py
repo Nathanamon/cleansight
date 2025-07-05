@@ -52,4 +52,5 @@ def upload():
         "message": "Image enregistrée avec succès",
         "annotation_auto": auto_ann,
         "metadata": metadata,
+        "log": f"Image {filename} enregistrée avec annotation: {manual_ann}, auto-annotation: {auto_ann}, metadata: {metadata}"
     }), 201
