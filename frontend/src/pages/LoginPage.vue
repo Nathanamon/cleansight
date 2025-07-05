@@ -336,7 +336,7 @@ export default {
             })
           );
 
-
+          
           this.messageType = "success";
           this.message = "Connexion réussie !";
           setTimeout(() => {
