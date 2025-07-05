@@ -65,6 +65,3 @@ def generate_metadata():
         },
         "weather": weather
     }
-if __name__ == "__main__":
-    metadata = generate_metadata()
-    print("Metadata générée :", metadata)

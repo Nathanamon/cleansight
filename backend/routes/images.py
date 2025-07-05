@@ -38,7 +38,7 @@ def get_images():
             "hauteur":          img.hauteur,
             "contraste":        img.contraste,
             "couleur_moyenne":  img.couleur_moyenne,
-            "metadata":    img.metadata_json
+            "metadata":         img.metadata_json
         })
     return jsonify(data), 200
 
