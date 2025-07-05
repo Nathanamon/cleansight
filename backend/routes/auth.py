@@ -107,7 +107,7 @@ def login():
         return jsonify(error="Code agent invalide"), 403
 
     user = User.query.filter_by(email=email, agent_code=agent_code).first()
-        if not user:
+    if not user:
         return jsonify(error="Compte inexistant"), 404
     if not user.check_password(password):
         return jsonify(error="Mot de passe incorrect"), 401
