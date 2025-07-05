@@ -40,7 +40,10 @@ class Config:
     # JWT (cookies)
     JWT_TOKEN_LOCATION = ["cookies"]
     JWT_COOKIE_SECURE = False  # True en production
-    JWT_COOKIE_SAMESITE = "None"  # Pour autoriser le front cross-site
+    # En développement la valeur "None" requiert l'option Secure et le cookie
+    # est ignoré par le navigateur. On utilise donc "Lax" pour que les cookies
+    # d'authentification soient bien envoyés sur http://localhost.
+    JWT_COOKIE_SAMESITE = "Lax"
     JWT_ACCESS_COOKIE_PATH = "/"
     JWT_REFRESH_COOKIE_PATH = "/auth/refresh"
     JWT_COOKIE_CSRF_PROTECT = True  # Protection CSRF pour les cookies JWT

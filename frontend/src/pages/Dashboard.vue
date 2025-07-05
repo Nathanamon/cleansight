@@ -509,7 +509,8 @@ classificationAccuracyOptions: {
           this.mapPoubelles = items.map(p => ({
             ...p,
             latitude: parseFloat(p.latitude),
-            longitude: parseFloat(p.longitude)
+            longitude: parseFloat(p.longitude),
+            address: p.address || 'Adresse inconnue'
           }))
         }
       } catch (e) {

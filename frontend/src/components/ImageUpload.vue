@@ -85,7 +85,6 @@
 <script setup>
 import { ref } from 'vue'
 
-const fichier = ref(null)
 const preview = ref(null)
 const prediction = ref(null)
 const annotation = ref(null)
@@ -145,8 +144,13 @@ async function validate() {
 
   loading.value = true
   try {
+    // Get your JWT token from localStorage (or wherever you store it)
+    const token = localStorage.getItem('authToken')
     const res = await fetch(import.meta.env.VITE_API_URL + '/validate', {
       method: 'POST',
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : undefined
+      },
       body: formData
     })
     if (res.ok) {

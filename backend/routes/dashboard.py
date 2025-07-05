@@ -151,7 +151,7 @@ def map_data():
                 "id": img.id,
                 "latitude": lat,
                 "longitude": lon,
-                "adresse": address,
+                "address": address,
                 "etat": img.annotation,
                 "timestamp": img.date_upload.isoformat(),
             })
