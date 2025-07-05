@@ -118,7 +118,8 @@ async function predict() {
   try {
     const res = await fetch(import.meta.env.VITE_API_URL + '/predict', {
       method: 'POST',
-      body: formData
+      body: formData,
+      credentials: 'include'
     })
     const data = await res.json()
     // Correction : utilisation d'une valeur par défaut si data.label est undefined/null

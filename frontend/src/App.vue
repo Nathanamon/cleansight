@@ -2,12 +2,14 @@
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+
 
 const route = useRoute()
 
 // Désactiver le padding pour certaines routes (ex : page de connexion)
 const noPaddingRoutes = ['/login']
-const shouldApplyPadding = !noPaddingRoutes.includes(route.path)
+const shouldApplyPadding = computed(() => !noPaddingRoutes.includes(route.path))
 </script>
 
 <template>
