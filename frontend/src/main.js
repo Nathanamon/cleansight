@@ -1,12 +1,16 @@
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import "./style.css";
 import App from "./App.vue";
 
 // ✅ Ajoute l'import du router
 import router from "./router";
 
-// ✅ Monte l'app avec le router
-createApp(App).use(router).mount("#app");
+const app = createApp(App);
+app.use(createPinia());
+app.use(router);
+app.mount("#app");
 
-// Installation Leaflet Map
-import 'leaflet/dist/leaflet.css'
+// ✅ Import du CSS pour Leaflet
+import "leaflet/dist/leaflet.css";
+

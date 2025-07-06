@@ -15,7 +15,8 @@
     "recharts": "^3.0.2",
     "tailwindcss": "^4.1.11",
     "vue": "^3.5.17",
-    "vue-leaflet": "^0.1.0"
+    "vue-leaflet": "^0.1.0",
+    "pinia": "^2.1.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",

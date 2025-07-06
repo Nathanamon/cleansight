@@ -1,63 +1,129 @@
 [
   {
-    "name": "poubelle_pleine_gfaible",
+    "conditions": [
+      {
+        "key": "contour_count",
+        "op": "<=",
+        "value": 2205
+      },
+      {
+        "key": "mean_g",
+        "op": "<=",
+        "value": 109.21
+      }
+    ],
+    "enabled": true,
     "message": "💡 Poubelle pleine (peu de contours, mean_g ≤ 109.21)",
-    "enabled": true,
-    "conditions": [
-      { "key": "contour_count", "op": "<=", "value": 2205.0 },
-      { "key": "mean_g",        "op": "<=", "value": 109.21 }
-    ]
+    "name": "poubelle_pleine_gfaible"
   },
   {
-    "name": "poubelle_pleine_gsup_fs_inf_binf",
+    "conditions": [
+      {
+        "key": "contour_count",
+        "op": "<=",
+        "value": 2205
+      },
+      {
+        "key": "mean_g",
+        "op": ">",
+        "value": 109.21
+      },
+      {
+        "key": "file_size",
+        "op": "<=",
+        "value": 27828.5
+      },
+      {
+        "key": "mean_b",
+        "op": "<=",
+        "value": 114.51
+      }
+    ],
+    "enabled": true,
     "message": "💡 Poubelle pleine (mean_g > 109.21, file_size ≤ 27828.5, mean_b ≤ 114.51)",
-    "enabled": true,
-    "conditions": [
-      { "key": "contour_count", "op": "<=", "value": 2205.0 },
-      { "key": "mean_g",        "op": ">",  "value": 109.21 },
-      { "key": "file_size",     "op": "<=", "value": 27828.5 },
-      { "key": "mean_b",        "op": "<=", "value": 114.51 }
-    ]
+    "name": "poubelle_pleine_gsup_fs_inf_binf"
   },
   {
-    "name": "poubelle_vide_gsup_fs_inf_bsup",
+    "conditions": [
+      {
+        "key": "contour_count",
+        "op": "<=",
+        "value": 2205
+      },
+      {
+        "key": "mean_g",
+        "op": ">",
+        "value": 109.21
+      },
+      {
+        "key": "file_size",
+        "op": "<=",
+        "value": 27828.5
+      },
+      {
+        "key": "mean_b",
+        "op": ">",
+        "value": 114.51
+      }
+    ],
+    "enabled": true,
     "message": "✅ Poubelle vide (mean_g > 109.21, file_size ≤ 27828.5, mean_b > 114.51)",
-    "enabled": true,
-    "conditions": [
-      { "key": "contour_count", "op": "<=", "value": 2205.0 },
-      { "key": "mean_g",        "op": ">",  "value": 109.21 },
-      { "key": "file_size",     "op": "<=", "value": 27828.5 },
-      { "key": "mean_b",        "op": ">",  "value": 114.51 }
-    ]
+    "name": "poubelle_vide_gsup_fs_inf_bsup"
   },
   {
-    "name": "poubelle_vide_gsup_fs_sup",
+    "conditions": [
+      {
+        "key": "contour_count",
+        "op": "<=",
+        "value": 2205
+      },
+      {
+        "key": "mean_g",
+        "op": ">",
+        "value": 109.21
+      },
+      {
+        "key": "file_size",
+        "op": ">",
+        "value": 27828.5
+      }
+    ],
+    "enabled": true,
     "message": "✅ Poubelle vide (mean_g > 109.21, file_size > 27828.5)",
-    "enabled": true,
-    "conditions": [
-      { "key": "contour_count", "op": "<=", "value": 2205.0 },
-      { "key": "mean_g",        "op": ">",  "value": 109.21 },
-      { "key": "file_size",     "op": ">",  "value": 27828.5 }
-    ]
+    "name": "poubelle_vide_gsup_fs_sup"
   },
   {
-    "name": "poubelle_pleine_cntsup_rinf",
+    "conditions": [
+      {
+        "key": "contour_count",
+        "op": ">",
+        "value": 2205
+      },
+      {
+        "key": "mean_r",
+        "op": "<=",
+        "value": 132.38
+      }
+    ],
+    "enabled": true,
     "message": "💡 Poubelle pleine (beaucoup de contours, mean_r ≤ 132.38)",
-    "enabled": true,
-    "conditions": [
-      { "key": "contour_count", "op": ">",  "value": 2205.0 },
-      { "key": "mean_r",        "op": "<=", "value": 132.38 }
-    ]
+    "name": "poubelle_pleine_cntsup_rinf"
   },
   {
-    "name": "poubelle_vide_cntsup_rsup",
-    "message": "✅ Poubelle vide (beaucoup de contours, mean_r > 132.38)",
-    "enabled": true,
     "conditions": [
-      { "key": "contour_count", "op": ">", "value": 2205.0 },
-      { "key": "mean_r",        "op": ">", "value": 132.38 }
-    ]
+      {
+        "key": "contour_count",
+        "op": ">",
+        "value": 2205
+      },
+      {
+        "key": "mean_r",
+        "op": ">",
+        "value": 132.38
+      }
+    ],
+    "enabled": true,
+    "message": "✅ Poubelle vide (beaucoup de contours, mean_r > 132.38)",
+    "name": "poubelle_vide_cntsup_rsup"
   }
 ]
-
-

@@ -48,7 +48,7 @@ export default defineComponent({
           console.warn('🔁 Données ignorées : format invalide pour chart.js')
         }
       },
-      deep: true
+      deep: false
     }
   },
   methods: {
