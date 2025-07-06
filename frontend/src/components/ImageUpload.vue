@@ -84,17 +84,11 @@
 
 <script setup>
 import { useAuthStore } from '@/stores/auth'
-import { ref } from 'vue'
-import { onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+
 
 onMounted(() => {
   auth.restoreFromLocalStorage()
-})
-
-watch(() => auth.csrfToken, (val) => {
-  if (!val) {
-    message.value = "⚠️ Erreur d’authentification, veuillez vous reconnecter."
-  }
 })
 
 
