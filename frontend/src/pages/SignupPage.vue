@@ -59,7 +59,7 @@
               @blur="agentCodeFocused = false"
               aria-describedby="agentHelp"
             />
-            <p id="agentHelp" v-if="agentCode && !isValidAgentCode" class="text-xs text-red-500 mt-1">Format attendu : <b>AGP-xxxx</b></p>
+            <p id="agentHelp" v-if="agentCode && !isValidAgentCode" class="text-xs text-red-500 mt-1">Format attendu : <b>AGP-1234</b></p>
           </div>
           <!-- Email -->
           <div>
@@ -207,7 +207,8 @@ export default {
   },
   computed: {
     isValidAgentCode() {
-      return /^AGP-\d{4,6}$/i.test(this.agentCode)
+      // Doit correspondre au format validé côté serveur
+      return /^AGP-\d{4}$/i.test(this.agentCode)
     },
     isValidEmail() {
       return /^[a-z0-9._-]+@([a-z0-9-]+\.)?paris\.fr$/i.test(this.email)

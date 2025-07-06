@@ -66,7 +66,7 @@
             <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/>
           </svg>
           <p id="agentHelp" class="text-xs text-red-500 mt-1" v-if="agentCode && !isValidAgentCode">
-            Format attendu : <b>AGP-xxxx</b>
+            Format attendu : <b>AGP-1234</b>
           </p>
         </div>
 
@@ -271,7 +271,7 @@ export default {
       return /^AGP-\d{4}$/i.test(this.agentCode);
     },
     isValidEmail() {
-      return /^[a-z0-9._-]+@paris\.fr$/i.test(this.email);
+      return /^[a-z0-9._-]+@([a-z0-9-]+\.)?paris\.fr$/i.test(this.email);
     },
     isFormValid() {
       return this.isValidAgentCode && this.isValidEmail && this.password;

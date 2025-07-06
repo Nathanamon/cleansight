@@ -4,7 +4,8 @@ from datetime import timedelta
 from flask import Blueprint, request, jsonify, url_for, current_app
 from flask_jwt_extended import (
     create_access_token, create_refresh_token,
-    jwt_required, get_jwt_identity, unset_jwt_cookies
+    jwt_required, get_jwt_identity, unset_jwt_cookies,
+    set_access_cookies, set_refresh_cookies
 )
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
@@ -130,21 +131,10 @@ def login():
             "last_name": user.last_name,
         },
     )
-    # Cookie JWT
-    resp.set_cookie(
-        "access_token_cookie", access_token,
-        httponly=True,
-        secure=current_app.config.get("JWT_COOKIE_SECURE", False),
-        samesite=current_app.config.get("JWT_COOKIE_SAMESITE", 'Lax'),
-        max_age=int(expires.total_seconds())
-    )
-    resp.set_cookie(
-        "refresh_token_cookie", refresh_token,
-        httponly=True,
-        secure=current_app.config.get("JWT_COOKIE_SECURE", False),
-        samesite=current_app.config.get("JWT_COOKIE_SAMESITE", 'Lax'),
-        max_age=int(expires.total_seconds())
-    )
+    
+    # Utilise les helpers JWT pour définir aussi le cookie CSRF
+    set_access_cookies(resp, access_token, max_age=int(expires.total_seconds()))
+    set_refresh_cookies(resp, refresh_token, max_age=int(expires.total_seconds()))
     return resp, 200
 
 
@@ -155,13 +145,7 @@ def refresh():
     identity = get_jwt_identity()
     new_token = create_access_token(identity=identity, expires_delta=timedelta(hours=2))
     resp = jsonify(message="Token rafraîchi")
-    resp.set_cookie(
-        "access_token_cookie", new_token,
-        httponly=True,
-        secure=current_app.config.get("JWT_COOKIE_SECURE", False),
-        samesite=current_app.config.get("JWT_COOKIE_SAMESITE", 'Lax'),
-        max_age=2 * 3600
-    )
+    set_access_cookies(resp, new_token, max_age=2 * 3600)
     return resp, 200
 
 # ——— Déconnexion ——————————————————————————————————————————————————————

@@ -24,7 +24,14 @@ def create_app():
     # 3. CORS (toutes origines autorisées)
     CORS(
         app,
-        resources={r"/*": {"origins": "http://localhost:5173"}},  # votre front Vite
+        resources={
+           r"/*": {               
+               "origins": [
+                   "http://localhost:5173",
+                   "http://127.0.0.1:5173",
+               ]
+           }
+        },  # votre front Vite
         supports_credentials=True,
         allow_headers=["Content-Type"],
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -65,7 +72,8 @@ def create_app():
     app.register_blueprint(rules_bp)
     from routes.auth import auth_bp
 
-    app.register_blueprint(auth_bp, url_prefix="/auth")
+    # Blueprint auth already defines its prefix
+    app.register_blueprint(auth_bp)
 
     return app
 

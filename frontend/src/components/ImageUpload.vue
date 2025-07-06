@@ -86,6 +86,7 @@
 import { ref } from 'vue'
 
 const preview = ref(null)
+const fichier = ref(null)
 const prediction = ref(null)
 const annotation = ref(null)
 const loading = ref(false)
@@ -145,12 +146,13 @@ async function validate() {
 
   loading.value = true
   try {
-    // Get your JWT token from localStorage (or wherever you store it)
-    const token = localStorage.getItem('authToken')
+      const csrfToken = document.cookie
+      .split('; ')
+      .find(c => c.startsWith('csrf_access_token='))?.split('=')[1]
     const res = await fetch(import.meta.env.VITE_API_URL + '/validate', {
       method: 'POST',
       headers: {
-        'Authorization': token ? `Bearer ${token}` : undefined
+        'X-CSRF-Token': csrfToken
       },
       body: formData
     })
