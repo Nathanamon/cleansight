@@ -5,13 +5,27 @@
 </template>
 
 <script>
-import { defineComponent, nextTick } from 'vue'
+import { defineComponent, nextTick, toRaw } from 'vue'
 import { Chart, registerables } from 'chart.js'
 
 // Ensure Chart.js components are registered only once
 if (!Chart._cleansightRegistered) {
   Chart.register(...registerables)
   Chart._cleansightRegistered = true
+}
+
+function toPlain(value) {
+  if (Array.isArray(value)) {
+    return value.map(v => toPlain(toRaw(v)))
+  }
+  if (value && typeof value === 'object') {
+    const raw = toRaw(value)
+    return Object.keys(raw).reduce((acc, key) => {
+      acc[key] = toPlain(raw[key])
+      return acc
+    }, Array.isArray(raw) ? [] : {})
+  }
+  return value
 }
 
 export default defineComponent({
@@ -69,8 +83,9 @@ export default defineComponent({
         return
       }
 
-      const safeData = JSON.parse(JSON.stringify(this.data || {}))
-      const safeOptions = JSON.parse(JSON.stringify(this.options || {}))
+      const safeData = toPlain(this.data || {})
+      const safeOptions = toPlain(this.options || {})
+
 
 
       try {
@@ -100,7 +115,7 @@ export default defineComponent({
         return
       }
       try {
-        const safeData = JSON.parse(JSON.stringify(this.data || {}))
+        const safeData = toPlain(this.data || {})
         this.chart.data = safeData
         this.chart.update()
       } catch (err) {
