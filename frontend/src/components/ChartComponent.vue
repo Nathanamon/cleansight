@@ -100,7 +100,8 @@ export default defineComponent({
         return
       }
       try {
-        this.chart.data = this.data
+        const safeData = JSON.parse(JSON.stringify(this.data || {}))
+        this.chart.data = safeData
         this.chart.update()
       } catch (err) {
         console.error('⛔ ChartComponent: erreur lors de la mise à jour du graphique', err)
