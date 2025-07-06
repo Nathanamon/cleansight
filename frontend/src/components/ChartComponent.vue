@@ -73,16 +73,20 @@ export default defineComponent({
       const safeOptions = JSON.parse(JSON.stringify(this.options || {}))
 
 
-      this.chart = new Chart(ctx, {
-        type: this.type,
-        data: safeData,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          ...this.defaultOptions,
-          ...safeOptions
-        }
-      })
+      try {
+        this.chart = new Chart(ctx, {
+          type: this.type,
+          data: safeData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            ...this.defaultOptions,
+            ...safeOptions
+          }
+        })
+      } catch (err) {
+        console.error('⛔ ChartComponent: erreur lors de la création du graphique', err)
+      }
     },
     updateChart() {
      if (
@@ -95,8 +99,12 @@ export default defineComponent({
         console.warn('⛔ ChartComponent: Données invalides ou canvas détaché, update annulé.')
         return
       }
-      this.chart.data = this.data
-      this.chart.update()
+      try {
+        this.chart.data = this.data
+        this.chart.update()
+      } catch (err) {
+        console.error('⛔ ChartComponent: erreur lors de la mise à jour du graphique', err)
+      }
     }
   },
   computed: {
