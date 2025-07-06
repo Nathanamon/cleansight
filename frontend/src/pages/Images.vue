@@ -275,10 +275,34 @@ export default {
     downloadImage(image) {
       console.log('Télécharger image:', image);
     },
-    deleteImage(image) {
-      if (confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
-        const index = this.images.findIndex(img => img.id === image.id);
-        if (index > -1) this.images.splice(index, 1);
+    async deleteImage(image) {
+      if (!confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) {
+        return
+      }
+
+      const auth = useAuthStore()
+      const headers = {}
+      if (auth.csrfToken) {
+        headers['X-CSRF-Token'] = auth.csrfToken
+      }
+
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/images/${image.id}`,
+          {
+            method: 'DELETE',
+            credentials: 'include',
+            headers
+          }
+        )
+        if (res.ok) {
+          const index = this.images.findIndex(img => img.id === image.id)
+          if (index > -1) this.images.splice(index, 1)
+        } else {
+          console.error('Erreur suppression image:', res.status)
+        }
+      } catch (e) {
+        console.error('Erreur suppression image:', e)
       }
     },
     clearFilters() {

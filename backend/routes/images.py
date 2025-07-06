@@ -1,6 +1,7 @@
 # backend/routes/images.py
 
 from datetime import datetime
+import os
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -44,6 +45,29 @@ def get_images():
             "metadata":         img.metadata_json
         })
     return jsonify(data), 200
+
+
+@images_bp.route("/images/<int:image_id>", methods=["DELETE"])
+@jwt_required()
+def delete_image(image_id):
+    """Delete an uploaded image and its record."""
+    from app import db
+    from models.image import Image
+
+    user_id = get_jwt_identity()
+    img = Image.query.filter_by(id=image_id, user_id=user_id).first()
+    if img is None:
+        return jsonify({"error": "Image not found"}), 404
+
+    folder = current_app.config["UPLOAD_FOLDER"]
+    path = os.path.join(folder, img.filename)
+    if os.path.exists(path):
+        os.remove(path)
+
+    db.session.delete(img)
+    db.session.commit()
+
+    return jsonify({"message": "Image supprimée"}), 200
 
 
 @images_bp.route('/uploads/<path:filename>', methods=['GET'])

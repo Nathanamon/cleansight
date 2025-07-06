@@ -39,8 +39,7 @@ export default defineComponent({
   },
   async mounted() {
     await nextTick()
-    this.createChart()
-    // Force an initial resize in case the component was hidden on mount
+    await this.createChart()
     await nextTick()
     this.resizeChart()
     this.initResizeObserver()
@@ -76,7 +75,15 @@ export default defineComponent({
     }
   },
   methods: {
-    createChart() {
+    async waitForVisible() {
+      const el = this.$el
+      while (el && (el.offsetWidth === 0 || el.offsetHeight === 0)) {
+        await new Promise(resolve => requestAnimationFrame(resolve))
+      }
+    },
+    async createChart() {
+      await this.waitForVisible()
+
       if (this.chart?.destroy) {
         this.chart.destroy()
         this.chart = null
@@ -122,14 +129,29 @@ export default defineComponent({
         this.resizeObserver.observe(el)
       }
     },
-    updateChart() {
+    resizeChart() {
+      if (this.chart?.resize) {
+        this.chart.resize()
+      } else {
+        // Fallback: trigger global resize for Chart.js to recalculate dimensions
+        window.dispatchEvent(new Event('resize'))
+      }
+    },
+    initResizeObserver() {
+      const el = this.$el
+      if (typeof ResizeObserver !== 'undefined' && el) {
+        this.resizeObserver = new ResizeObserver(() => this.resizeChart())
+        this.resizeObserver.observe(el)
+      }
+    },
+    async updateChart() {
       if (!this.data || !Array.isArray(this.data.datasets)) {
         console.warn('⛔ ChartComponent: Données invalides, update annulé.')
         return
       }
 
       if (!this.chart) {
-        this.createChart()
+        await this.createChart()
         return
       }
 
@@ -139,6 +161,7 @@ export default defineComponent({
       }
 
       try {
+        await this.waitForVisible()
         const safeData = safeClone(this.data)
         this.chart.data = safeData
         this.chart.update()
