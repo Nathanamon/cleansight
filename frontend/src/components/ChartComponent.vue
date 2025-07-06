@@ -8,7 +8,11 @@
 import { defineComponent, nextTick } from 'vue'
 import { Chart, registerables } from 'chart.js'
 
-Chart.register(...registerables)
+// Ensure Chart.js components are registered only once
+if (!Chart._cleansightRegistered) {
+  Chart.register(...registerables)
+  Chart._cleansightRegistered = true
+}
 
 export default defineComponent({
   name: 'ChartComponent',
@@ -58,9 +62,10 @@ export default defineComponent({
         this.chart = null
       }
 
-      const ctx = this.$refs.canvas?.getContext('2d')
-      if (!ctx || !this.data || !Array.isArray(this.data.datasets)) {
-        console.warn('⛔ ChartComponent: Données invalides, création annulée.')
+      const canvas = this.$refs.canvas
+      const ctx = canvas?.getContext('2d')
+      if (!ctx || !canvas?.parentNode || !this.data || !Array.isArray(this.data.datasets)) {
+        console.warn('⛔ ChartComponent: Données invalides ou canvas introuvable, création annulée.')
         return
       }
 
@@ -80,8 +85,14 @@ export default defineComponent({
       })
     },
     updateChart() {
-      if (!this.chart || !this.data || !Array.isArray(this.data.datasets)) {
-        console.warn('⛔ ChartComponent: Données invalides, update annulé.')
+     if (
+        !this.chart ||
+        !this.chart.canvas ||
+        !this.chart.canvas.parentNode ||
+        !this.data ||
+        !Array.isArray(this.data.datasets)
+      ) {
+        console.warn('⛔ ChartComponent: Données invalides ou canvas détaché, update annulé.')
         return
       }
       this.chart.data = this.data

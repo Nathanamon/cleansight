@@ -55,6 +55,16 @@ const routes = [
     name: "Rules",
     component: () => import("./pages/Rules.vue"),
   },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: () => import("./pages/ProfilePage.vue"),
+  },
+  {
+    path: "/settings",
+    name: "Settings",
+    component: () => import("./pages/SettingsPage.vue"),
+  },
 ];
 
 const router = createRouter({
