@@ -584,6 +584,8 @@ classificationAccuracyOptions: {
         if (peak.ok) {
           this.peakHoursData = await peak.json()
         }
+        await this.$nextTick()
+        window.dispatchEvent(new Event('resize'))
       } catch (e) {
         console.error('Erreur chargement dashboard:', e)
       }
@@ -622,13 +624,20 @@ classificationAccuracyOptions: {
         this.isLoading = false;
       }
     },
-    updateChartData() {
-      fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}`)
-        .then(r => r.ok ? r.json() : null)
-        .then(d => { if (d) this.dailyData = d; });
-      fetch(`${import.meta.env.VITE_API_URL}/dashboard/weather_trash?days=${this.selectedPeriod}`)
-        .then(r => r.ok ? r.json() : null)
-        .then(d => { if (d) this.weatherData = d; });
+    async updateChartData() {
+      const [daily, weather] = await Promise.all([
+        fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}`),
+        fetch(`${import.meta.env.VITE_API_URL}/dashboard/weather_trash?days=${this.selectedPeriod}`)
+      ])
+
+      if (daily.ok) {
+        this.dailyData = await daily.json()
+      }
+      if (weather.ok) {
+        this.weatherData = await weather.json()
+      }
+      await this.$nextTick()
+      window.dispatchEvent(new Event('resize'))
     },
     handleViewImage(image) {
       console.log('Voir image:', image);

@@ -114,36 +114,8 @@ export default defineComponent({
         console.error('⛔ ChartComponent: erreur lors de la création du graphique', err)
       }
     },
-    resizeChart() {
-      if (this.chart?.resize) {
-        this.chart.resize()
-      } else {
-        // Fallback: trigger global resize for Chart.js to recalculate dimensions
-        window.dispatchEvent(new Event('resize'))
-      }
-    },
-    initResizeObserver() {
-      const el = this.$el
-      if (typeof ResizeObserver !== 'undefined' && el) {
-        this.resizeObserver = new ResizeObserver(() => this.resizeChart())
-        this.resizeObserver.observe(el)
-      }
-    },
-    resizeChart() {
-      if (this.chart?.resize) {
-        this.chart.resize()
-      } else {
-        // Fallback: trigger global resize for Chart.js to recalculate dimensions
-        window.dispatchEvent(new Event('resize'))
-      }
-    },
-    initResizeObserver() {
-      const el = this.$el
-      if (typeof ResizeObserver !== 'undefined' && el) {
-        this.resizeObserver = new ResizeObserver(() => this.resizeChart())
-        this.resizeObserver.observe(el)
-      }
-    },
+
+
     async updateChart() {
       if (!this.data || !Array.isArray(this.data.datasets)) {
         console.warn('⛔ ChartComponent: Données invalides, update annulé.')
