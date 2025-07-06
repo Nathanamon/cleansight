@@ -85,8 +85,13 @@
         </div>
       </div>
 
+      <!-- Empty state -->
+      <div v-if="totalImages === 0" class="text-center text-gray-500 py-10">
+        Aucune image disponible pour le moment.
+      </div>
+
       <!-- Grid View -->
-      <div v-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div v-if="viewMode === 'grid' && totalImages > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <div
           v-for="image in paginatedImages"
           :key="image.id"
@@ -151,7 +156,7 @@
       </div>
 
       <!-- Pagination -->
-      <div class="flex items-center justify-between">
+      <div v-if="totalImages > 0" class="flex items-center justify-between">
         <div class="text-sm text-gray-500">
           Affichage de {{ startIndex + 1 }} à {{ endIndex }} sur {{ totalImages }} images
         </div>

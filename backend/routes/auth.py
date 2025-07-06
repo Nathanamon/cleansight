@@ -5,7 +5,7 @@ from flask import Blueprint, request, jsonify, url_for, current_app
 from flask_jwt_extended import (
     create_access_token, create_refresh_token,
     jwt_required, get_jwt_identity, unset_jwt_cookies,
-    set_access_cookies, set_refresh_cookies
+    set_access_cookies, set_refresh_cookies, get_csrf_token
 )
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
@@ -136,6 +136,7 @@ def login():
             "first_name": user.first_name,
             "last_name": user.last_name,
         },
+        csrf_token=get_csrf_token(access_token)
     )
 
     
@@ -151,7 +152,10 @@ def login():
 def refresh():
     identity = get_jwt_identity()
     new_token = create_access_token(identity=identity, expires_delta=timedelta(hours=2))
-    resp = jsonify(message="Token rafraîchi")
+    resp = jsonify(
+        message="Token rafraîchi",
+        csrf_token=get_csrf_token(new_token)
+    )
     set_access_cookies(resp, new_token, max_age=2 * 3600)
     return resp, 200
 

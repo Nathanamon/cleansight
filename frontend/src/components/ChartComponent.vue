@@ -33,14 +33,17 @@ export default defineComponent({
   },
   data() {
     return {
-      chart: null
+      chart: null,
+      resizeObserver: null
     }
   },
   async mounted() {
     await nextTick()
     this.createChart()
     // Force an initial resize in case the component was hidden on mount
+    await nextTick()
     this.resizeChart()
+    this.initResizeObserver()
     window.addEventListener('resize', this.resizeChart)
   },
   beforeUnmount() {
@@ -49,6 +52,10 @@ export default defineComponent({
       this.chart = null
     }
     window.removeEventListener('resize', this.resizeChart)
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+      this.resizeObserver = null
+    }
   },
   watch: {
     data: {
@@ -108,6 +115,13 @@ export default defineComponent({
         window.dispatchEvent(new Event('resize'))
       }
     },
+    initResizeObserver() {
+      const el = this.$el
+      if (typeof ResizeObserver !== 'undefined' && el) {
+        this.resizeObserver = new ResizeObserver(() => this.resizeChart())
+        this.resizeObserver.observe(el)
+      }
+    },
     updateChart() {
       if (!this.data || !Array.isArray(this.data.datasets)) {
         console.warn('⛔ ChartComponent: Données invalides, update annulé.')
@@ -128,6 +142,7 @@ export default defineComponent({
         const safeData = safeClone(this.data)
         this.chart.data = safeData
         this.chart.update()
+        this.resizeChart()
       } catch (err) {
         console.error('⛔ ChartComponent: erreur lors de la mise à jour du graphique', err)
       }
