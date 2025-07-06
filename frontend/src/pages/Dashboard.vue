@@ -84,8 +84,8 @@
           <chart-component
             chart-id="dailyChart"
             type="line"
-            :data="dailyChartData"
-            :options="dailyChartOptions"
+            :data="rawDailyChartData"
+            :options="rawDailyChartOptions"
           />
         </div>
 
@@ -99,8 +99,8 @@
             v-if="districtChartData && districtChartData.datasets.length > 0"
             chart-id="districtChart"
             type="doughnut"
-            :data="districtChartData"
-            :options="districtChartOptions"
+            :data="rawDistrictChartData"
+            :options="rawDistrictChartOptions"
           />
         </div>
         <!-- Correlation Météo / Poubelles pleines -->
@@ -113,8 +113,8 @@
     v-if="weatherTrashChartData && weatherTrashChartData.datasets.length > 0"
     chart-id="weatherTrashChart"
     type="bar"
-    :data="weatherTrashChartData"
-    :options="weatherTrashChartOptions"
+    :data="rawWeatherTrashChartData"
+    :options="rawWeatherTrashChartOptions"
   />
 </div>
 <!-- Taux moyen de remplissage par arrondissement -->
@@ -127,8 +127,8 @@
     v-if="fillRateChartData && fillRateChartData.datasets.length > 0"
     chart-id="fillRateChart"
     type="bar"
-    :data="fillRateChartData"
-    :options="fillRateChartOptions"
+    :data="rawFillRateChartData"
+    :options="rawFillRateChartOptions"
   />
 </div>
 <!-- Heures de pic de remplissage -->
@@ -141,8 +141,8 @@
     v-if="peakHoursChartData && peakHoursChartData.datasets.length > 0"
     chart-id="peakHoursChart"
     type="radar"
-    :data="peakHoursChartData"
-    :options="peakHoursChartOptions"
+    :data="rawPeakHoursChartData"
+    :options="rawPeakHoursChartOptions"
   />
 </div>
 <!-- Fiabilité de la classification automatique -->
@@ -155,8 +155,8 @@
     v-if="classificationAccuracyData && classificationAccuracyData.datasets.length > 0"
     chart-id="accuracyChart"
     type="bar"
-    :data="classificationAccuracyData"
-    :options="classificationAccuracyOptions"
+    :data="rawClassificationAccuracyData"
+    :options="rawClassificationAccuracyOptions"
   />
 </div>
 
@@ -183,6 +183,15 @@ import Sidebar from '../components/Sidebar.vue'
 import StatCard from '../components/StatCard.vue'
 import ChartComponent from '../components/ChartComponent.vue'
 import RecentImages from '../components/RecentImages.vue'
+import { toRaw } from 'vue'
+
+function toRawClone(obj) {
+  try {
+    return JSON.parse(JSON.stringify(toRaw(obj)))
+  } catch {
+    return {}
+  }
+}
 
 
 export default {
@@ -366,6 +375,42 @@ classificationAccuracyOptions: {
     }
   },
   computed: {
+    rawDailyChartData() {
+      return toRawClone(this.dailyChartData)
+    },
+    rawDailyChartOptions() {
+      return toRawClone(this.dailyChartOptions)
+    },
+    rawDistrictChartData() {
+      return toRawClone(this.districtChartData)
+    },
+    rawDistrictChartOptions() {
+      return toRawClone(this.districtChartOptions)
+    },
+    rawClassificationAccuracyData() {
+      return toRawClone(this.classificationAccuracyData)
+    },
+    rawClassificationAccuracyOptions() {
+      return toRawClone(this.classificationAccuracyOptions)
+    },
+    rawWeatherTrashChartData() {
+      return toRawClone(this.weatherTrashChartData)
+    },
+    rawWeatherTrashChartOptions() {
+      return toRawClone(this.weatherTrashChartOptions)
+    },
+    rawFillRateChartData() {
+      return toRawClone(this.fillRateChartData)
+    },
+    rawFillRateChartOptions() {
+      return toRawClone(this.fillRateChartOptions)
+    },
+    rawPeakHoursChartData() {
+      return toRawClone(this.peakHoursChartData)
+    },
+    rawPeakHoursChartOptions() {
+      return toRawClone(this.peakHoursChartOptions)
+    },
     lastUpdate() {
       return new Date().toLocaleString('fr-FR');
     },

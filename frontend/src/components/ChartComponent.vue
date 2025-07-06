@@ -8,37 +8,20 @@
 import { defineComponent, nextTick, toRaw } from 'vue'
 import { Chart, registerables } from 'chart.js'
 
-// Ensure Chart.js components are registered only once
+// Enregistrement unique de Chart.js
 if (!Chart._cleansightRegistered) {
   Chart.register(...registerables)
   Chart._cleansightRegistered = true
 }
 
-function toPlain(value, seen = new Map()) {
-  if (value === null || typeof value !== 'object') {
-  
-  const result = Array.isArray(raw) ? [] : {}
-  seen.set(raw, result)
-
-  Object.keys(raw).forEach(key => {
-    result[key] = toPlain(raw[key], seen)
-  })
-
-  return result  }
-
-  const raw = toRaw(value)
-  if (seen.has(raw)) {
-    return seen.get(raw)
+// Utilitaire : conversion deep clone sécurisée
+function safeClone(obj) {
+  try {
+    return JSON.parse(JSON.stringify(toRaw(obj || {})))
+  } catch {
+    return {}
   }
-
-  const result = Array.isArray(raw) ? [] : {}
-  seen.set(raw, result)
-
-  Object.keys(raw).forEach(key => {
-    result[key] = toPlain(raw[key], seen)
-  })
-
-  return result}
+}
 
 export default defineComponent({
   name: 'ChartComponent',
@@ -58,7 +41,7 @@ export default defineComponent({
     this.createChart()
   },
   beforeUnmount() {
-    if (this.chart && typeof this.chart.destroy === 'function') {
+    if (this.chart?.destroy) {
       this.chart.destroy()
       this.chart = null
     }
@@ -66,7 +49,6 @@ export default defineComponent({
   watch: {
     data: {
       handler(newVal) {
-        // Validation stricte
         if (
           newVal &&
           typeof newVal === 'object' &&
@@ -78,12 +60,13 @@ export default defineComponent({
           console.warn('🔁 Données ignorées : format invalide pour chart.js')
         }
       },
-      deep: false
+      deep: false,
+      flush: 'post'
     }
   },
   methods: {
     createChart() {
-      if (this.chart && typeof this.chart.destroy === 'function') {
+      if (this.chart?.destroy) {
         this.chart.destroy()
         this.chart = null
       }
@@ -95,10 +78,8 @@ export default defineComponent({
         return
       }
 
-      const safeData = toPlain(this.data || {})
-      const safeOptions = toPlain(this.options || {})
-
-
+      const safeData = safeClone(this.data)
+      const safeOptions = safeClone(this.options)
 
       try {
         this.chart = new Chart(ctx, {
@@ -116,18 +97,23 @@ export default defineComponent({
       }
     },
     updateChart() {
-     if (
-        !this.chart ||
-        !this.chart.canvas ||
-        !this.chart.canvas.parentNode ||
-        !this.data ||
-        !Array.isArray(this.data.datasets)
-      ) {
-        console.warn('⛔ ChartComponent: Données invalides ou canvas détaché, update annulé.')
+      if (!this.data || !Array.isArray(this.data.datasets)) {
+        console.warn('⛔ ChartComponent: Données invalides, update annulé.')
         return
       }
+
+      if (!this.chart) {
+        this.createChart()
+        return
+      }
+
+      if (!this.chart.canvas?.parentNode) {
+        console.warn('⛔ ChartComponent: canvas détaché, update annulé.')
+        return
+      }
+
       try {
-        const safeData = toPlain(this.data || {})
+        const safeData = safeClone(this.data)
         this.chart.data = safeData
         this.chart.update()
       } catch (err) {
