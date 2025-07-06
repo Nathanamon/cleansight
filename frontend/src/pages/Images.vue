@@ -12,13 +12,13 @@
           <p class="text-gray-600 mt-1">Toutes les images uploadées des poubelles</p>
         </div>
         <div class="flex items-center space-x-4">
-          <button
+          <!-- <button
             @click="openUploadModal"
             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <i class="fas fa-upload mr-2"></i>
             Uploader des images
-          </button>
+          </button> -->
           <div class="flex border border-gray-300 rounded-lg overflow-hidden">
             <button
               @click="viewMode = 'grid'"
@@ -144,6 +144,13 @@
                 Télécharger
               </button>
               <button
+                @click.stop="markAsEmpty(image)"
+                class="text-green-600 hover:text-green-700 text-sm font-medium"
+              >
+                <i class="fas fa-check mr-1"></i>
+                Marquer vidée
+              </button>
+              <button
                 @click.stop="deleteImage(image)"
                 class="text-red-600 hover:text-red-700 text-sm font-medium"
               >
@@ -188,6 +195,7 @@
 <script>
 import Sidebar from '../components/Sidebar.vue'
 import StatusBadge from '../components/StatusBadge.vue'
+import { useAuthStore } from '@/stores/auth'
 
 export default {
   name: 'Images',
@@ -252,6 +260,7 @@ export default {
         })
         if (res.ok) {
           const data = await res.json()
+          console.log('Images chargées:', data)
           this.images = data.map(img => ({
             id: img.id,
             filename: img.filename,
@@ -274,6 +283,34 @@ export default {
     },
     downloadImage(image) {
       console.log('Télécharger image:', image);
+    },
+    async markAsEmpty(image) {
+      const auth = useAuthStore()
+      const headers = {
+        'Content-Type': 'application/json'
+      }
+      if (auth.csrfToken) {
+        headers['X-CSRF-Token'] = auth.csrfToken
+      }
+
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/images/${image.id}`,
+          {
+            method: 'PATCH',
+            credentials: 'include',
+            headers,
+            body: JSON.stringify({ annotation: 'vide' })
+          }
+        )
+        if (res.ok) {
+          image.status = 'vide'
+        } else {
+          console.error('Erreur mise à jour image:', res.status)
+        }
+      } catch (e) {
+        console.error('Erreur mise à jour image:', e)
+      }
     },
     async deleteImage(image) {
       if (!confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) {

@@ -222,6 +222,7 @@ def map_data():
     images = (
         Image.query
         .filter(Image.metadata_json.isnot(None))
+        .filter(Image.annotation != "vide")
         .order_by(Image.date_upload.desc())
         .all()
     )

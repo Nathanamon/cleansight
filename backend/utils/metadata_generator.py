@@ -1,17 +1,16 @@
 import random
 import requests
 from datetime import datetime
+import time
 
 # Clé API OpenWeatherMap
 OPENWEATHER_API_KEY = "eed36ed4831387893d10db8c5891a98d"
 
-# Générer des coordonnées GPS aléatoires dans Paris intra-muros
 def get_random_gps_in_paris():
     lat = random.uniform(48.815573, 48.902144)
     lon = random.uniform(2.224199, 2.469920)
     return {"lat": round(lat, 6), "lon": round(lon, 6)}
 
-# Obtenir la météo réelle à partir des coordonnées
 def get_weather(lat, lon):
     url = (
         f"https://api.openweathermap.org/data/2.5/weather?"
@@ -36,32 +35,40 @@ def get_weather(lat, lon):
         "wind_speed": None
     }
 
-# Reverse geocoding (facultatif) pour récupérer le nom du lieu
 def reverse_geocode(lat, lon):
-    url = f"https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json&zoom=16"
+    url = f"https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json&zoom=16&addressdetails=1"
     headers = {"User-Agent": "cleansight-bot/1.0"}
     try:
         response = requests.get(url, headers=headers, timeout=5)
         if response.status_code == 200:
             data = response.json()
-            return data.get("display_name", "Adresse inconnue")
+            address = data.get("display_name", "Adresse inconnue")
+            postcode = data.get("address", {}).get("postcode", "")
+            return address, postcode
     except Exception as e:
         print(f"[Erreur géocodage] {e}")
-    return "Adresse inconnue"
+    return "Adresse inconnue", ""
 
-# Fonction principale à appeler dans upload
 def generate_metadata():
-    coords = get_random_gps_in_paris()
-    lat, lon = coords["lat"], coords["lon"]
-    weather = get_weather(lat, lon)
-    address = reverse_geocode(lat, lon)
+    for _ in range(10):  # 10 essais max
+        coords = get_random_gps_in_paris()
+        lat, lon = coords["lat"], coords["lon"]
+        address, postcode = reverse_geocode(lat, lon)
+        
+        if postcode.startswith("750"):  # Valide pour Paris intra-muros
+            weather = get_weather(lat, lon)
+            return {
+                "timestamp": datetime.now().isoformat(),
+                "location": {
+                    "lat": lat,
+                    "lon": lon,
+                    "address": address
+                },
+                "weather": weather
+            }
 
-    return {
-        "timestamp": datetime.now().isoformat(),
-        "location": {
-            "lat": lat,
-            "lon": lon,
-            "address": address
-        },
-        "weather": weather
-    }
+        time.sleep(1)  # éviter de spammer l'API Nominatim
+
+    # Si aucun point valide trouvé
+    print("[Erreur] Aucune adresse Paris intra-muros trouvée après 10 essais.")
+    return None

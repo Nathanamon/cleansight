@@ -7,6 +7,7 @@
 <script>
 import { defineComponent, nextTick, toRaw } from 'vue'
 import { Chart, registerables } from 'chart.js'
+import isEqual from 'lodash/isEqual'
 
 // Enregistrement unique de Chart.js
 if (!Chart._cleansightRegistered) {
@@ -70,7 +71,7 @@ export default defineComponent({
           console.warn('🔁 Données ignorées : format invalide pour chart.js')
         }
       },
-      deep: false,
+      deep: true,
       flush: 'post'
     }
   },
@@ -117,31 +118,60 @@ export default defineComponent({
 
 
     async updateChart() {
-      if (!this.data || !Array.isArray(this.data.datasets)) {
-        console.warn('⛔ ChartComponent: Données invalides, update annulé.')
-        return
-      }
+  if (!this.data || !Array.isArray(this.data.datasets)) {
+    console.warn('⛔ ChartComponent: Données invalides, update annulé.')
+    return
+  }
 
-      if (!this.chart) {
-        await this.createChart()
-        return
-      }
+  if (!this.chart || !this.chart.canvas?.isConnected) {
+    console.warn('⛔ ChartComponent: chart manquant ou canvas déconnecté. Création forcée.')
+    await this.createChart()
+    return
+  }
 
-      if (!this.chart.canvas?.parentNode) {
-        console.warn('⛔ ChartComponent: canvas détaché, update annulé.')
-        return
-      }
+  try {
+    await this.waitForVisible()
 
-      try {
-        await this.waitForVisible()
-        const safeData = safeClone(this.data)
-        this.chart.data = safeData
-        this.chart.update()
-        this.resizeChart()
-      } catch (err) {
-        console.error('⛔ ChartComponent: erreur lors de la mise à jour du graphique', err)
-      }
+    const safeData = safeClone(this.data)
+
+    // Vérifie que labels et data sont cohérents
+    const isValid = (
+      Array.isArray(safeData.labels) &&
+      safeData.datasets.every(ds => Array.isArray(ds.data)) &&
+      safeData.datasets.every(ds => ds.data.length === safeData.labels.length)
+    )
+
+    if (!isValid) {
+      console.warn('⛔ ChartComponent: données invalides (longueurs incohérentes)')
+      return
     }
+
+    const hasChanged = !isEqual(this.chart.data.labels, safeData.labels) ||
+                       !isEqual(this.chart.data.datasets, safeData.datasets)
+
+    if (hasChanged) {
+      this.chart.data.labels = safeData.labels
+
+      // Mutation profonde des datasets pour préserver l'animation
+      this.chart.data.datasets.forEach((target, i) => {
+        const source = safeData.datasets[i]
+        if (source) {
+          Object.assign(target, source)
+        }
+      })
+
+      this.chart.update()
+      this.resizeChart()
+    } else {
+      console.log('📊 Données inchangées — aucune mise à jour nécessaire')
+    }
+
+  } catch (err) {
+    console.error('⛔ ChartComponent: erreur lors de updateChart', err)
+  }
+}
+
+
   },
   computed: {
     defaultOptions() {

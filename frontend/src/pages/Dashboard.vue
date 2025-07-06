@@ -82,6 +82,7 @@
             </select>
           </div>
           <chart-component
+            v-if="hasDailyData"
             chart-id="dailyChart"
             type="line"
             :data="rawDailyChartData"
@@ -89,6 +90,37 @@
           />
         </div>
 
+        <!-- Correlation Météo / Poubelles pleines -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-cloud-sun-rain mr-2 text-blue-500"></i>
+            Corrélation Météo / Poubelles pleines
+          </h3>
+          <chart-component
+            v-if="hasWeatherTrashData"
+            chart-id="weatherTrashChart"
+            type="bar"
+            :data="rawWeatherTrashChartData"
+            :options="rawWeatherTrashChartOptions"
+          />
+        </div>
+        
+        <!-- Heures de pic de remplissage -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-clock mr-2 text-orange-500"></i>
+            Heures de pic de remplissage
+          </h3>
+          <chart-component
+          v-if="hasPeakHoursData"
+          chart-id="peakHoursChart"
+          type="radar"
+          :data="rawPeakHoursChartData"
+          :options="rawPeakHoursChartOptions"
+          />
+        </div>
+        
+        
         <!-- District Distribution Chart -->
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">
@@ -96,73 +128,44 @@
             Répartition par arrondissements
           </h3>
           <chart-component
-            v-if="districtChartData && districtChartData.datasets.length > 0"
+            v-if="hasDistrictData"
             chart-id="districtChart"
             type="doughnut"
             :data="rawDistrictChartData"
             :options="rawDistrictChartOptions"
           />
+
         </div>
-        <!-- Correlation Météo / Poubelles pleines -->
-<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-  <h3 class="text-lg font-semibold text-gray-900 mb-4">
-    <i class="fas fa-cloud-sun-rain mr-2 text-blue-500"></i>
-    Corrélation Météo / Poubelles pleines
-  </h3>
-  <chart-component
-    v-if="weatherTrashChartData && weatherTrashChartData.datasets.length > 0"
-    chart-id="weatherTrashChart"
-    type="bar"
-    :data="rawWeatherTrashChartData"
-    :options="rawWeatherTrashChartOptions"
-  />
-</div>
-<!-- Taux moyen de remplissage par arrondissement -->
-<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-  <h3 class="text-lg font-semibold text-gray-900 mb-4">
-    <i class="fas fa-chart-bar mr-2 text-indigo-500"></i>
-    Taux moyen de remplissage par arrondissement
-  </h3>
-  <chart-component
-    v-if="fillRateChartData && fillRateChartData.datasets.length > 0"
-    chart-id="fillRateChart"
-    type="bar"
-    :data="rawFillRateChartData"
-    :options="rawFillRateChartOptions"
-  />
-</div>
-<!-- Heures de pic de remplissage -->
-<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-  <h3 class="text-lg font-semibold text-gray-900 mb-4">
-    <i class="fas fa-clock mr-2 text-orange-500"></i>
-    Heures de pic de remplissage
-  </h3>
-  <chart-component
-    v-if="peakHoursChartData && peakHoursChartData.datasets.length > 0"
-    chart-id="peakHoursChart"
-    type="radar"
-    :data="rawPeakHoursChartData"
-    :options="rawPeakHoursChartOptions"
-  />
-</div>
-<!-- Fiabilité de la classification automatique -->
-<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-  <h3 class="text-lg font-semibold text-gray-900 mb-4">
-    <i class="fas fa-robot mr-2"></i>
-    Fiabilité de la classification automatique
-  </h3>
-  <chart-component
-    v-if="classificationAccuracyData && classificationAccuracyData.datasets.length > 0"
-    chart-id="accuracyChart"
-    type="bar"
-    :data="rawClassificationAccuracyData"
-    :options="rawClassificationAccuracyOptions"
-  />
-</div>
+        
+        <!-- Taux moyen de remplissage par arrondissement -->
+        <!-- <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-chart-bar mr-2 text-indigo-500"></i>
+            Taux moyen de remplissage par arrondissement
+          </h3>
+          <chart-component
+            v-if="hasFillRateData"
+            chart-id="fillRateChart"
+            type="bar"
+            :data="rawFillRateChartData"
+            :options="rawFillRateChartOptions"
+          />
+        </div> -->
 
-
-
-
+        <!-- Fiabilité de la classification automatique -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-robot mr-2"></i>
+            Fiabilité de la classification automatique
+          </h3>
+          <chart-component
+            v-if="hasClassificationAccuracyData"
+            chart-id="accuracyChart"
+            type="bar"
+            :data="rawClassificationAccuracyData"
+            :options="rawClassificationAccuracyOptions"
+          />
+        </div>
       </div>
       
 
@@ -208,6 +211,7 @@ export default {
     return {
       isLoading: false,
       mapRefreshInterval: null,
+      chartRefreshInterval: null,
       selectedPeriod: '7',
       statistics: {
         totalImages: 0,
@@ -342,6 +346,53 @@ classificationAccuracyOptions: {
     }
   },
   computed: {
+    hasDailyData() {
+    return this.dailyData.labels.length > 0 &&
+           this.dailyData.full.length > 0 &&
+           this.dailyData.empty.length > 0
+    },
+hasWeatherTrashData() {
+  return (
+    Array.isArray(this.weatherData?.labels) &&
+    this.weatherData.labels.length > 0 &&
+    Array.isArray(this.weatherData.full) &&
+    this.weatherData.full.length > 0 &&
+    Array.isArray(this.weatherData.humidity) &&
+    this.weatherData.humidity.length > 0
+  )
+},
+hasPeakHoursData() {
+  return (
+    Array.isArray(this.peakHoursData?.labels) &&
+    this.peakHoursData.labels.length > 0 &&
+    Array.isArray(this.peakHoursData?.rate) &&
+    this.peakHoursData.rate.length > 0
+  )
+},
+hasDistrictData() {
+  const labels = this.districtChartData.labels
+  const data = this.districtChartData.datasets[0]?.data || []
+  return Array.isArray(labels) && labels.length > 0 && labels.length === data.length
+},
+hasFillRateData() {
+  const labels = this.fillRateChartData.labels || []
+  const data = this.fillRateChartData.datasets[0]?.data || []
+  return labels.length > 0 && labels.length === data.length
+},
+hasClassificationAccuracyData() {
+  const chartData = this.classificationAccuracyData
+  const labels = chartData.labels || []
+  const datasets = chartData.datasets || []
+
+  return (
+    labels.length > 0 &&
+    datasets.length === 2 &&
+    datasets.every(ds => ds.data.length === labels.length)
+  )
+},
+
+
+    
     rawDailyChartData() {
       return toRawClone(this.dailyChartData)
     },
@@ -390,32 +441,41 @@ classificationAccuracyOptions: {
       return [48.8566, 2.3522];
     },
     dailyChartData() {
-      if (!this.dailyData?.labels || !this.dailyData?.full || !this.dailyData?.empty) {
-        return { labels: [], datasets: [] }
-      }
+  const hasValidData =
+    Array.isArray(this.dailyData?.labels) &&
+    this.dailyData.labels.length > 0 &&
+    Array.isArray(this.dailyData.full) &&
+    this.dailyData.full.length > 0 &&
+    Array.isArray(this.dailyData.empty) &&
+    this.dailyData.empty.length > 0
 
-      return {
-        labels: this.dailyData.labels,
-        datasets: [
-          {
-            label: 'Poubelles Pleines',
-            data: this.dailyData.full,
-            borderColor: 'rgb(239, 68, 68)',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            tension: 0.4,
-            fill: true
-          },
-          {
-            label: 'Poubelles Vides',
-            data: this.dailyData.empty,
-            borderColor: 'rgb(34, 197, 94)',
-            backgroundColor: 'rgba(34, 197, 94, 0.1)',
-            tension: 0.4,
-            fill: true
-          }
-        ]
+  if (!hasValidData) {
+    return { labels: [], datasets: [] }
+  }
+
+  return {
+    labels: this.dailyData.labels,
+    datasets: [
+      {
+        label: 'Poubelles Pleines',
+        data: this.dailyData.full,
+        borderColor: 'rgb(239, 68, 68)',
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        tension: 0.4,
+        fill: true
+      },
+      {
+        label: 'Poubelles Vides',
+        data: this.dailyData.empty,
+        borderColor: 'rgb(34, 197, 94)',
+        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        tension: 0.4,
+        fill: true
       }
-    },
+    ]
+  }
+},
+
     dailyChartOptions() {
       return {
         interaction: {
@@ -432,37 +492,58 @@ classificationAccuracyOptions: {
       };
     },
     districtChartData() {
-      return {
-        labels: ['1er', '2ème', '3ème', '4ème', '5ème', '6ème', '7ème', '8ème', '9ème', '10ème'],
-        datasets: [{
-          data: [45, 32, 28, 67, 43, 39, 52, 61, 38, 29],
-          backgroundColor: [
-            '#EF4444', '#F97316', '#EAB308', '#22C55E', '#06B6D4',
-            '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#84CC16'
-          ],
-          borderWidth: 0,
-          hoverBorderWidth: 2,
-          hoverBorderColor: '#fff'
-        }]
-      };
-    },
+    const counts = {}
+
+    for (const bin of this.mapPoubelles) {
+      const address = bin.address || bin.location?.address || ""
+      const match = address.match(/75(\d{3})/)
+      if (match) {
+        const arrondissement = match[1]  // ex: '015' → 15e
+        counts[arrondissement] = (counts[arrondissement] || 0) + 1
+      }
+    }
+
+    // Tri par arrondissement numérique croissant
+    const sortedArr = Object.keys(counts).sort((a, b) => parseInt(a) - parseInt(b))
+
+    return {
+      labels: sortedArr.map(num => `${parseInt(num)}e`),
+      datasets: [{
+        data: sortedArr.map(num => counts[num]),
+        backgroundColor: [
+          '#EF4444', '#F97316', '#EAB308', '#22C55E', '#06B6D4',
+          '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#84CC16',
+          '#10B981', '#6366F1', '#D946EF', '#F43F5E', '#0EA5E9',
+          '#FACC15', '#4ADE80', '#14B8A6', '#A855F7', '#E11D48'
+        ],
+        borderWidth: 0
+      }]
+    }
+  },
     classificationAccuracyData() {
-      return {
-        labels: this.accuracyData.labels,
-        datasets: [
-          {
-            label: 'Correctement classées',
-            data: this.accuracyData.correct,
-            backgroundColor: 'rgba(132, 204, 22, 0.8)'
-          },
-          {
-            label: 'Corrigées manuellement',
-            data: this.accuracyData.incorrect,
-            backgroundColor: 'rgba(251, 191, 36, 0.8)'
-          }
-        ]
-      };
-    },
+  const labels = Array.isArray(this.accuracyData.labels) ? this.accuracyData.labels : []
+  const correct = Array.isArray(this.accuracyData.correct) ? this.accuracyData.correct : []
+  const incorrect = Array.isArray(this.accuracyData.incorrect) ? this.accuracyData.incorrect : []
+
+  const length = Math.min(labels.length, correct.length, incorrect.length)
+
+  return {
+    labels: labels.slice(0, length),
+    datasets: [
+      {
+        label: 'Correctement classées',
+        data: correct.slice(0, length).map(val => (typeof val === 'number' ? val : 0)),
+        backgroundColor: 'rgba(132, 204, 22, 0.8)'
+      },
+      {
+        label: 'Corrigées manuellement',
+        data: incorrect.slice(0, length).map(val => (typeof val === 'number' ? val : 0)),
+        backgroundColor: 'rgba(251, 191, 36, 0.8)'
+      }
+    ]
+  }
+},
+
      weatherTrashChartData() {
       return {
         labels: this.weatherData.labels,
@@ -483,17 +564,24 @@ classificationAccuracyOptions: {
       }
     },
     fillRateChartData() {
-      return {
-        labels: this.fillRateData.labels,
-        datasets: [
-          {
-            label: 'Taux de remplissage (%)',
-            data: this.fillRateData.rate,
-            backgroundColor: 'rgba(99, 102, 241, 0.6)'
-          }
-        ]
+  const labels = Array.isArray(this.fillRateData.labels) ? this.fillRateData.labels : []
+  const rates = Array.isArray(this.fillRateData.rate) ? this.fillRateData.rate : []
+
+  const sanitizedRates = rates.map(val => (typeof val === 'number' ? val : 0))
+  const length = Math.min(labels.length, sanitizedRates.length)
+
+  return {
+    labels: labels.slice(0, length),
+    datasets: [
+      {
+        label: 'Taux de remplissage (%)',
+        data: sanitizedRates.slice(0, length),
+        backgroundColor: 'rgba(99, 102, 241, 0.6)'
       }
-    },
+    ]
+  }
+},
+
     peakHoursChartData() {
       return {
         labels: this.peakHoursData.labels,
@@ -533,12 +621,19 @@ classificationAccuracyOptions: {
     // leaving the map empty for too long between updates
     this.mapRefreshInterval = setInterval(() => {
       this.loadMapData()
-    }, 30000)
+    }, 5000)
+    // Refresh chart data every 5 seconds
+    this.chartRefreshInterval = setInterval(() => {
+      this.loadDashboardData()
+    }, 5000)
   },
 
   beforeUnmount() {
     if (this.mapRefreshInterval) {
       clearInterval(this.mapRefreshInterval)
+    }
+    if (this.chartRefreshInterval) {
+      clearInterval(this.chartRefreshInterval)
     }
   },
 
@@ -595,12 +690,14 @@ classificationAccuracyOptions: {
         const res = await fetch(import.meta.env.VITE_API_URL + '/dashboard/map')
         if (res.ok) {
           const items = await res.json()
-          this.mapPoubelles = items.map(p => ({
-            ...p,
-            latitude: parseFloat(p.latitude),
-            longitude: parseFloat(p.longitude),
-            address: p.address || 'Adresse inconnue'
-          }))
+          this.mapPoubelles = items
+            .filter(p => p.etat !== 'vide')
+            .map(p => ({
+              ...p,
+              latitude: parseFloat(p.latitude),
+              longitude: parseFloat(p.longitude),
+              address: p.address || 'Adresse inconnue'
+            }))
         }
       } catch (e) {
         console.error('Erreur chargement carte:', e)

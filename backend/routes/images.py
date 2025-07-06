@@ -9,9 +9,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 images_bp = Blueprint("images", __name__)
 
 @images_bp.route("/images", methods=["GET"])
-@jwt_required()
 def get_images():
-    from app import db
     from models.image import Image
 
     # filtres
@@ -19,8 +17,7 @@ def get_images():
     df  = request.args.get("date_from")
     dt  = request.args.get("date_to")
 
-    user_id = get_jwt_identity()
-    q = Image.query.filter_by(user_id=user_id)
+    q = Image.query
     if ann in ("pleine", "vide"):
         q = q.filter_by(annotation=ann)
     if df:
@@ -68,6 +65,28 @@ def delete_image(image_id):
     db.session.commit()
 
     return jsonify({"message": "Image supprimée"}), 200
+
+@images_bp.route("/images/<int:image_id>", methods=["PATCH"])
+@jwt_required()
+def update_image(image_id):
+    """Update image annotation."""
+    from app import db
+    from models.image import Image
+
+    data = request.get_json() or {}
+    new_ann = data.get("annotation")
+    if new_ann not in ("pleine", "vide", "maintenance", "d\u00e9bordante"):
+        return jsonify({"error": "Annotation invalide"}), 400
+
+    user_id = get_jwt_identity()
+    img = Image.query.filter_by(id=image_id, user_id=user_id).first()
+    if img is None:
+        return jsonify({"error": "Image not found"}), 404
+
+    img.annotation = new_ann
+    db.session.commit()
+
+    return jsonify({"message": "Image mise \u00e0 jour"}), 200
 
 
 @images_bp.route('/uploads/<path:filename>', methods=['GET'])
