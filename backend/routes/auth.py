@@ -91,7 +91,12 @@ def signup():
 # ——— Connexion —————————————————————————————————————————————————————
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    data = request.get_json() or {}
+    try:
+        data = request.get_json(force=True)  # force = parse même si content-type est absent ou mauvais
+    except Exception as e:
+        current_app.logger.error(f"[LOGIN] Erreur parsing JSON: {e}")
+        return jsonify(error="Requête invalide (format JSON)"), 422
+
     email = (data.get("email") or "").strip().lower()
     password = data.get("password", "")
     agent_code = (data.get("agent_code") or "").strip().upper()
@@ -120,8 +125,9 @@ def login():
         expires = timedelta(hours=2)       # 2h sinon
 
     # Créer tokens
-    access_token = create_access_token(identity=user.id, expires_delta=expires)
-    refresh_token = create_refresh_token(identity=user.id, expires_delta=expires)
+    access_token = create_access_token(identity=str(user.id), expires_delta=expires)
+    refresh_token = create_refresh_token(identity=str(user.id), expires_delta=expires)
+
 
     resp = jsonify(
         message="Connecté",

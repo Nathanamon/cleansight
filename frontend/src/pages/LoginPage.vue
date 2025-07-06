@@ -311,6 +311,12 @@ export default {
       }
 
       try {
+        console.log("Payload envoyé : ", {
+          agent_code: this.agentCode,
+          email: this.email,
+          password: "[masqué]", // masqué pour sécurité
+          remember_me: this.remember
+        });
         const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
           method: "POST",
           credentials: "include",
@@ -322,7 +328,8 @@ export default {
             remember_me: this.remember
           })
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
+
 
         if (res.ok) {
           // Stocker un indicateur d'authentification simple
@@ -355,8 +362,13 @@ export default {
             );
           }, 1000);
         } else {
+          console.error("Login error", res.status, data);
           this.messageType = "error";
-          this.message = data.error || "Identifiants invalides";
+          this.message =
+            data.error ||
+            data.message ||
+            (Array.isArray(data.detail) ? data.detail[0]?.msg : null) ||
+            "Identifiants invalides";
         }
       } catch (err) {
         this.messageType = "error";
