@@ -45,6 +45,99 @@ def recent():
     return jsonify(data), 200
 
 
+@dashboard_bp.route("/weather_trash", methods=["GET"])
+def weather_trash():
+    """Return daily counts of full bins and average humidity."""
+    days = int(request.args.get("days", 5))
+    end_date = datetime.utcnow().date()
+    start_date = end_date - timedelta(days=days - 1)
+
+    images = Image.query.filter(Image.date_upload >= start_date).all()
+
+    data_map = {}
+    for img in images:
+        day = img.date_upload.date()
+        entry = data_map.setdefault(day, {"full": 0, "humidity_sum": 0, "cnt": 0})
+        if img.annotation == "pleine":
+            entry["full"] += 1
+        try:
+            humidity = img.metadata_json.get("weather", {}).get("humidity")
+        except AttributeError:
+            humidity = None
+        if humidity is not None:
+            entry["humidity_sum"] += float(humidity)
+            entry["cnt"] += 1
+
+    labels = []
+    full = []
+    humidity = []
+    current = start_date
+    while current <= end_date:
+        stats = data_map.get(current, {})
+        labels.append(current.isoformat())
+        full.append(stats.get("full", 0))
+        if stats.get("cnt"):
+            humidity.append(round(stats["humidity_sum"] / stats["cnt"], 2))
+        else:
+            humidity.append(0)
+        current += timedelta(days=1)
+
+    return jsonify({"labels": labels, "full": full, "humidity": humidity}), 200
+
+
+@dashboard_bp.route("/fill_rate", methods=["GET"])
+def fill_rate():
+    """Return average fill rate by city."""
+    images = Image.query.filter(Image.metadata_json.isnot(None)).all()
+    stats = {}
+    for img in images:
+        try:
+            addr = img.metadata_json.get("location", {}).get("address", "")
+            city = addr.split(",")[1].strip() if "," in addr else "?"
+        except Exception:
+            city = "?"
+        entry = stats.setdefault(city, {"total": 0, "full": 0})
+        entry["total"] += 1
+        if img.annotation == "pleine":
+            entry["full"] += 1
+
+    labels = []
+    rate = []
+    for city, val in stats.items():
+        labels.append(city)
+        r = round((val["full"] / val["total"] * 100), 2) if val["total"] else 0
+        rate.append(r)
+
+    return jsonify({"labels": labels, "rate": rate}), 200
+
+
+@dashboard_bp.route("/peak_hours", methods=["GET"])
+def peak_hours():
+    """Return fill rate per time slot."""
+    slots = [(0, 6), (6, 9), (9, 12), (12, 15), (15, 18), (18, 21), (21, 24)]
+    labels = []
+    rates = []
+    for start, end in slots:
+        total = (
+            db.session.query(func.count(Image.id))
+            .filter(func.extract("hour", Image.date_upload) >= start)
+            .filter(func.extract("hour", Image.date_upload) < end)
+            .scalar()
+        )
+        full = (
+            db.session.query(func.count(Image.id))
+            .filter(func.extract("hour", Image.date_upload) >= start)
+            .filter(func.extract("hour", Image.date_upload) < end)
+            .filter(Image.annotation == "pleine")
+            .scalar()
+        )
+        rate = round((full / total * 100), 2) if total else 0
+        labels.append(f"{start:02d}h-{end % 24:02d}h")
+        rates.append(rate)
+
+    return jsonify({"labels": labels, "rate": rates}), 200
+
+
 @dashboard_bp.route("/daily", methods=["GET"])
 def daily_stats():
     """Return counts of full and empty bins per day."""

@@ -218,23 +218,9 @@ export default {
       },
       dailyData: { labels: [], full: [], empty: [] },
       accuracyData: { labels: [], correct: [], incorrect: [] },
-      weatherTrashChartData: {
-  labels: ['01/07', '02/07', '03/07', '04/07', '05/07'],
-  datasets: [
-    {
-      label: 'Poubelles pleines',
-      data: [12, 8, 16, 20, 10],
-      backgroundColor: 'rgba(34, 197, 94, 0.6)',
-      yAxisID: 'y'
-    },
-    {
-      label: 'Pluie (mm)',
-      data: [5, 0, 15, 30, 2],
-      backgroundColor: 'rgba(59, 130, 246, 0.6)',
-      yAxisID: 'y1'
-    }
-  ]
-},
+      weatherData: { labels: [], full: [], humidity: [] },
+      fillRateData: { labels: [], rate: [] },
+      peakHoursData: { labels: [], rate: [] },
 weatherTrashChartOptions: {
   responsive: true,
   interaction: {
@@ -257,7 +243,7 @@ weatherTrashChartOptions: {
       position: 'right',
       title: {
         display: true,
-        text: 'Pluie (mm)'
+        text: 'Humidité (%)'
       },
       beginAtZero: true,
       grid: {
@@ -275,16 +261,7 @@ weatherTrashChartOptions: {
     }
   }
 },
-fillRateChartData: {
-  labels: ['3e', '7e', '10e', '13e', '15e', '17e', '18e', '19e'],
-  datasets: [
-    {
-      label: 'Taux de remplissage (%)',
-      data: [62, 75, 90, 68, 81, 50, 87, 72],
-      backgroundColor: 'rgba(99, 102, 241, 0.6)'
-    }
-  ]
-},
+
 fillRateChartOptions: {
   indexAxis: 'y',
   scales: {
@@ -308,18 +285,7 @@ fillRateChartOptions: {
     }
   }
 },
-peakHoursChartData: {
-  labels: ['00h-06h', '06h-09h', '09h-12h', '12h-15h', '15h-18h', '18h-21h', '21h-00h'],
-  datasets: [
-    {
-      label: 'Remplissage',
-      data: [20, 35, 65, 80, 70, 50, 30],
-      backgroundColor: 'rgba(249, 115, 22, 0.3)',
-      borderColor: 'rgb(249, 115, 22)',
-      pointBackgroundColor: 'rgb(249, 115, 22)'
-    }
-  ]
-},
+
 peakHoursChartOptions: {
   scales: {
     r: {
@@ -496,6 +462,51 @@ classificationAccuracyOptions: {
         ]
       };
     },
+     weatherTrashChartData() {
+      return {
+        labels: this.weatherData.labels,
+        datasets: [
+          {
+            label: 'Poubelles pleines',
+            data: this.weatherData.full,
+            backgroundColor: 'rgba(34, 197, 94, 0.6)',
+            yAxisID: 'y'
+          },
+          {
+            label: 'Humidité (%)',
+            data: this.weatherData.humidity,
+            backgroundColor: 'rgba(59, 130, 246, 0.6)',
+            yAxisID: 'y1'
+          }
+        ]
+      }
+    },
+    fillRateChartData() {
+      return {
+        labels: this.fillRateData.labels,
+        datasets: [
+          {
+            label: 'Taux de remplissage (%)',
+            data: this.fillRateData.rate,
+            backgroundColor: 'rgba(99, 102, 241, 0.6)'
+          }
+        ]
+      }
+    },
+    peakHoursChartData() {
+      return {
+        labels: this.peakHoursData.labels,
+        datasets: [
+          {
+            label: 'Remplissage',
+            data: this.peakHoursData.rate,
+            backgroundColor: 'rgba(249, 115, 22, 0.3)',
+            borderColor: 'rgb(249, 115, 22)',
+            pointBackgroundColor: 'rgb(249, 115, 22)'
+          }
+        ]
+      }
+    },
     districtChartOptions() {
       return {
         cutout: '60%',
@@ -549,6 +560,18 @@ classificationAccuracyOptions: {
         if (acc.ok) {
           this.accuracyData = await acc.json()
         }
+                const weather = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/weather_trash?days=${this.selectedPeriod}`)
+        if (weather.ok) {
+          this.weatherData = await weather.json()
+        }
+        const fill = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/fill_rate`)
+        if (fill.ok) {
+          this.fillRateData = await fill.json()
+        }
+        const peak = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/peak_hours`)
+        if (peak.ok) {
+          this.peakHoursData = await peak.json()
+        }
       } catch (e) {
         console.error('Erreur chargement dashboard:', e)
       }
@@ -591,6 +614,9 @@ classificationAccuracyOptions: {
       fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}`)
         .then(r => r.ok ? r.json() : null)
         .then(d => { if (d) this.dailyData = d; });
+      fetch(`${import.meta.env.VITE_API_URL}/dashboard/weather_trash?days=${this.selectedPeriod}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d) this.weatherData = d; });
     },
     handleViewImage(image) {
       console.log('Voir image:', image);
