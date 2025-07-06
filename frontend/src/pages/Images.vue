@@ -12,13 +12,6 @@
           <p class="text-gray-600 mt-1">Toutes les images uploadées des poubelles</p>
         </div>
         <div class="flex items-center space-x-4">
-          <!-- <button
-            @click="openUploadModal"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <i class="fas fa-upload mr-2"></i>
-            Uploader des images
-          </button> -->
           <div class="flex border border-gray-300 rounded-lg overflow-hidden">
             <button
               @click="viewMode = 'grid'"
@@ -131,7 +124,7 @@
           <div class="p-4">
             <div class="flex items-center justify-between mb-2">
               <h3 class="font-medium text-gray-900 truncate">{{ image.filename }}</h3>
-              <status-badge :status="image.status" size="xs" />
+              <StatusBadge :status="image.status" size="xs" />
             </div>
 
             <!-- Actions -->
@@ -192,176 +185,154 @@
 </template>
 
 
-<script>
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue'
 import Sidebar from '../components/Sidebar.vue'
 import StatusBadge from '../components/StatusBadge.vue'
 import { useAuthStore } from '@/stores/auth'
 
-export default {
-  name: 'Images',
-  components: {
-    Sidebar,
-    StatusBadge
-  },
-  data() {
-    return {
-      viewMode: 'grid',
-      searchQuery: '',
-      selectedStatus: '',
-      selectedDate: '',
-      currentPage: 1,
-      itemsPerPage: 12,
-      images: [], // This will be populated with images from the backend
-    }
-  },
-  computed: {
-    filteredImages() {
-      let filtered = this.images;
-      if (this.searchQuery) {
-        filtered = filtered.filter(image =>
-          image.filename.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          image.location.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
-      }
-      if (this.selectedStatus) {
-        filtered = filtered.filter(image => image.status === this.selectedStatus);
-      }
-      if (this.selectedDate) {
-        filtered = filtered.filter(image =>
-          image.uploadDate.startsWith(this.selectedDate)
-        );
-      }
-      return filtered;
-    },
-    totalImages() {
-      return this.filteredImages.length;
-    },
-    totalPages() {
-      return Math.ceil(this.totalImages / this.itemsPerPage);
-    },
-    startIndex() {
-      return (this.currentPage - 1) * this.itemsPerPage;
-    },
-    endIndex() {
-      return Math.min(this.startIndex + this.itemsPerPage, this.totalImages);
-    },
-    paginatedImages() {
-      return this.filteredImages.slice(this.startIndex, this.endIndex);
-    }
-  },
-  async mounted() {
-    await this.loadImages()
-  },
-  methods: {
-    async loadImages() {
-      try {
-        const res = await fetch(import.meta.env.VITE_API_URL + '/images', {
-          credentials: 'include'
-        })
-        if (res.ok) {
-          const data = await res.json()
-          console.log('Images chargées:', data)
-          this.images = data.map(img => ({
-            id: img.id,
-            filename: img.filename,
-            status: img.annotation,
-            location: 'Paris',
-            uploadDate: img.date_upload,
-            size: img.taille ? `${(img.taille / 1024).toFixed(0)} KB` : '',
-            thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${img.filename}`
-          }))
-        }
-      } catch (e) {
-        console.error('Erreur chargement images:', e)
-      }
-    },
-    openUploadModal() {
-      console.log('Ouvrir modal d\'upload');
-    },
-    openImageModal(image) {
-      console.log('Ouvrir modal d\'image:', image);
-    },
-    downloadImage(image) {
-      console.log('Télécharger image:', image);
-    },
-    async markAsEmpty(image) {
-      const auth = useAuthStore()
-      const headers = {
-        'Content-Type': 'application/json'
-      }
-      if (auth.csrfToken) {
-        headers['X-CSRF-Token'] = auth.csrfToken
-      }
+const viewMode = ref('grid')
+const searchQuery = ref('')
+const selectedStatus = ref('')
+const selectedDate = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 12
+const images = ref([])
 
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/images/${image.id}`,
-          {
-            method: 'PATCH',
-            credentials: 'include',
-            headers,
-            body: JSON.stringify({ annotation: 'vide' })
-          }
-        )
-        if (res.ok) {
-          image.status = 'vide'
-        } else {
-          console.error('Erreur mise à jour image:', res.status)
-        }
-      } catch (e) {
-        console.error('Erreur mise à jour image:', e)
-      }
-    },
-    async deleteImage(image) {
-      if (!confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) {
-        return
-      }
+const auth = useAuthStore()
 
-      const auth = useAuthStore()
-      const headers = {}
-      if (auth.csrfToken) {
-        headers['X-CSRF-Token'] = auth.csrfToken
-      }
-
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/images/${image.id}`,
-          {
-            method: 'DELETE',
-            credentials: 'include',
-            headers
-          }
-        )
-        if (res.ok) {
-          const index = this.images.findIndex(img => img.id === image.id)
-          if (index > -1) this.images.splice(index, 1)
-        } else {
-          console.error('Erreur suppression image:', res.status)
-        }
-      } catch (e) {
-        console.error('Erreur suppression image:', e)
-      }
-    },
-    clearFilters() {
-      this.searchQuery = '';
-      this.selectedStatus = '';
-      this.selectedDate = '';
-      this.currentPage = 1;
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages) this.currentPage++;
-    },
-    previousPage() {
-      if (this.currentPage > 1) this.currentPage--;
-    },
-    formatDate(dateString) {
-      return new Date(dateString).toLocaleString('fr-FR');
+async function loadImages() {
+  try {
+    const headers = {}
+    if (auth.csrfToken) {
+      headers['X-CSRF-Token'] = auth.csrfToken
     }
-  },
-  watch: {
-    filteredImages() {
-      this.currentPage = 1;
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/images`, {
+      credentials: 'include',
+      headers
+    })
+    if (res.ok) {
+      const data = await res.json()
+      console.log("aaa") // 👈
+      images.value = data.map(img => ({
+        id: img.id,
+        filename: img.filename,
+        status: img.annotation,
+        location: 'Paris',
+        uploadDate: img.date_upload,
+        size: img.taille ? `${(img.taille / 1024).toFixed(0)} KB` : '',
+        thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${encodeURIComponent(img.filename)}`
+      }))
     }
+  } catch (e) {
+    console.error('Erreur chargement images:', e)
   }
 }
+function openUploadModal() {
+  console.log("Ouvrir modal d'upload")
+}
+function openImageModal(image) {
+  console.log("Ouvrir modal d'image:", image)
+}
+function downloadImage(image) {
+  console.log('Télécharger image:', image)
+}
+
+async function markAsEmpty(image) {
+  const headers = { 'Content-Type': 'application/json' }
+  if (auth.csrfToken) {
+    headers['X-CSRF-Token'] = auth.csrfToken
+  }
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/images/${image.id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers,
+      body: JSON.stringify({ annotation: 'vide' })
+    })
+    if (res.ok) {
+      image.status = 'vide'
+    } else {
+      console.error('Erreur mise à jour image:', res.status)    
+
+      
+    }
+  } catch (e) {
+    console.error('Erreur mise à jour image:', e)
+  }
+}
+
+async function deleteImage(image) {
+  if (!confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) return
+
+  const headers = {}
+  if (auth.csrfToken) {
+    headers['X-CSRF-Token'] = auth.csrfToken
+  }
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/images/${image.id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers
+    })
+    if (res.ok) {
+      const index = images.value.findIndex(img => img.id === image.id)
+      if (index > -1) images.value.splice(index, 1)
+    } else {
+      console.error('Erreur suppression image:', res.status)
+    }
+  } catch (e) {
+    console.error('Erreur suppression image:', e)
+  }
+}
+
+function clearFilters() {
+  searchQuery.value = ''
+  selectedStatus.value = ''
+  selectedDate.value = ''
+  currentPage.value = 1
+}
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) currentPage.value++
+}
+function previousPage() {
+  if (currentPage.value > 1) currentPage.value--
+}
+function formatDate(dateString) {
+  return new Date(dateString).toLocaleString('fr-FR')
+}
+
+const filteredImages = computed(() => {
+  let filtered = images.value
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(img =>
+      img.filename.toLowerCase().includes(q) ||
+      img.location.toLowerCase().includes(q)
+    )
+  }
+  if (selectedStatus.value) {
+    filtered = filtered.filter(img => img.status === selectedStatus.value)
+  }
+  if (selectedDate.value) {
+    filtered = filtered.filter(img => img.uploadDate.startsWith(selectedDate.value))
+  }
+  return filtered
+})
+
+const totalImages = computed(() => filteredImages.value.length)
+const totalPages = computed(() => Math.ceil(totalImages.value / itemsPerPage))
+const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage)
+const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage, totalImages.value))
+const paginatedImages = computed(() => filteredImages.value.slice(startIndex.value, endIndex.value))
+
+watch(filteredImages, () => {
+  currentPage.value = 1
+})
+
+onMounted(() => {
+  if (auth.restoreFromLocalStorage) auth.restoreFromLocalStorage()
+  loadImages()
+})
 </script>
