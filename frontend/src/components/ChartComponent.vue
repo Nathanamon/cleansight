@@ -17,16 +17,28 @@ if (!Chart._cleansightRegistered) {
 function toPlain(value, seen = new Map()) {
   if (value === null || typeof value !== 'object') {
   
-    return value
-  }
+  const result = Array.isArray(raw) ? [] : {}
+  seen.set(raw, result)
+
+  Object.keys(raw).forEach(key => {
+    result[key] = toPlain(raw[key], seen)
+  })
+
+  return result  }
 
   const raw = toRaw(value)
   if (seen.has(raw)) {
     return seen.get(raw)
   }
 
-    return value
-}
+  const result = Array.isArray(raw) ? [] : {}
+  seen.set(raw, result)
+
+  Object.keys(raw).forEach(key => {
+    result[key] = toPlain(raw[key], seen)
+  })
+
+  return result}
 
 export default defineComponent({
   name: 'ChartComponent',
