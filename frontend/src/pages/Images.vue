@@ -12,6 +12,13 @@
           <p class="text-gray-600 mt-1">Toutes les images uploadées des poubelles</p>
         </div>
         <div class="flex items-center space-x-4">
+          <button
+            @click="openUploadModal"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <i class="fas fa-upload mr-2"></i>
+            Uploader des images
+          </button>
           <div class="flex border border-gray-300 rounded-lg overflow-hidden">
             <button
               @click="viewMode = 'grid'"
@@ -78,15 +85,10 @@
         </div>
       </div>
 
-      <!-- Empty state -->
-      <div v-if="totalImages === 0" class="text-center text-gray-500 py-10">
-        Aucune image disponible pour le moment.
-      </div>
-
       <!-- Grid View -->
-      <div v-if="viewMode === 'grid' && totalImages > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div v-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <div
-          v-for="image in paginatedImages"
+          v-for="image in filteredImages"
           :key="image.id"
           class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
           @click="openImageModal(image)"
@@ -124,7 +126,7 @@
           <div class="p-4">
             <div class="flex items-center justify-between mb-2">
               <h3 class="font-medium text-gray-900 truncate">{{ image.filename }}</h3>
-              <StatusBadge :status="image.status" size="xs" />
+              <status-badge :status="image.status" size="xs" />
             </div>
 
             <!-- Actions -->
@@ -135,13 +137,6 @@
               >
                 <i class="fas fa-download mr-1"></i>
                 Télécharger
-              </button>
-              <button
-                @click.stop="markAsEmpty(image)"
-                class="text-green-600 hover:text-green-700 text-sm font-medium"
-              >
-                <i class="fas fa-check mr-1"></i>
-                Marquer vidée
               </button>
               <button
                 @click.stop="deleteImage(image)"
@@ -156,7 +151,7 @@
       </div>
 
       <!-- Pagination -->
-      <div v-if="totalImages > 0" class="flex items-center justify-between">
+      <div class="flex items-center justify-between">
         <div class="text-sm text-gray-500">
           Affichage de {{ startIndex + 1 }} à {{ endIndex }} sur {{ totalImages }} images
         </div>
@@ -185,154 +180,144 @@
 </template>
 
 
-<script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+<script>
 import Sidebar from '../components/Sidebar.vue'
 import StatusBadge from '../components/StatusBadge.vue'
-import { useAuthStore } from '@/stores/auth'
 
-const viewMode = ref('grid')
-const searchQuery = ref('')
-const selectedStatus = ref('')
-const selectedDate = ref('')
-const currentPage = ref(1)
-const itemsPerPage = 12
-const images = ref([])
-
-const auth = useAuthStore()
-
-async function loadImages() {
-  try {
-    const headers = {}
-    if (auth.csrfToken) {
-      headers['X-CSRF-Token'] = auth.csrfToken
+export default {
+  name: 'Images',
+  components: {
+    Sidebar,
+    StatusBadge
+  },
+  data() {
+    return {
+      viewMode: 'grid',
+      searchQuery: '',
+      selectedStatus: '',
+      selectedDate: '',
+      currentPage: 1,
+      itemsPerPage: 12,
+      images: [
+        {
+          id: 1,
+          filename: 'poubelle_001.jpg',
+          status: 'pleine',
+          location: '15ème arrondissement',
+          uploadDate: '2025-07-02T10:30:00',
+          size: '2.3 MB',
+          thumbnail: null
+        },
+        {
+          id: 2,
+          filename: 'poubelle_002.jpg',
+          status: 'vide',
+          location: '7ème arrondissement',
+          uploadDate: '2025-07-02T09:15:00',
+          size: '1.8 MB',
+          thumbnail: null
+        },
+        {
+          id: 3,
+          filename: 'poubelle_003.jpg',
+          status: 'pleine',
+          location: '11ème arrondissement',
+          uploadDate: '2025-07-02T08:45:00',
+          size: '2.1 MB',
+          thumbnail: null
+        },
+        {
+          id: 4,
+          filename: 'poubelle_004.jpg',
+          status: 'vide',
+          location: '3ème arrondissement',
+          uploadDate: '2025-07-01T16:20:00',
+          size: '1.9 MB',
+          thumbnail: null
+        },
+        {
+          id: 5,
+          filename: 'poubelle_005.jpg',
+          status: 'maintenance',
+          location: '16ème arrondissement',
+          uploadDate: '2025-07-01T14:10:00',
+          size: '2.0 MB',
+          thumbnail: null
+        }
+      ]
     }
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/images`, {
-      credentials: 'include',
-      headers
-    })
-    if (res.ok) {
-      const data = await res.json()
-      console.log("aaa") // 👈
-      images.value = data.map(img => ({
-        id: img.id,
-        filename: img.filename,
-        status: img.annotation,
-        location: 'Paris',
-        uploadDate: img.date_upload,
-        size: img.taille ? `${(img.taille / 1024).toFixed(0)} KB` : '',
-        thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${encodeURIComponent(img.filename)}`
-      }))
+  },
+  computed: {
+    filteredImages() {
+      let filtered = this.images;
+      if (this.searchQuery) {
+        filtered = filtered.filter(image =>
+          image.filename.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          image.location.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      }
+      if (this.selectedStatus) {
+        filtered = filtered.filter(image => image.status === this.selectedStatus);
+      }
+      if (this.selectedDate) {
+        filtered = filtered.filter(image =>
+          image.uploadDate.startsWith(this.selectedDate)
+        );
+      }
+      return filtered;
+    },
+    totalImages() {
+      return this.filteredImages.length;
+    },
+    totalPages() {
+      return Math.ceil(this.totalImages / this.itemsPerPage);
+    },
+    startIndex() {
+      return (this.currentPage - 1) * this.itemsPerPage;
+    },
+    endIndex() {
+      return Math.min(this.startIndex + this.itemsPerPage, this.totalImages);
+    },
+    paginatedImages() {
+      return this.filteredImages.slice(this.startIndex, this.endIndex);
     }
-  } catch (e) {
-    console.error('Erreur chargement images:', e)
-  }
-}
-function openUploadModal() {
-  console.log("Ouvrir modal d'upload")
-}
-function openImageModal(image) {
-  console.log("Ouvrir modal d'image:", image)
-}
-function downloadImage(image) {
-  console.log('Télécharger image:', image)
-}
-
-async function markAsEmpty(image) {
-  const headers = { 'Content-Type': 'application/json' }
-  if (auth.csrfToken) {
-    headers['X-CSRF-Token'] = auth.csrfToken
-  }
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/images/${image.id}`, {
-      method: 'PATCH',
-      credentials: 'include',
-      headers,
-      body: JSON.stringify({ annotation: 'vide' })
-    })
-    if (res.ok) {
-      image.status = 'vide'
-    } else {
-      console.error('Erreur mise à jour image:', res.status)    
-
-      
+  },
+  methods: {
+    openUploadModal() {
+      console.log('Ouvrir modal d\'upload');
+    },
+    openImageModal(image) {
+      console.log('Ouvrir modal d\'image:', image);
+    },
+    downloadImage(image) {
+      console.log('Télécharger image:', image);
+    },
+    deleteImage(image) {
+      if (confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
+        const index = this.images.findIndex(img => img.id === image.id);
+        if (index > -1) this.images.splice(index, 1);
+      }
+    },
+    clearFilters() {
+      this.searchQuery = '';
+      this.selectedStatus = '';
+      this.selectedDate = '';
+      this.currentPage = 1;
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) this.currentPage++;
+    },
+    previousPage() {
+      if (this.currentPage > 1) this.currentPage--;
+    },
+    formatDate(dateString) {
+      return new Date(dateString).toLocaleString('fr-FR');
     }
-  } catch (e) {
-    console.error('Erreur mise à jour image:', e)
-  }
-}
-
-async function deleteImage(image) {
-  if (!confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) return
-
-  const headers = {}
-  if (auth.csrfToken) {
-    headers['X-CSRF-Token'] = auth.csrfToken
-  }
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/images/${image.id}`, {
-      method: 'DELETE',
-      credentials: 'include',
-      headers
-    })
-    if (res.ok) {
-      const index = images.value.findIndex(img => img.id === image.id)
-      if (index > -1) images.value.splice(index, 1)
-    } else {
-      console.error('Erreur suppression image:', res.status)
+  },
+  watch: {
+    filteredImages() {
+      this.currentPage = 1;
     }
-  } catch (e) {
-    console.error('Erreur suppression image:', e)
   }
 }
-
-function clearFilters() {
-  searchQuery.value = ''
-  selectedStatus.value = ''
-  selectedDate.value = ''
-  currentPage.value = 1
-}
-
-function nextPage() {
-  if (currentPage.value < totalPages.value) currentPage.value++
-}
-function previousPage() {
-  if (currentPage.value > 1) currentPage.value--
-}
-function formatDate(dateString) {
-  return new Date(dateString).toLocaleString('fr-FR')
-}
-
-const filteredImages = computed(() => {
-  let filtered = images.value
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(img =>
-      img.filename.toLowerCase().includes(q) ||
-      img.location.toLowerCase().includes(q)
-    )
-  }
-  if (selectedStatus.value) {
-    filtered = filtered.filter(img => img.status === selectedStatus.value)
-  }
-  if (selectedDate.value) {
-    filtered = filtered.filter(img => img.uploadDate.startsWith(selectedDate.value))
-  }
-  return filtered
-})
-
-const totalImages = computed(() => filteredImages.value.length)
-const totalPages = computed(() => Math.ceil(totalImages.value / itemsPerPage))
-const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage)
-const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage, totalImages.value))
-const paginatedImages = computed(() => filteredImages.value.slice(startIndex.value, endIndex.value))
-
-watch(filteredImages, () => {
-  currentPage.value = 1
-})
-
-onMounted(() => {
-  if (auth.restoreFromLocalStorage) auth.restoreFromLocalStorage()
-  loadImages()
-})
 </script>
