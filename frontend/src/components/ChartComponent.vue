@@ -14,18 +14,32 @@ if (!Chart._cleansightRegistered) {
   Chart._cleansightRegistered = true
 }
 
-function toPlain(value) {
-  if (Array.isArray(value)) {
-    return value.map(v => toPlain(toRaw(v)))
+function toPlain(value, seen = new Map()) {
+  if (value === null || typeof value !== 'object') {
+  
+  const result = Array.isArray(raw) ? [] : {}
+  seen.set(raw, result)
+
+  Object.keys(raw).forEach(key => {
+    result[key] = toPlain(raw[key], seen)
+  })
+
+  return result
   }
-  if (value && typeof value === 'object') {
-    const raw = toRaw(value)
-    return Object.keys(raw).reduce((acc, key) => {
-      acc[key] = toPlain(raw[key])
-      return acc
-    }, Array.isArray(raw) ? [] : {})
+
+  const raw = toRaw(value)
+  if (seen.has(raw)) {
+    return seen.get(raw)
   }
-  return value
+
+  const result = Array.isArray(raw) ? [] : {}
+  seen.set(raw, result)
+
+  Object.keys(raw).forEach(key => {
+    result[key] = toPlain(raw[key], seen)
+  })
+
+  return result
 }
 
 export default defineComponent({
