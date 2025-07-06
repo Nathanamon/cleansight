@@ -7,7 +7,6 @@ from flask_jwt_extended import (
     jwt_required, get_jwt_identity, unset_jwt_cookies,
     set_access_cookies, set_refresh_cookies
 )
-from flask_jwt_extended import get_csrf_token
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
@@ -137,7 +136,6 @@ def login():
             "first_name": user.first_name,
             "last_name": user.last_name,
         },
-        csrf_token=get_csrf_token(access_token)
     )
 
     

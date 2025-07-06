@@ -2,7 +2,7 @@
 import os
 from datetime import datetime
 from flask import Blueprint, request, jsonify, current_app
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from werkzeug.utils import secure_filename
 from app import db
 from models.image import Image
@@ -13,16 +13,14 @@ from utils.metadata_generator import generate_metadata
 validate_bp = Blueprint("validate", __name__)
 
 @validate_bp.route("/validate", methods=["POST"])
-@jwt_required()
 def validate():
+    verify_jwt_in_request(optional=True)
     if 'image' not in request.files or 'label' not in request.form:
         return jsonify({"error": "Image et label sont obligatoires"}), 400
 
     img_file = request.files['image']
     label    = request.form['label']
-    user_id  = get_jwt_identity()
-    if user_id is None:
-        return jsonify({"error": "Utilisateur non authentifié"}), 401
+    user_id = get_jwt_identity() if get_jwt_identity() is not None else None
     annotation_auto = request.form.get('annotation_auto') or request.form.get('prediction')
     fname    = secure_filename(img_file.filename)
 

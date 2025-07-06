@@ -84,7 +84,7 @@
 
 <script setup>
 import { useAuthStore } from '@/stores/auth'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 
 
 onMounted(() => {
@@ -99,6 +99,7 @@ function getCookie(name) {
 }
 
 const auth = useAuthStore()
+const isLoggedIn = computed(() => !!auth.csrfToken)
 const preview = ref(null)
 const fichier = ref(null)
 const prediction = ref(null)
@@ -162,17 +163,16 @@ async function validate() {
   loading.value = true
 
   try {
-    const csrfToken = auth.csrfToken;
-    if (!csrfToken) {
-      throw new Error("CSRF token manquant")
+    const headers = {}
+    const csrfToken = auth.csrfToken
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken
     }
 
     const res = await fetch(import.meta.env.VITE_API_URL + '/validate', {
       method: 'POST',
       credentials: 'include',
-      headers: {
-        'X-CSRF-Token': csrfToken
-      },
+      headers,
       body: formData
     })
 
