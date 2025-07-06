@@ -207,6 +207,7 @@ export default {
   data() {
     return {
       isLoading: false,
+      mapRefreshInterval: null,
       selectedPeriod: '7',
       statistics: {
         totalImages: 0,
@@ -528,6 +529,13 @@ classificationAccuracyOptions: {
   async mounted() {
     await this.loadDashboardData()
     await this.loadMapData()
+    this.mapRefreshInterval = setInterval(this.loadMapData, 60000)
+  },
+
+  beforeUnmount() {
+    if (this.mapRefreshInterval) {
+      clearInterval(this.mapRefreshInterval)
+    }
   },
 
   methods: {
