@@ -96,6 +96,7 @@
             Répartition par arrondissements
           </h3>
           <chart-component
+            v-if="districtChartData && districtChartData.datasets.length > 0"
             chart-id="districtChart"
             type="doughnut"
             :data="districtChartData"
@@ -109,6 +110,7 @@
     Corrélation Météo / Poubelles pleines
   </h3>
   <chart-component
+    v-if="weatherTrashChartData && weatherTrashChartData.datasets.length > 0"
     chart-id="weatherTrashChart"
     type="bar"
     :data="weatherTrashChartData"
@@ -122,6 +124,7 @@
     Taux moyen de remplissage par arrondissement
   </h3>
   <chart-component
+    v-if="fillRateChartData && fillRateChartData.datasets.length > 0"
     chart-id="fillRateChart"
     type="bar"
     :data="fillRateChartData"
@@ -135,6 +138,7 @@
     Heures de pic de remplissage
   </h3>
   <chart-component
+    v-if="peakHoursChartData && peakHoursChartData.datasets.length > 0"
     chart-id="peakHoursChart"
     type="radar"
     :data="peakHoursChartData"
@@ -148,6 +152,7 @@
     Fiabilité de la classification automatique
   </h3>
   <chart-component
+    v-if="classificationAccuracyData && classificationAccuracyData.datasets.length > 0"
     chart-id="accuracyChart"
     type="bar"
     :data="classificationAccuracyData"
@@ -178,7 +183,6 @@ import Sidebar from '../components/Sidebar.vue'
 import StatCard from '../components/StatCard.vue'
 import ChartComponent from '../components/ChartComponent.vue'
 import RecentImages from '../components/RecentImages.vue'
-import { map } from 'leaflet'
 
 
 export default {
@@ -374,7 +378,10 @@ classificationAccuracyOptions: {
       return [48.8566, 2.3522];
     },
     dailyChartData() {
-      
+      if (!this.dailyData?.labels || !this.dailyData?.full || !this.dailyData?.empty) {
+        return { labels: [], datasets: [] }
+      }
+
       return {
         labels: this.dailyData.labels,
         datasets: [
@@ -395,7 +402,7 @@ classificationAccuracyOptions: {
             fill: true
           }
         ]
-      };
+      }
     },
     dailyChartOptions() {
       return {

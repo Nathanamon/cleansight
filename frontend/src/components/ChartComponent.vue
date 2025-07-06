@@ -5,59 +5,87 @@
 </template>
 
 <script>
+import { defineComponent, nextTick } from 'vue'
 import { Chart, registerables } from 'chart.js'
+
 Chart.register(...registerables)
 
-export default {
+export default defineComponent({
   name: 'ChartComponent',
   props: {
     chartId: String,
     type: String,
     data: Object,
-    options: Object,
-    width: Number,
-    height: Number
+    options: Object
   },
   data() {
     return {
       chart: null
     }
   },
-  mounted() {
-    this.createChart();
+  async mounted() {
+    await nextTick()
+    this.createChart()
   },
   beforeUnmount() {
-    if (this.chart) this.chart.destroy();
+    if (this.chart && typeof this.chart.destroy === 'function') {
+      this.chart.destroy()
+      this.chart = null
+    }
   },
   watch: {
     data: {
-      handler() {
-        this.updateChart();
+      handler(newVal) {
+        // Validation stricte
+        if (
+          newVal &&
+          typeof newVal === 'object' &&
+          Array.isArray(newVal.datasets) &&
+          newVal.datasets.every(ds => Array.isArray(ds.data))
+        ) {
+          this.updateChart()
+        } else {
+          console.warn('🔁 Données ignorées : format invalide pour chart.js')
+        }
       },
       deep: true
     }
   },
   methods: {
     createChart() {
-      const ctx = this.$refs.canvas.getContext('2d');
-      if (ctx) {
-        this.chart = new Chart(ctx, {
-          type: this.type,
-          data: this.data,
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            ...this.defaultOptions,
-            ...this.options
-          }
-        });
+      if (this.chart && typeof this.chart.destroy === 'function') {
+        this.chart.destroy()
+        this.chart = null
       }
+
+      const ctx = this.$refs.canvas?.getContext('2d')
+      if (!ctx || !this.data || !Array.isArray(this.data.datasets)) {
+        console.warn('⛔ ChartComponent: Données invalides, création annulée.')
+        return
+      }
+
+      const safeData = JSON.parse(JSON.stringify(this.data || {}))
+      const safeOptions = JSON.parse(JSON.stringify(this.options || {}))
+
+
+      this.chart = new Chart(ctx, {
+        type: this.type,
+        data: safeData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          ...this.defaultOptions,
+          ...safeOptions
+        }
+      })
     },
     updateChart() {
-      if (this.chart) {
-        this.chart.data = this.data;
-        this.chart.update();
+      if (!this.chart || !this.data || !Array.isArray(this.data.datasets)) {
+        console.warn('⛔ ChartComponent: Données invalides, update annulé.')
+        return
       }
+      this.chart.data = this.data
+      this.chart.update()
     }
   },
   computed: {
@@ -72,7 +100,7 @@ export default {
             }
           }
         }
-      };
+      }
 
       if (this.type === 'line' || this.type === 'bar') {
         return {
@@ -86,11 +114,11 @@ export default {
               grid: { display: false }
             }
           }
-        };
+        }
       }
 
-      return baseOptions;
+      return baseOptions
     }
   }
-}
+})
 </script>

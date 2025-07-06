@@ -33,7 +33,7 @@ def create_app():
            }
         },  # votre front Vite
         supports_credentials=True,
-        allow_headers=["Content-Type"],
+        allow_headers=["Content-Type", "X-CSRF-Token"],
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     )
 

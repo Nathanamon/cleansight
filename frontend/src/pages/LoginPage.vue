@@ -249,6 +249,7 @@
 </template>
 
 <script>
+import { useAuthStore } from '@/stores/auth'
 export default {
   name: "LoginPage",
   data() {
@@ -302,6 +303,8 @@ export default {
     async handleLogin() {
       this.message = "";
       this.loading = true;
+      const auth = useAuthStore()
+
 
       if (!this.isFormValid) {
         this.message = "Merci de vérifier vos informations.";
@@ -328,39 +331,40 @@ export default {
             remember_me: this.remember
           })
         });
+
         const data = await res.json().catch(() => ({}));
 
 
         if (res.ok) {
-          // Stocker un indicateur d'authentification simple
-          localStorage.setItem('authToken', 'true');
-          localStorage.setItem(
-            'userData',
-            JSON.stringify({
-              email: data.user.email,
-              firstName: data.user.first_name,
-              lastName: data.user.last_name,
-            })
-          );
+          const auth = useAuthStore()
 
-          
-          this.messageType = "success";
-          this.message = "Connexion réussie !";
+          if (data.csrf_token) {
+            auth.login(
+              {
+                email: data.user.email,
+                firstName: data.user.first_name,
+                lastName: data.user.last_name,
+              },
+              data.csrf_token
+            )
+          }
+
+          this.messageType = "success"
+          this.message = "Connexion réussie !"
+
           setTimeout(() => {
-            this.$router.push("/dashboard");
-            window.dispatchEvent(
-              new CustomEvent('auth-changed', {
-                detail: {
-                  authenticated: true,
-                  user: {
-                    email: data.user.email,
-                    firstName: data.user.first_name,
-                    lastName: data.user.last_name,
-                  },
+            this.$router.push("/dashboard")
+            window.dispatchEvent(new CustomEvent('auth-changed', {
+              detail: {
+                authenticated: true,
+                user: {
+                  email: data.user.email,
+                  firstName: data.user.first_name,
+                  lastName: data.user.last_name,
                 },
-              })
-            );
-          }, 1000);
+              },
+            }))
+          }, 1000)
         } else {
           console.error("Login error", res.status, data);
           this.messageType = "error";

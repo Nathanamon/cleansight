@@ -83,8 +83,28 @@
 </template>
 
 <script setup>
+import { useAuthStore } from '@/stores/auth'
 import { ref } from 'vue'
+import { onMounted } from 'vue'
 
+onMounted(() => {
+  auth.restoreFromLocalStorage()
+})
+
+watch(() => auth.csrfToken, (val) => {
+  if (!val) {
+    message.value = "⚠️ Erreur d’authentification, veuillez vous reconnecter."
+  }
+})
+
+
+function getCookie(name) {
+  return document.cookie
+    .split('; ')
+    .find(c => c.startsWith(name + '='))?.split('=')[1] || null
+}
+
+const auth = useAuthStore()
 const preview = ref(null)
 const fichier = ref(null)
 const prediction = ref(null)
@@ -139,34 +159,39 @@ async function validate() {
     message.value = "Veuillez choisir une annotation."
     return
   }
+
   const formData = new FormData()
   formData.append('image', fichier.value)
   formData.append('label', annotation.value)
   formData.append('annotation_auto', prediction.value || '')
 
   loading.value = true
+
   try {
-      const csrfToken = document.cookie
-      .split('; ')
-      .find(c => c.startsWith('csrf_access_token='))?.split('=')[1]
+    const csrfToken = auth.csrfToken;
+    if (!csrfToken) {
+      throw new Error("CSRF token manquant")
+    }
+
     const res = await fetch(import.meta.env.VITE_API_URL + '/validate', {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'X-CSRF-Token': csrfToken
       },
       body: formData
     })
+
     if (res.ok) {
-      // Afficher le popup de confirmation
       showValidationPopup.value = true
-      // Réinitialiser le formulaire
       fichier.value = null
       preview.value = null
       prediction.value = null
       annotation.value = null
       message.value = ''
     } else {
-      message.value = "Erreur lors de l'enregistrement."
+      const data = await res.json().catch(() => ({}))
+      message.value = data?.error || "Erreur lors de l'enregistrement."
     }
   } catch (e) {
     message.value = "Erreur réseau."
@@ -175,6 +200,7 @@ async function validate() {
     loading.value = false
   }
 }
+
 </script>
 
 <style scoped>
