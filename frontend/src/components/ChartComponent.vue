@@ -39,12 +39,16 @@ export default defineComponent({
   async mounted() {
     await nextTick()
     this.createChart()
+    // Force an initial resize in case the component was hidden on mount
+    this.resizeChart()
+    window.addEventListener('resize', this.resizeChart)
   },
   beforeUnmount() {
     if (this.chart?.destroy) {
       this.chart.destroy()
       this.chart = null
     }
+    window.removeEventListener('resize', this.resizeChart)
   },
   watch: {
     data: {
@@ -94,6 +98,14 @@ export default defineComponent({
         })
       } catch (err) {
         console.error('⛔ ChartComponent: erreur lors de la création du graphique', err)
+      }
+    },
+    resizeChart() {
+      if (this.chart?.resize) {
+        this.chart.resize()
+      } else {
+        // Fallback: trigger global resize for Chart.js to recalculate dimensions
+        window.dispatchEvent(new Event('resize'))
       }
     },
     updateChart() {

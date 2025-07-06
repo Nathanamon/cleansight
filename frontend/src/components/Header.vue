@@ -255,6 +255,8 @@
 <script>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from "vue-router";
+import { useAuthStore } from '@/stores/auth'
+
 
 export default {
   name: "Header",
@@ -262,15 +264,11 @@ export default {
     const router = useRouter();
     const isMobileMenuOpen = ref(false);
     const isUserMenuOpen = ref(false);
-    
-    // États d'authentification (à connecter avec votre store/service d'auth)
-    const isAuthenticated = ref(false);
-    const user = ref({
-      name: '',
-      email: '',
-      firstName: '',
-      lastName: ''
-    });
+
+    const auth = useAuthStore();
+
+    const isAuthenticated = computed(() => !!auth.user);
+    const user = computed(() => auth.user || { name: '', email: '', firstName: '', lastName: '' });
 
     // Computed properties pour l'affichage utilisateur
     const userName = computed(() => {
@@ -293,25 +291,11 @@ export default {
       }
       return user.value.email ? user.value.email.charAt(0).toUpperCase() : 'U';
     });
+    // Méthodes d'authentification via le store
 
-    // Méthodes d'authentification (à adapter selon votre système)
-    const checkAuthStatus = () => {
-      // Exemple : vérifier le token dans localStorage ou appeler votre service d'auth
-      const token = localStorage.getItem('authToken');
-      const userData = localStorage.getItem('userData');
-      
-      if (token && userData) {
-        isAuthenticated.value = true;
-        user.value = JSON.parse(userData);
-      }
-    };
 
     const logout = () => {
-      // Nettoyer l'authentification
-      isAuthenticated.value = false;
-      user.value = { name: '', email: '', firstName: '', lastName: '' };
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
+      auth.logout();
       window.dispatchEvent(new CustomEvent('auth-changed', { detail: { authenticated: false } }));
       
       // Fermer les menus
@@ -378,13 +362,23 @@ export default {
         isUserMenuOpen.value = false;
       }
     };
-    
+
     const handleAuthChanged = (e) => {
-      setAuthenticationState(e.detail.authenticated, e.detail.user);
+      // If user data is provided, update the store directly to cover cases
+      // where localStorage hasn't been populated yet (e.g. login without CSRF token)
+      if (e?.detail?.authenticated && e.detail.user) {
+        auth.user = e.detail.user;
+        localStorage.setItem('userData', JSON.stringify(e.detail.user));
+        localStorage.setItem('authToken', 'true');
+      } else if (!e?.detail?.authenticated) {
+        auth.logout();
+      } else {
+        auth.restoreFromLocalStorage();
+      }
     };
 
     onMounted(() => {
-      checkAuthStatus();
+      auth.restoreFromLocalStorage();
       document.addEventListener('click', handleClickOutside);
       window.addEventListener('auth-changed', handleAuthChanged);
     });
@@ -394,13 +388,6 @@ export default {
       window.removeEventListener('auth-changed', handleAuthChanged);
     });
 
-    // Méthode publique pour mettre à jour l'état d'authentification
-    const setAuthenticationState = (authenticated, userData = null) => {
-      isAuthenticated.value = authenticated;
-      if (userData) {
-        user.value = userData;
-      }
-    };
 
     return {
       isMobileMenuOpen,
@@ -418,8 +405,8 @@ export default {
       toggleMobileMenu,
       toggleUserMenu,
       logout,
-      setAuthenticationState,
-      checkAuthStatus
+      // fonctions exposées pour compatibilité
+
     };
   },
 };
