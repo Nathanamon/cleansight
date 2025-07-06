@@ -529,7 +529,11 @@ classificationAccuracyOptions: {
   async mounted() {
     await this.loadDashboardData()
     await this.loadMapData()
-    this.mapRefreshInterval = setInterval(this.loadMapData, 60000)
+    // Refresh map data every 30s so new uploads appear quickly without
+    // leaving the map empty for too long between updates
+    this.mapRefreshInterval = setInterval(() => {
+      this.loadMapData()
+    }, 30000)
   },
 
   beforeUnmount() {
