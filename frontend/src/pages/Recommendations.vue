@@ -1,11 +1,7 @@
 <template>
   <div class="flex min-h-screen bg-gray-50">
-    <!-- Sidebar -->
     <Sidebar />
-
-    <!-- Main Content -->
     <div class="flex-1 p-6 mt-20 space-y-6 overflow-y-auto">
-      <!-- Page Header -->
       <div class="flex justify-between items-center">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">Recommandations IA</h1>
@@ -19,8 +15,16 @@
         </button>
       </div>
 
-      <!-- Recommendations List -->
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <!-- Empty State -->
+      <div v-if="recommendations.length === 0" class="text-gray-500 text-sm">
+        Aucune recommandation disponible pour le moment.
+      </div>
+
+      <!-- Dynamic Recommendations -->
+      <div
+        v-else
+        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+      >
         <RecommendationCard
           v-for="(rec, index) in recommendations"
           :key="index"
@@ -45,46 +49,80 @@ export default {
     RecommendationCard
   },
   data() {
-    return {
-      recommendations: [
-        {
-          title: 'Augmenter la fréquence de collecte dans le 15ème',
-          description: 'Plus de 32% des poubelles débordantes sont localisées dans cet arrondissement.',
-          icon: 'fas fa-map-marker-alt',
-          severity: 'high'
-        },
-        {
-          title: 'Planifier un entretien pour les bacs signalés en maintenance',
-          description: '5 bacs ont été marqués en maintenance depuis plus de 48h.',
-          icon: 'fas fa-tools',
-          severity: 'medium'
-        },
-        {
-          title: 'Optimiser la tournée du lundi matin',
-          description: 'Le taux de remplissage est faible le lundi. Une tournée tous les 2 lundis est suffisante.',
-          icon: 'fas fa-route',
-          severity: 'low'
-        },
-        {
-          title: 'Analyser l’augmentation soudaine d’uploads dans le 11ème',
-          description: 'Une hausse de 80% d’images uploadées a été détectée sur 3 jours.',
-          icon: 'fas fa-chart-line',
-          severity: 'medium'
-        },
-        {
-          title: 'Ajouter une poubelle rue de Vaugirard',
-          description: 'Zone à forte densité de dépôts sauvages détectés sur les dernières images.',
-          icon: 'fas fa-plus-square',
-          severity: 'high'
-        }
-      ]
-    };
-  },
-  methods: {
-    refreshRecommendations() {
-      console.log('Actualisation des recommandations IA...');
-      // API call à l'IA possible ici
+  return {
+    recommendations: [],
+    isLoading: false,
+    error: null
+  };
+},
+mounted() {
+  this.loadRecommendations();
+},
+methods: {
+  async loadRecommendations() {
+    this.isLoading = true;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/recommendations`);
+      if (!res.ok) throw new Error("Échec du chargement des recommandations");
+      const data = await res.json();
+      this.recommendations = data.map(rec => ({
+        title: rec.title,
+        description: rec.text || rec.description,
+        severity: rec.severity || 'medium',
+        icon: this.chooseIcon(rec.severity)
+      }));
+    } catch (err) {
+      this.error = err.message;
+    } finally {
+      this.isLoading = false;
     }
+  },
+  chooseIcon(severity) {
+    if (severity === 'high') return 'fas fa-exclamation-triangle';
+    if (severity === 'low') return 'fas fa-check-circle';
+    return 'fas fa-lightbulb';
+  }
+},
+
+  async mounted() {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/recommendations`);
+  if (res.ok) {
+    this.recommendations = await res.json();
+  } else {
+    console.error('Erreur chargement recommandations');
+  }
+},
+  methods: {
+    async refreshRecommendations() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/recommendations`)
+        if (res.ok) {
+          const data = await res.json()
+          this.recommendations = data
+        } else {
+          this.recommendations = []
+          console.warn('Erreur chargement recommandations :', res.status)
+        }
+      } catch (e) {
+        console.error('Erreur réseau recommandations :', e)
+        this.recommendations = []
+      }
+    },
+    async refreshRecommendations() {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/generate_recommendations`, {
+    method: "POST",
+  });
+  if (res.ok) {
+    this.fetchRecommendations(); // recharge le fichier JSON
+  } else {
+    console.error("Échec de génération");
+  }
+},
+async fetchRecommendations() {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/static/recommendations.json`);
+  this.recommendations = await res.json();
+}
+
   }
 }
 </script>

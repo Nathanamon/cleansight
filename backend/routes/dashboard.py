@@ -3,6 +3,9 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import func, case
 from app import db
 from models.image import Image
+import os
+import json
+
 
 # Blueprint for dashboard related endpoints
 dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
@@ -11,7 +14,7 @@ dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 def summary():
     """Return aggregate counts for the dashboard."""
     total_images = Image.query.count()
-    annotation_at_upload = func.coalesce(Image.annotation_auto, Image.annotation)
+    annotation_at_upload = func.coalesce(Image.annotation, Image.annotation_auto)
     empty_bins = db.session.query(func.count(Image.id)).filter(
         annotation_at_upload == "vide"
     ).scalar()
@@ -65,7 +68,7 @@ def weather_trash():
     for img in images:
         day = img.date_upload.date()
         entry = data_map.setdefault(day, {"full": 0, "humidity_sum": 0, "cnt": 0})
-        ann = img.annotation_auto if img.annotation_auto is not None else img.annotation
+        ann = img.annotation if img.annotation is not None else img.annotation_auto
         if ann == "pleine":
             entry["full"] += 1
         try:
@@ -106,7 +109,7 @@ def fill_rate():
             city = "?"
         entry = stats.setdefault(city, {"total": 0, "full": 0})
         entry["total"] += 1
-        ann = img.annotation_auto if img.annotation_auto is not None else img.annotation
+        ann = img.annotation if img.annotation is not None else img.annotation_auto
         if ann == "pleine":
             entry["full"] += 1
 
@@ -133,7 +136,7 @@ def peak_hours():
             .filter(func.extract("hour", Image.date_upload) < end)
             .scalar()
         )
-        annotation_at_upload = func.coalesce(Image.annotation_auto, Image.annotation)
+        annotation_at_upload = func.coalesce(Image.annotation, Image.annotation_auto)
         full = (
             db.session.query(func.count(Image.id))
             .filter(func.extract("hour", Image.date_upload) >= start)
@@ -155,7 +158,7 @@ def daily_stats():
     end_date = datetime.utcnow().date()
     start_date = end_date - timedelta(days=days - 1)
 
-    annotation_at_upload = func.coalesce(Image.annotation_auto, Image.annotation)
+    annotation_at_upload = func.coalesce(Image.annotation, Image.annotation_auto)
     results = (
         db.session.query(
             func.date(Image.date_upload).label("date"),
@@ -230,7 +233,7 @@ def classification_accuracy():
 @dashboard_bp.route("/map", methods=["GET"])
 def map_data():
     """Return list of trash bins with coordinates."""
-    annotation_at_upload = func.coalesce(Image.annotation_auto, Image.annotation)
+    annotation_at_upload = func.coalesce(Image.annotation, Image.annotation_auto)
     images = (
         Image.query
         .filter(Image.metadata_json.isnot(None))
@@ -262,3 +265,23 @@ def map_data():
                 "timestamp": img.date_upload.isoformat(),
             })
     return jsonify(data), 200
+
+@dashboard_bp.route("/recommendations", methods=["GET"])
+def get_recommendations():
+    try:
+        path = os.path.join(os.path.dirname(__file__), "..", "static", "recommendations.json")
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return jsonify(data), 200
+    except FileNotFoundError:
+        return jsonify([]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+@dashboard_bp.route("/generate_recommendations", methods=["POST"])
+def generate_recommendations():
+    try:
+        import subprocess
+        subprocess.run(["python", "utils/generate_recommendations.py"], check=True)
+        return jsonify({"message": "Recommandations générées avec succès"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
