@@ -138,7 +138,7 @@ def login():
         },
         csrf_token=get_csrf_token(access_token)
     )
-
+    # On ajoute les tokens dans la réponse
     
     # Utilise les helpers JWT pour définir aussi le cookie CSRF
     set_access_cookies(resp, access_token, max_age=int(expires.total_seconds()))

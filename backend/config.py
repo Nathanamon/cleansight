@@ -48,6 +48,7 @@ class Config:
     JWT_REFRESH_COOKIE_PATH = "/auth/refresh"
     JWT_COOKIE_CSRF_PROTECT = True  # Protection CSRF pour les cookies JWT
     JWT_CSRF_IN_COOKIES = False
+    
 
 
 

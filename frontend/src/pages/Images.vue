@@ -136,16 +136,6 @@
     Télécharger
   </button>
 
-  <!-- Afficher uniquement si status === 'pleine' -->
-  <button
-    v-if="image.status === 'pleine'"
-    @click.stop="markAsEmpty(image)"
-    class="text-green-600 hover:text-green-700 text-sm font-medium"
-  >
-    <i class="fas fa-check mr-1"></i>
-    Marquer vidée
-  </button>
-
   <button
     @click.stop="deleteImage(image)"
     class="text-red-600 hover:text-red-700 text-sm font-medium"
@@ -240,31 +230,6 @@ function openImageModal(image) {
 function downloadImage(image) {
   console.log('Télécharger image:', image)
 }
-
-async function markAsEmpty(image) {
-  try {
-    const headers = { 'Content-Type': 'application/json' }
-    if (auth.csrfToken) {
-      headers['X-CSRF-Token'] = auth.csrfToken
-    }
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/images/${image.id}`, {
-      method: 'PATCH',
-      credentials: 'include',
-      headers,
-      body: JSON.stringify({ annotation: 'vide' })
-    })
-
-    if (res.ok) {
-      image.status = 'vide'
-    } else {
-      const errorData = await res.json()
-      console.error('Erreur PATCH:', res.status, errorData)
-    }
-  } catch (e) {
-    console.error('Exception markAsEmpty:', e)
-  }
-}
-
 
 
 async function deleteImage(image) {
