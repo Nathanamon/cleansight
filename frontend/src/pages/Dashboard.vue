@@ -59,7 +59,11 @@
     <i class="fas fa-map-marked-alt mr-2 text-green-600"></i>
     Carte des poubelles
   </h3>
-  <TrashMap :poubelles="mapPoubelles" :center="mapCenter" />
+  <TrashMap
+    :poubelles="mapPoubelles"
+    :center="mapCenter"
+    @bin-emptied="handleBinEmptied"
+  />
 </div>
 
       <!-- Charts Section -->
@@ -747,6 +751,10 @@ hasClassificationAccuracyData() {
       if (index > -1) {
         this.recentImages.splice(index, 1);
       }
+    },
+    handleBinEmptied(id) {
+      const idx = this.mapPoubelles.findIndex(p => p.id === id)
+      if (idx > -1) this.mapPoubelles.splice(idx, 1)
     }
   }
 }

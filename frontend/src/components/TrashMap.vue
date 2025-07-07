@@ -16,6 +16,12 @@
             <p><strong>État :</strong> {{ p.etat }}</p>
             <p><strong>Adresse :</strong> {{ p.address || 'Adresse inconnue' }}</p>
             <p><strong>Heure :</strong> {{ formatDate(p.timestamp) }}</p>
+            <button
+              class="mt-2 bg-green-600 text-white px-3 py-1 rounded text-xs"
+              @click="markAsEmpty(p)"
+            >
+              Marquer vidée
+            </button>
           </div>
         </l-popup>
 
@@ -39,6 +45,7 @@
 </template>
 
 <script setup>
+import { useAuthStore } from '@/stores/auth'
 import { LMap, LTileLayer, LMarker, LPopup, LCircle } from '@vue-leaflet/vue-leaflet'
 import L from 'leaflet'
 import { computed } from 'vue'
@@ -61,7 +68,29 @@ const props = defineProps({
 })
 
 const { poubelles, center, zoom } = toRefs(props)
+const emit = defineEmits(['bin-emptied'])
+const auth = useAuthStore()
 
+async function markAsEmpty(bin) {
+  const headers = { 'Content-Type': 'application/json' }
+  if (auth.csrfToken) headers['X-CSRF-Token'] = auth.csrfToken
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/images/${bin.id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers,
+      body: JSON.stringify({ annotation: 'vide' })
+    })
+    if (res.ok) {
+      emit('bin-emptied', bin.id)
+    } else {
+      console.error('Erreur mise à jour:', res.status)
+    }
+  } catch (e) {
+    console.error('Erreur réseau:', e)
+  }
+}
 
 
 // Constantes Leaflet
