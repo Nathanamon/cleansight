@@ -58,7 +58,8 @@
             <option value="">Tous les statuts</option>
             <option value="pleine">Poubelles pleines</option>
             <option value="vide">Poubelles vides</option>
-            <option value="maintenance">En maintenance</option>
+            <option value="vidée">Poubelles vidées</option>
+            <!-- <option value="maintenance">En maintenance</option> -->
           </select>
 
           <!-- Date Filter -->

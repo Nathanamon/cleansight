@@ -51,6 +51,13 @@
           icon-bg-color="bg-red-500"
           :trend="statistics.fullTrend"
         />
+        <stat-card
+          title="Poubelles vidées"
+          :value="statistics.emptiedBins"
+          icon="fas fa-trash-alt"
+          icon-bg-color="bg-indigo-500"
+          :trend="statistics.emptiedTrend"
+        />
       </div>
 
       <!-- Trash Map Section -->
@@ -221,8 +228,10 @@ export default {
         totalImages: 0,
         emptyBins: 0,
         fullBins: 0,
+        emptiedBins: 0,
         imagesTrend: 0,
         emptyTrend: 0,
+        emptiedTrend: 0,
         fullTrend: 0
       },
       dailyData: { labels: [], full: [], empty: [] },
@@ -650,6 +659,7 @@ hasClassificationAccuracyData() {
           this.statistics.totalImages = data.total_images
           this.statistics.emptyBins = data.empty_bins
           this.statistics.fullBins = data.full_bins
+          this.statistics.emptiedBins = data.emptied_bins || 0
         }
         const rec = await fetch(import.meta.env.VITE_API_URL + '/dashboard/recent')
         if (rec.ok) {
@@ -695,7 +705,7 @@ hasClassificationAccuracyData() {
         if (res.ok) {
           const items = await res.json()
           this.mapPoubelles = items
-            .filter(p => p.etat !== 'vide')
+            .filter(p => p.etat !== 'vide' && p.etat !== 'vidée')
             .map(p => ({
               ...p,
               latitude: parseFloat(p.latitude),

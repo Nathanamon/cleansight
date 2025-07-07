@@ -72,7 +72,7 @@ def update_image(image_id):
 
     data = request.get_json() or {}
     new_ann = data.get("annotation")
-    if new_ann not in ("pleine", "vide", "maintenance", "débordante"):
+    if new_ann not in ("pleine", "vide","vidée", "maintenance", "débordante"):
         return jsonify({"error": "Annotation invalide"}), 400
 
     img = Image.query.filter_by(id=image_id).first()

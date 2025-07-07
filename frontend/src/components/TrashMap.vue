@@ -80,7 +80,7 @@ async function markAsEmpty(bin) {
       method: 'PATCH',
       credentials: 'same-origin',
       headers,
-      body: JSON.stringify({ annotation: 'vide' })
+      body: JSON.stringify({ annotation: 'vidée' })
     })
     if (res.ok) {
       emit('bin-emptied', bin.id)
@@ -101,7 +101,7 @@ const tileAttribution = '&copy; OpenStreetMap contributors'
 
 // Couleurs selon état
 const getColor = (etat) => {
-  if (etat === 'vide') return '#5DBB4E'
+  if (etat === 'vide' || etat === 'vidée') return '#5DBB4E'
   if (etat === 'pleine') return '#F77F38'
   if (etat === 'débordante') return '#E3342F'
   return 'gray'

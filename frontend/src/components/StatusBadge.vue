@@ -12,7 +12,7 @@ export default {
     status: {
       type: String,
       required: true,
-      validator: (value) => ['pleine', 'vide', 'maintenance', 'erreur'].includes(value)
+      validator: (value) => ['pleine', 'vide', 'vidée', 'maintenance', 'erreur'].includes(value)
     },
     showIcon: {
       type: Boolean,
@@ -34,6 +34,11 @@ export default {
         },
         vide: {
           text: 'Vide',
+          classes: 'bg-green-100 text-green-800 border-green-200',
+          icon: 'fas fa-check-circle'
+        },
+        vidée: {
+          text: 'Vidée',
           classes: 'bg-green-100 text-green-800 border-green-200',
           icon: 'fas fa-check-circle'
         },

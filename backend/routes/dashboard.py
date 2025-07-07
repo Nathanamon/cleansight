@@ -13,10 +13,12 @@ def summary():
     total_images = Image.query.count()
     empty_bins = Image.query.filter_by(annotation="vide").count()
     full_bins = Image.query.filter_by(annotation="pleine").count()
+    emptied_bins = Image.query.filter_by(annotation="vidée").count()
     return jsonify({
         "total_images": total_images,
         "empty_bins": empty_bins,
         "full_bins": full_bins,
+        "emptied_bins": emptied_bins,
     }), 200
 
 @dashboard_bp.route("/recent", methods=["GET"])
