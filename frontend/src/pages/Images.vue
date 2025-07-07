@@ -243,12 +243,14 @@ function downloadImage(image) {
 
 async function markAsEmpty(image) {
   try {
+    const headers = { 'Content-Type': 'application/json' }
+    if (auth.csrfToken) {
+      headers['X-CSRF-Token'] = auth.csrfToken
+    }
     const res = await fetch(`${import.meta.env.VITE_API_URL}/images/${image.id}`, {
       method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${auth.jwtToken}`,  // IMPORTANT
-        'Content-Type': 'application/json'
-      },
+      credentials: 'include',
+      headers,
       body: JSON.stringify({ annotation: 'vide' })
     })
 
