@@ -128,28 +128,32 @@
 
             <!-- Actions -->
             <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-              <button
-                @click.stop="downloadImage(image)"
-                class="text-blue-600 hover:text-blue-700 text-sm font-medium"
-              >
-                <i class="fas fa-download mr-1"></i>
-                Télécharger
-              </button>
-              <button
-                @click.stop="markAsEmpty(image)"
-                class="text-green-600 hover:text-green-700 text-sm font-medium"
-              >
-                <i class="fas fa-check mr-1"></i>
-                Marquer vidée
-              </button>
-              <button
-                @click.stop="deleteImage(image)"
-                class="text-red-600 hover:text-red-700 text-sm font-medium"
-              >
-                <i class="fas fa-trash mr-1"></i>
-                Supprimer
-              </button>
-            </div>
+  <button
+    @click.stop="downloadImage(image)"
+    class="text-blue-600 hover:text-blue-700 text-sm font-medium"
+  >
+    <i class="fas fa-download mr-1"></i>
+    Télécharger
+  </button>
+
+  <!-- Afficher uniquement si status === 'pleine' -->
+  <button
+    v-if="image.status === 'pleine'"
+    @click.stop="markAsEmpty(image)"
+    class="text-green-600 hover:text-green-700 text-sm font-medium"
+  >
+    <i class="fas fa-check mr-1"></i>
+    Marquer vidée
+  </button>
+
+  <button
+    @click.stop="deleteImage(image)"
+    class="text-red-600 hover:text-red-700 text-sm font-medium"
+  >
+    <i class="fas fa-trash mr-1"></i>
+    Supprimer
+  </button>
+</div>
           </div>
         </div>
       </div>
@@ -238,26 +242,28 @@ function downloadImage(image) {
 }
 
 async function markAsEmpty(image) {
-  const headers = { 'Content-Type': 'application/json' }
-  if (auth.csrfToken) {
-    headers['X-CSRF-Token'] = auth.csrfToken
-  }
   try {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/images/${image.id}`, {
       method: 'PATCH',
-      credentials: 'include',
-      headers,
+      headers: {
+        'Authorization': `Bearer ${auth.jwtToken}`,  // IMPORTANT
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ annotation: 'vide' })
     })
+
     if (res.ok) {
       image.status = 'vide'
     } else {
-      console.error('Erreur mise à jour image:', res.status)    
+      const errorData = await res.json()
+      console.error('Erreur PATCH:', res.status, errorData)
     }
   } catch (e) {
-    console.error('Erreur mise à jour image:', e)
+    console.error('Exception markAsEmpty:', e)
   }
 }
+
+
 
 async function deleteImage(image) {
   if (!confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) return
