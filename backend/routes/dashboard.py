@@ -11,8 +11,13 @@ dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 def summary():
     """Return aggregate counts for the dashboard."""
     total_images = Image.query.count()
-    empty_bins = Image.query.filter_by(annotation="vide").count()
-    full_bins = Image.query.filter_by(annotation="pleine").count()
+    annotation_at_upload = func.coalesce(Image.annotation_auto, Image.annotation)
+    empty_bins = db.session.query(func.count(Image.id)).filter(
+        annotation_at_upload == "vide"
+    ).scalar()
+    full_bins = db.session.query(func.count(Image.id)).filter(
+        annotation_at_upload == "pleine"
+    ).scalar()
     emptied_bins = Image.query.filter_by(annotation="vidée").count()
     return jsonify({
         "total_images": total_images,
@@ -60,7 +65,8 @@ def weather_trash():
     for img in images:
         day = img.date_upload.date()
         entry = data_map.setdefault(day, {"full": 0, "humidity_sum": 0, "cnt": 0})
-        if img.annotation == "pleine":
+        ann = img.annotation_auto if img.annotation_auto is not None else img.annotation
+        if ann == "pleine":
             entry["full"] += 1
         try:
             humidity = img.metadata_json.get("weather", {}).get("humidity")
@@ -100,7 +106,8 @@ def fill_rate():
             city = "?"
         entry = stats.setdefault(city, {"total": 0, "full": 0})
         entry["total"] += 1
-        if img.annotation == "pleine":
+        ann = img.annotation_auto if img.annotation_auto is not None else img.annotation
+        if ann == "pleine":
             entry["full"] += 1
 
     labels = []
@@ -126,11 +133,12 @@ def peak_hours():
             .filter(func.extract("hour", Image.date_upload) < end)
             .scalar()
         )
+        annotation_at_upload = func.coalesce(Image.annotation_auto, Image.annotation)
         full = (
             db.session.query(func.count(Image.id))
             .filter(func.extract("hour", Image.date_upload) >= start)
             .filter(func.extract("hour", Image.date_upload) < end)
-            .filter(Image.annotation == "pleine")
+            .filter(annotation_at_upload == "pleine")
             .scalar()
         )
         rate = round((full / total * 100), 2) if total else 0
@@ -147,11 +155,12 @@ def daily_stats():
     end_date = datetime.utcnow().date()
     start_date = end_date - timedelta(days=days - 1)
 
+    annotation_at_upload = func.coalesce(Image.annotation_auto, Image.annotation)
     results = (
         db.session.query(
             func.date(Image.date_upload).label("date"),
-            func.sum(case((Image.annotation == "pleine", 1), else_=0)).label("full"),
-            func.sum(case((Image.annotation == "vide", 1), else_=0)).label("empty"),
+            func.sum(case((annotation_at_upload == "pleine", 1), else_=0)).label("full"),
+            func.sum(case((annotation_at_upload == "vide", 1), else_=0)).label("empty"),
         )
         .filter(Image.date_upload >= start_date)
         .group_by(func.date(Image.date_upload))
@@ -221,10 +230,11 @@ def classification_accuracy():
 @dashboard_bp.route("/map", methods=["GET"])
 def map_data():
     """Return list of trash bins with coordinates."""
+    annotation_at_upload = func.coalesce(Image.annotation_auto, Image.annotation)
     images = (
         Image.query
         .filter(Image.metadata_json.isnot(None))
-        .filter(Image.annotation != "vide")
+        .filter(annotation_at_upload != "vide")
         .order_by(Image.date_upload.desc())
         .all()
     )

@@ -37,9 +37,7 @@
     </l-map>
 
     <div class="mt-6 flex justify-center gap-6 text-sm font-medium text-gray-700">
-      <span><span class="inline-block w-3 h-3 rounded-full mr-2" style="background:#5DBB4E"></span>Vide</span>
       <span><span class="inline-block w-3 h-3 rounded-full mr-2" style="background:#F77F38"></span>Pleine</span>
-      <span><span class="inline-block w-3 h-3 rounded-full mr-2" style="background:#E3342F"></span>Débordante</span>
     </div>
   </div>
 </template>

@@ -37,7 +37,7 @@
         />
         
         <stat-card
-          title="Poubelles Vides"
+          title="Poubelles vides uploadées"
           :value="statistics.emptyBins"
           icon="fas fa-trash"
           icon-bg-color="bg-green-500"
@@ -45,14 +45,14 @@
         />
         
         <stat-card
-          title="Poubelles Pleines"
+          title="Poubelles pleines uploadées"
           :value="statistics.fullBins"
           icon="fas fa-trash-alt"
           icon-bg-color="bg-red-500"
           :trend="statistics.fullTrend"
         />
         <stat-card
-          title="Poubelles vidées"
+          title="Poubelles pleines vidées"
           :value="statistics.emptiedBins"
           icon="fas fa-trash-alt"
           icon-bg-color="bg-indigo-500"

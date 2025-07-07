@@ -7,9 +7,12 @@
           <i class="fas fa-clock mr-2 text-purple-500"></i>
           5 Dernières images uploadées
         </h3>
-        <button class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-          Voir tout
-        </button>
+        <button
+  @click="goToImagesPage"
+  class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+>
+  Voir tout
+</button>
       </div>
     </div>
 
@@ -107,6 +110,9 @@ export default {
     },
     deleteImage(image) {
       this.$emit('delete-image', image);
+    },
+    goToImagesPage() {
+    this.$router.push({ name: 'Images' })
     }
   }
 }
