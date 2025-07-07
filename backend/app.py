@@ -33,8 +33,8 @@ def create_app():
            }
         },  # votre front Vite
         supports_credentials=True,
-        allow_headers=["Content-Type", "X-CSRF-Token"],
-        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "X-CSRF-Token","Authorization"],
+        methods=["GET", "POST", "PUT", "DELETE","PATCH", "OPTIONS"],
     )
 
     # 4. Init de SQLAlchemy

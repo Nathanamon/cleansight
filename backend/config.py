@@ -38,7 +38,7 @@ class Config:
     MAIL_DEFAULT_SENDER = ("CleanSight", "noreply@cleansight.com")
 
     # JWT (cookies)
-    JWT_TOKEN_LOCATION = ["cookies"]
+    JWT_TOKEN_LOCATION = ["cookies", "headers"]
     JWT_COOKIE_SECURE = False  # True en production
     # En développement la valeur "None" requiert l'option Secure et le cookie
     # est ignoré par le navigateur. On utilise donc "Lax" pour que les cookies
