@@ -66,26 +66,24 @@ def delete_image(image_id):
     return jsonify({"message": "Image supprimée"}), 200
 
 @images_bp.route("/images/<int:image_id>", methods=["PATCH"])
-@jwt_required()
 def update_image(image_id):
-    """Update image annotation."""
     from app import db
     from models.image import Image
 
     data = request.get_json() or {}
     new_ann = data.get("annotation")
-    if new_ann not in ("pleine", "vide", "maintenance", "d\u00e9bordante"):
+    if new_ann not in ("pleine", "vide", "maintenance", "débordante"):
         return jsonify({"error": "Annotation invalide"}), 400
 
-    user_id = get_jwt_identity()
-    img = Image.query.filter_by(id=image_id, user_id=user_id).first()
+    img = Image.query.filter_by(id=image_id).first()
     if img is None:
         return jsonify({"error": "Image not found"}), 404
 
     img.annotation = new_ann
     db.session.commit()
 
-    return jsonify({"message": "Image mise \u00e0 jour"}), 200
+    return jsonify({"message": "Image mise à jour"}), 200
+
 
 
 @images_bp.route('/uploads/<path:filename>', methods=['GET'])

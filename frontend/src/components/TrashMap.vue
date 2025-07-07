@@ -78,7 +78,7 @@ async function markAsEmpty(bin) {
   try {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/images/${bin.id}`, {
       method: 'PATCH',
-      credentials: 'include',
+      credentials: 'same-origin',
       headers,
       body: JSON.stringify({ annotation: 'vide' })
     })
@@ -91,6 +91,8 @@ async function markAsEmpty(bin) {
     console.error('Erreur réseau:', e)
   }
 }
+
+
 
 
 // Constantes Leaflet
