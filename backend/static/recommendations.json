@@ -6,19 +6,7 @@
     "severity": "high"
   },
   {
-    "title": "Augmenter les collectes dans le 75011",
-    "description": "Le taux de remplissage est élevé (100%) dans cette zone.",
-    "icon": "fas fa-map-marker-alt",
-    "severity": "high"
-  },
-  {
-    "title": "Augmenter les collectes dans le 75009",
-    "description": "Le taux de remplissage est élevé (100%) dans cette zone.",
-    "icon": "fas fa-map-marker-alt",
-    "severity": "high"
-  },
-  {
-    "title": "Augmenter les collectes dans le 75019",
+    "title": "Augmenter les collectes dans le 75017",
     "description": "Le taux de remplissage est élevé (100%) dans cette zone.",
     "icon": "fas fa-map-marker-alt",
     "severity": "high"
