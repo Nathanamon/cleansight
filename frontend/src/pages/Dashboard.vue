@@ -670,7 +670,7 @@ hasClassificationAccuracyData() {
             status: img.annotation,
             location: img.location || 'Paris',
             uploadTime: new Date(img.date_upload).toLocaleString('fr-FR'),
-            thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${img.filename}`
+            thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${encodeURIComponent(img.filename)}`
           }))
         }
         const daily = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}`)
@@ -710,7 +710,8 @@ hasClassificationAccuracyData() {
               ...p,
               latitude: parseFloat(p.latitude),
               longitude: parseFloat(p.longitude),
-              address: p.address || 'Adresse inconnue'
+              address: p.address || 'Adresse inconnue',
+              thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${encodeURIComponent(p.filename)}`
             }))
         }
       } catch (e) {

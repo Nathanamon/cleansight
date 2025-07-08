@@ -24,11 +24,20 @@
           Fonctionnalités
         </button>
         <button
+          v-if="!isAuthenticated"
           type="button"
           class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
           @click="scrollToSection('dashboard')"
         >
           Dashboard
+        </button>
+        <button
+          v-else
+          type="button"
+          class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
+          @click="navigateToDashboard"
+        >
+          Mon Dashboard
         </button>
         <button
           type="button"
@@ -181,11 +190,20 @@
             Fonctionnalités
           </button>
           <button
+            v-if="!isAuthenticated"
             type="button"
             class="w-full text-left text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600 border-b border-gray-100 pb-2"
             @click="scrollToSection('dashboard')"
           >
             Dashboard
+          </button>
+          <button
+            v-else
+            type="button"
+            class="w-full text-left text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600 border-b border-gray-100 pb-2"
+            @click="navigateToDashboard"
+          >
+            Mon Dashboard
           </button>
           <button
             type="button"
@@ -372,6 +390,7 @@ export default {
         localStorage.setItem('authToken', 'true');
       } else if (!e?.detail?.authenticated) {
         auth.logout();
+        router.push('/');
       } else {
         auth.restoreFromLocalStorage();
       }

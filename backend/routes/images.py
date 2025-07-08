@@ -2,7 +2,7 @@
 
 from datetime import datetime
 import os
-from flask import Blueprint, request, jsonify, current_app, send_from_directory
+from flask import Blueprint, request, jsonify, current_app, send_from_directory, url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 images_bp = Blueprint("images", __name__)
@@ -39,6 +39,7 @@ def get_images():
             "contraste":        img.contraste,
             "couleur_moyenne":  img.couleur_moyenne,
             "metadata":         img.metadata_json,
+            "thumbnail":        url_for("images.serve_image", filename=img.filename),
         })
     return jsonify(data), 200
 

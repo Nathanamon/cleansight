@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, url_for
 from sqlalchemy import func, case
 from app import db
 from models.image import Image
@@ -51,6 +51,7 @@ def recent():
             "annotation": img.annotation,
             "date_upload": img.date_upload.isoformat(),
             "location": location,
+            "thumbnail": url_for("images.serve_image", filename=img.filename),
         })
     return jsonify(data), 200
 
@@ -263,6 +264,8 @@ def map_data():
                 "address": address,
                 "etat": img.annotation,
                 "timestamp": img.date_upload.isoformat(),
+                "filename": img.filename,
+                "thumbnail": url_for("images.serve_image", filename=img.filename),
             })
     return jsonify(data), 200
 

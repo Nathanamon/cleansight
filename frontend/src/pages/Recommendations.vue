@@ -15,16 +15,11 @@
         </button>
       </div>
 
-      <!-- Empty State -->
       <div v-if="recommendations.length === 0" class="text-gray-500 text-sm">
         Aucune recommandation disponible pour le moment.
       </div>
 
-      <!-- Dynamic Recommendations -->
-      <div
-        v-else
-        class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-      >
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <RecommendationCard
           v-for="(rec, index) in recommendations"
           :key="index"
@@ -44,71 +39,55 @@ import RecommendationCard from '../components/RecommendationCard.vue'
 
 export default {
   name: 'Recommendations',
-  components: {
-    Sidebar,
-    RecommendationCard
-  },
+  components: { Sidebar, RecommendationCard },
   data() {
-  return {
-    recommendations: [],
-    isLoading: false,
-    error: null
-  };
-},
-mounted() {
-  this.loadRecommendations();
-},
-methods: {
-  async loadRecommendations() {
-    this.isLoading = true;
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/recommendations`);
-      if (!res.ok) throw new Error("Échec du chargement des recommandations");
-      const data = await res.json();
-      this.recommendations = data.map(rec => ({
-        title: rec.title,
-        description: rec.text || rec.description,
-        severity: rec.severity || 'medium',
-        icon: this.chooseIcon(rec.severity)
-      }));
-    } catch (err) {
-      this.error = err.message;
-    } finally {
-      this.isLoading = false;
+    return {
+      recommendations: [],
+      isLoading: false,
+      error: null
     }
   },
-  chooseIcon(severity) {
-    if (severity === 'high') return 'fas fa-exclamation-triangle';
-    if (severity === 'low') return 'fas fa-check-circle';
-    return 'fas fa-lightbulb';
-  }
-},
-
-  async mounted() {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/recommendations`);
-  if (res.ok) {
-    this.recommendations = await res.json();
-  } else {
-    console.error('Erreur chargement recommandations');
-  }
-},
+  mounted() {
+    this.loadRecommendations()
+  },
   methods: {
-    async refreshRecommendations() {
+    async loadRecommendations() {
+      this.isLoading = true
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/recommendations`)
+        if (!res.ok) throw new Error('Échec du chargement des recommandations')
+        const data = await res.json()
+        this.recommendations = data.map(rec => ({
+          title: rec.title,
+          description: rec.text || rec.description,
+          severity: rec.severity || 'medium',
+          icon: this.chooseIcon(rec.severity)
+        }))
+      } catch (err) {
+        this.error = err.message
+      } finally {
+        this.isLoading = false
+      }
+    },
+    chooseIcon(severity) {
+      if (severity === 'high') return 'fas fa-exclamation-triangle'
+      if (severity === 'low') return 'fas fa-check-circle'
+      return 'fas fa-lightbulb'
+    },
+    async refreshRecommendations() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/generate_recommendations`, { method: 'POST' })
         if (res.ok) {
-          const data = await res.json()
-          this.recommendations = data
+          await this.loadRecommendations()
         } else {
-          this.recommendations = []
-          console.warn('Erreur chargement recommandations :', res.status)
+          console.error('Échec de génération')
         }
       } catch (e) {
         console.error('Erreur réseau recommandations :', e)
-        this.recommendations = []
       }
     },
-    async refreshRecommendations() {
+    async loadRecommendations() {
+      this.isLoading = true
   const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/generate_recommendations`, {
     method: "POST",
   });

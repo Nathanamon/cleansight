@@ -9,7 +9,16 @@
         :key="p.id"
         :lat-lng="[p.latitude, p.longitude]"
         :icon="getIcon(p.etat)"
+        @mouseover="hoveredId = p.id"
+        @mouseout="hoveredId = null"
       >
+        <l-tooltip v-if="hoveredId === p.id" :options="{ direction: 'top', offset: [0, -10] }">
+          <img v-if="p.thumbnail" :src="p.thumbnail" class="w-32 h-24 object-cover rounded mb-2" />
+          <div class="text-xs">
+            <p><strong>ID :</strong> {{ p.id }}</p>
+            <p><strong>État :</strong> {{ p.etat }}</p>
+          </div>
+        </l-tooltip>
         <l-popup>
           <div class="text-sm">
             <p><strong>ID :</strong> {{ p.id }}</p>
@@ -44,9 +53,8 @@
 
 <script setup>
 import { useAuthStore } from '@/stores/auth'
-import { LMap, LTileLayer, LMarker, LPopup, LCircle } from '@vue-leaflet/vue-leaflet'
-import L from 'leaflet'
-import { computed } from 'vue'
+import { LMap, LTileLayer, LMarker, LPopup, LCircle, LTooltip } from '@vue-leaflet/vue-leaflet'
+import { computed, ref } from 'vue'
 import { toRefs } from 'vue'
 
 // Props
@@ -68,6 +76,7 @@ const props = defineProps({
 const { poubelles, center, zoom } = toRefs(props)
 const emit = defineEmits(['bin-emptied'])
 const auth = useAuthStore()
+const hoveredId = ref(null)
 
 async function markAsEmpty(bin) {
   const headers = { 'Content-Type': 'application/json' }
