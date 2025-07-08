@@ -348,28 +348,19 @@ export default {
           )
 
           // Mise à jour immédiate du header
-          window.dispatchEvent(new CustomEvent('auth-changed', {
-            detail: {
-              authenticated: true,
-              user: {
-                email: data.user.email,
-                firstName: data.user.first_name,
-                lastName: data.user.last_name,
+          window.dispatchEvent(
+            new CustomEvent('auth-changed', {
+              detail: {
+                authenticated: true,
+                user: {
+                  email: data.user.email,
+                  firstName: data.user.first_name,
+                  lastName: data.user.last_name,
+                },
               },
-            },
-          }))
+            })
+          )
 
-          // Mise à jour immédiate du header
-          window.dispatchEvent(new CustomEvent('auth-changed', {
-            detail: {
-              authenticated: true,
-              user: {
-                email: data.user.email,
-                firstName: data.user.first_name,
-                lastName: data.user.last_name,
-              },
-            },
-          }))
 
           this.messageType = "success"
           this.message = "Connexion réussie !"
