@@ -1,4 +1,4 @@
-import { createApp, watch } from "vue";
+import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 
@@ -50,7 +50,7 @@ router.beforeEach((to, from, next) => {
 });
 
 
-app.use(createPinia());
+
 app.use(router);
 app.mount("#app");
 

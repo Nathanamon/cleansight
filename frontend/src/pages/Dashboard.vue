@@ -685,7 +685,6 @@ hasClassificationAccuracyData() {
         if (daily.ok) {
           this.dailyData = await daily.json()
         }
-        const acc = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/accuracy`)
           const acc = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/accuracy`, {
             credentials: 'include'
           })
@@ -737,8 +736,7 @@ hasClassificationAccuracyData() {
                 if (raw.startsWith('http')) return raw
                 const encoded = raw.replace(p.filename, encodeURIComponent(p.filename))
                 return `${base}${encoded}`
-              })(),
-              thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${encodeURIComponent(p.filename)}`
+              })()
             }))
         }
       } catch (e) {
