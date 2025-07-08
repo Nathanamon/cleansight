@@ -255,7 +255,13 @@ async function loadImages() {
   location: formatAddress(img.metadata?.location?.address),
   uploadDate: img.date_upload,
   size: img.taille ? `${(img.taille / 1024).toFixed(0)} KB` : '',
-  thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${encodeURIComponent(img.filename)}`,
+  thumbnail: (() => {
+    const base = import.meta.env.VITE_API_URL
+    const raw = img.thumbnail || `/uploads/${img.filename}`
+    if (raw.startsWith('http')) return raw
+    const encoded = raw.replace(img.filename, encodeURIComponent(img.filename))
+    return `${base}${encoded}`
+  })(),
   weather: img.metadata?.weather
     ? {
         description: img.metadata.weather.description || 'Inconnu',

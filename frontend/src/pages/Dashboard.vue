@@ -92,8 +92,7 @@
               <option value="90">3 derniers mois</option>
             </select>
           </div>
-          <chart-component
-            v-if="hasDailyData"
+          <safe-chart
             chart-id="dailyChart"
             type="line"
             :data="rawDailyChartData"
@@ -107,8 +106,7 @@
             <i class="fas fa-cloud-sun-rain mr-2 text-blue-500"></i>
             Corrélation Météo / Poubelles pleines
           </h3>
-          <chart-component
-            v-if="hasWeatherTrashData"
+          <safe-chart
             chart-id="weatherTrashChart"
             type="bar"
             :data="rawWeatherTrashChartData"
@@ -122,12 +120,11 @@
             <i class="fas fa-clock mr-2 text-orange-500"></i>
             Heures de pic de remplissage
           </h3>
-          <chart-component
-          v-if="hasPeakHoursData"
-          chart-id="peakHoursChart"
-          type="radar"
-          :data="rawPeakHoursChartData"
-          :options="rawPeakHoursChartOptions"
+          <safe-chart
+            chart-id="peakHoursChart"
+            type="radar"
+            :data="rawPeakHoursChartData"
+            :options="rawPeakHoursChartOptions
           />
         </div>
         
@@ -138,8 +135,7 @@
             <i class="fas fa-map-marker-alt mr-2 text-green-500"></i>
             Répartition par arrondissements
           </h3>
-          <chart-component
-            v-if="hasDistrictData"
+          <safe-chart
             chart-id="districtChart"
             type="doughnut"
             :data="rawDistrictChartData"
@@ -169,8 +165,7 @@
             <i class="fas fa-robot mr-2"></i>
             Fiabilité de la classification automatique
           </h3>
-          <chart-component
-            v-if="hasClassificationAccuracyData"
+          <safe-chart
             chart-id="accuracyChart"
             type="bar"
             :data="rawClassificationAccuracyData"
@@ -196,6 +191,7 @@ import TrashMap from '../components/TrashMap.vue'
 import Sidebar from '../components/Sidebar.vue'
 import StatCard from '../components/StatCard.vue'
 import ChartComponent from '../components/ChartComponent.vue'
+import SafeChart from '../components/SafeChart.vue'
 import RecentImages from '../components/RecentImages.vue'
 import { toRaw } from 'vue'
 
@@ -214,6 +210,7 @@ export default {
     Sidebar,
     StatCard,
     ChartComponent,
+    SafeChart,
     RecentImages,
     TrashMap,
     /* TrashWeatherStats */
@@ -664,14 +661,20 @@ hasClassificationAccuracyData() {
         const rec = await fetch(import.meta.env.VITE_API_URL + '/dashboard/recent')
         if (rec.ok) {
           const imgs = await rec.json()
-          this.recentImages = imgs.map(img => ({
-            id: img.id,
-            filename: img.filename,
-            status: img.annotation,
-            location: img.location || 'Paris',
-            uploadTime: new Date(img.date_upload).toLocaleString('fr-FR'),
-            thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${encodeURIComponent(img.filename)}`
-          }))
+            this.recentImages = imgs.map(img => ({
+              id: img.id,
+              filename: img.filename,
+              status: img.annotation,
+              location: img.location || 'Paris',
+              uploadTime: new Date(img.date_upload).toLocaleString('fr-FR'),
+              thumbnail: (() => {
+                const base = import.meta.env.VITE_API_URL
+                const raw = img.thumbnail || `/uploads/${img.filename}`
+                if (raw.startsWith('http')) return raw
+                const encoded = raw.replace(img.filename, encodeURIComponent(img.filename))
+                return `${base}${encoded}`
+              })(),
+            }))
         }
         const daily = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}`)
         if (daily.ok) {
@@ -711,6 +714,13 @@ hasClassificationAccuracyData() {
               latitude: parseFloat(p.latitude),
               longitude: parseFloat(p.longitude),
               address: p.address || 'Adresse inconnue',
+              thumbnail: (() => {
+                const base = import.meta.env.VITE_API_URL
+                const raw = p.thumbnail || `/uploads/${p.filename}`
+                if (raw.startsWith('http')) return raw
+                const encoded = raw.replace(p.filename, encodeURIComponent(p.filename))
+                return `${base}${encoded}`
+              })(),
               thumbnail: `${import.meta.env.VITE_API_URL}/uploads/${encodeURIComponent(p.filename)}`
             }))
         }

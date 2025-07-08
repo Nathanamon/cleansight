@@ -54,7 +54,6 @@ export default {
     async loadRecommendations() {
       this.isLoading = true
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/recommendations`)
         if (!res.ok) throw new Error('Échec du chargement des recommandations')
         const data = await res.json()
         this.recommendations = data.map(rec => ({
@@ -75,6 +74,29 @@ export default {
       return 'fas fa-lightbulb'
     },
     async refreshRecommendations() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/generate_recommendations`, { method: 'POST' })
+        if (!res.ok) throw new Error('Échec du chargement des recommandations')
+        const data = await res.json()
+        this.recommendations = data.map(rec => ({
+          title: rec.title,
+          description: rec.text || rec.description,
+          severity: rec.severity || 'medium',
+          icon: this.chooseIcon(rec.severity)
+        }))
+      } catch (err) {
+        this.error = err.message
+      } finally {
+        this.isLoading = false
+      }
+    },
+    chooseIcon(severity) {
+      if (severity === 'high') return 'fas fa-exclamation-triangle'
+      if (severity === 'low') return 'fas fa-check-circle'
+      return 'fas fa-lightbulb'
+    },
+    async loadRecommendations() {
+      this.isLoading = true
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/generate_recommendations`, { method: 'POST' })
         if (res.ok) {

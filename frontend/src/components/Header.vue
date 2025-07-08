@@ -15,37 +15,30 @@
 
       <!-- Desktop Navigation -->
       <div class="hidden lg:flex items-center gap-8">
-        <!-- Navigation links (shown for both states) -->
-        <button
-          type="button"
-          class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
-          @click="scrollToSection('features')"
-        >
-          Fonctionnalités
-        </button>
-        <button
-          v-if="!isAuthenticated"
-          type="button"
-          class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
-          @click="scrollToSection('dashboard')"
-        >
-          Dashboard
-        </button>
-        <button
-          v-else
-          type="button"
-          class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
-          @click="navigateToDashboard"
-        >
-          Mon Dashboard
-        </button>
-        <button
-          type="button"
-          class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
-          @click="scrollToSection('impact')"
-        >
-          Impact
-        </button>
+        <!-- Navigation links displayed only for guests -->
+        <template v-if="!isAuthenticated">
+          <button
+            type="button"
+            class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
+            @click="scrollToSection('features')"
+          >
+            Fonctionnalités
+          </button>
+          <button
+            type="button"
+            class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
+            @click="scrollToSection('dashboard')"
+          >
+            Dashboard
+          </button>
+          <button
+            type="button"
+            class="text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600"
+            @click="scrollToSection('impact')"
+          >
+            Impact
+          </button>
+        </template>
 
         <!-- Actions based on authentication state -->
         <div v-if="!isAuthenticated" class="flex items-center gap-4">
@@ -141,7 +134,7 @@
           class="bg-blue-600 text-white border-none py-2 px-4 rounded-full cursor-pointer font-semibold transition-all duration-300 text-sm hover:bg-blue-700 hover:-translate-y-1"
           @click="navigateToDashboard"
         >
-          Dashboard
+          Mon Dashboard
         </button>
       </div>
 
@@ -181,7 +174,7 @@
     >
       <div class="px-4 py-4 space-y-4">
         <!-- Navigation Links -->
-        <div class="space-y-3">
+        <div v-if="!isAuthenticated" class="space-y-3">
           <button
             type="button"
             class="w-full text-left text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600 border-b border-gray-100 pb-2"
@@ -195,7 +188,7 @@
             class="w-full text-left text-gray-600 cursor-pointer transition-colors duration-300 font-medium py-2 hover:text-green-600 border-b border-gray-100 pb-2"
             @click="scrollToSection('dashboard')"
           >
-            Dashboard
+            Mon Dashboard
           </button>
           <button
             v-else

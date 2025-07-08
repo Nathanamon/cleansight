@@ -21,12 +21,21 @@
         </l-tooltip>
         <l-popup>
           <div class="text-sm">
+            <img
+              v-if="p.thumbnail"
+              :src="p.thumbnail"
+              alt="photo de la poubelle"
+              class="w-full h-32 object-cover rounded mb-2"
+            />
+            <div v-else class="w-full h-32 flex items-center justify-center bg-gray-100 text-gray-500 rounded mb-2 text-xs">
+              Image indisponible
+            </div>
             <p><strong>ID :</strong> {{ p.id }}</p>
             <p><strong>État :</strong> {{ p.etat }}</p>
             <p><strong>Adresse :</strong> {{ p.address || 'Adresse inconnue' }}</p>
             <p><strong>Heure :</strong> {{ formatDate(p.timestamp) }}</p>
             <button
-              class="mt-2 bg-green-600 text-white px-3 py-1 rounded text-xs"
+              class="mt-2 bg-green-600 text-white px-3 py-1 rounded text-xs cursor-pointer"
               @click="markAsEmpty(p)"
             >
               Marquer vidée
