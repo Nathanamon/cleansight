@@ -124,7 +124,7 @@
             chart-id="peakHoursChart"
             type="radar"
             :data="rawPeakHoursChartData"
-            :options="rawPeakHoursChartOptions
+            :options="rawPeakHoursChartOptions"
           />
         </div>
         
