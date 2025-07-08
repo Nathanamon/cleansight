@@ -10,5 +10,11 @@
     "description": "Le taux de remplissage est élevé (100%) dans cette zone.",
     "icon": "fas fa-map-marker-alt",
     "severity": "high"
+  },
+  {
+    "title": "Augmenter les collectes dans le 75008",
+    "description": "Le taux de remplissage est élevé (100%) dans cette zone.",
+    "icon": "fas fa-map-marker-alt",
+    "severity": "high"
   }
 ]
