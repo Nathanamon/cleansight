@@ -347,7 +347,7 @@ export default {
             data.csrf_token
           )
 
-          // Mise à jour immédiate du header
+          // Informer les autres composants que l'utilisateur est connecté
           window.dispatchEvent(
             new CustomEvent('auth-changed', {
               detail: {
@@ -355,12 +355,11 @@ export default {
                 user: {
                   email: data.user.email,
                   firstName: data.user.first_name,
-                  lastName: data.user.last_name,
-                },
-              },
+                  lastName: data.user.last_name
+                }
+              }
             })
           )
-
 
           this.messageType = "success"
           this.message = "Connexion réussie !"

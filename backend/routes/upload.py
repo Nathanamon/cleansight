@@ -5,7 +5,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from datetime import datetime
 from flask import Blueprint, request, jsonify, current_app
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+from flask_jwt_extended.exceptions import JWTExtendedException
 from werkzeug.utils import secure_filename
 from app import db
 from models.image import Image
@@ -17,8 +18,13 @@ from utils.metadata_generator import generate_metadata
 upload_bp = Blueprint("upload", __name__)
 
 @upload_bp.route("/upload", methods=["POST"])
-@jwt_required()
 def upload():
+    user_id = None
+    try:
+        verify_jwt_in_request(optional=True)
+        user_id = get_jwt_identity()
+    except JWTExtendedException:
+        user_id = None
     if 'image' not in request.files or 'annotation' not in request.form:
         return jsonify({"error": "Image et annotation sont obligatoires"}), 400
 
@@ -33,7 +39,7 @@ def upload():
     features = extract_features(path)
     auto_ann = classify_image(features)
     metadata = generate_metadata()
-    user_id = get_jwt_identity()
+    user_id = get_jwt_identity() if get_jwt_identity() is not None else None
 
 
     img = Image(

@@ -9,8 +9,7 @@
         :key="p.id"
         :lat-lng="[p.latitude, p.longitude]"
         :icon="getIcon(p.etat)"
-        @mouseover="hoveredId = p.id"
-        @mouseout="hoveredId = null"
+        @click="selectBin(p)"
       >
         <l-tooltip v-if="hoveredId === p.id" :options="{ direction: 'top', offset: [0, -10] }">
           <img v-if="p.thumbnail" :src="p.thumbnail" class="w-32 h-24 object-cover rounded mb-2" />
@@ -19,7 +18,7 @@
             <p><strong>État :</strong> {{ p.etat }}</p>
           </div>
         </l-tooltip>
-        <l-popup>
+        <l-popup v-if="selectedBin && selectedBin.id === p.id">
           <div class="text-sm">
             <img
               v-if="p.thumbnail"
@@ -34,6 +33,12 @@
             <p><strong>État :</strong> {{ p.etat }}</p>
             <p><strong>Adresse :</strong> {{ p.address || 'Adresse inconnue' }}</p>
             <p><strong>Heure :</strong> {{ formatDate(p.timestamp) }}</p>
+            <img
+              v-if="p.imageUrl"
+              :src="p.imageUrl"
+              alt="Image poubelle"
+              class="mt-2 w-40 h-auto object-contain"
+            />
             <button
               class="mt-2 bg-green-600 text-white px-3 py-1 rounded text-xs cursor-pointer"
               @click="markAsEmpty(p)"
@@ -63,8 +68,7 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth'
 import { LMap, LTileLayer, LMarker, LPopup, LCircle, LTooltip } from '@vue-leaflet/vue-leaflet'
-import { computed, ref } from 'vue'
-import { toRefs } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 
 // Props
 const props = defineProps({
@@ -85,6 +89,11 @@ const props = defineProps({
 const { poubelles, center, zoom } = toRefs(props)
 const emit = defineEmits(['bin-emptied'])
 const auth = useAuthStore()
+const selectedBin = ref(null)
+
+function selectBin(bin) {
+  selectedBin.value = bin
+}
 const hoveredId = ref(null)
 
 async function markAsEmpty(bin) {

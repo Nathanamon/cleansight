@@ -730,6 +730,9 @@ hasClassificationAccuracyData() {
               latitude: parseFloat(p.latitude),
               longitude: parseFloat(p.longitude),
               address: p.address || 'Adresse inconnue',
+              imageUrl: p.filename
+                ? `${import.meta.env.VITE_API_URL}/uploads/${p.filename}`
+                : null,
               thumbnail: (() => {
                 const base = import.meta.env.VITE_API_URL
                 const raw = p.thumbnail || `/uploads/${p.filename}`
