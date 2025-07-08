@@ -220,6 +220,7 @@ export default {
       isLoading: false,
       mapRefreshInterval: null,
       chartRefreshInterval: null,
+      lastUpdate: new Date().toLocaleString('fr-FR'),
       selectedPeriod: '7',
       statistics: {
         totalImages: 0,
@@ -439,9 +440,6 @@ hasClassificationAccuracyData() {
     rawPeakHoursChartOptions() {
       return toRawClone(this.peakHoursChartOptions)
     },
-    lastUpdate() {
-      return new Date().toLocaleString('fr-FR');
-    },
     mapCenter() {
       if (this.mapPoubelles.length > 0) {
         const avgLat = this.mapPoubelles.reduce((s, p) => s + p.latitude, 0) / this.mapPoubelles.length;
@@ -627,6 +625,7 @@ hasClassificationAccuracyData() {
   async mounted() {
     await this.loadDashboardData()
     await this.loadMapData()
+    this.lastUpdate = new Date().toLocaleString('fr-FR')
     // Refresh map data every 30s so new uploads appear quickly without
     // leaving the map empty for too long between updates
     this.mapRefreshInterval = setInterval(() => {
@@ -698,6 +697,7 @@ hasClassificationAccuracyData() {
         }
         await this.$nextTick()
         window.dispatchEvent(new Event('resize'))
+        this.lastUpdate = new Date().toLocaleString('fr-FR')
       } catch (e) {
         console.error('Erreur chargement dashboard:', e)
       }
@@ -733,6 +733,7 @@ hasClassificationAccuracyData() {
       try {
         await this.loadDashboardData();
         await this.loadMapData();
+        this.lastUpdate = new Date().toLocaleString('fr-FR');
         this.$emit('show-notification', {
           type: 'success',
           message: 'Données actualisées avec succès'
@@ -760,6 +761,7 @@ hasClassificationAccuracyData() {
       }
       await this.$nextTick()
       window.dispatchEvent(new Event('resize'))
+      this.lastUpdate = new Date().toLocaleString('fr-FR');
     },
     handleViewImage(image) {
       console.log('Voir image:', image);

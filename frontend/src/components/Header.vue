@@ -1,6 +1,8 @@
 <template>
-    <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-[1100] py-4 border-b border-black/10">
-    <div class="max-w-6xl mx-auto flex justify-between items-center px-4 sm:px-8">
+    <nav
+      v-show="ui.showHeader"
+      class="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-[1100] py-4 border-b border-black/10"
+    >    <div class="max-w-6xl mx-auto flex justify-between items-center px-4 sm:px-8">
       <!-- Logo -->
       <div class="flex items-center gap-2 sm:gap-4">
         <router-link to="/" class="flex items-center justify-center gap-2 sm:gap-4">
@@ -267,6 +269,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from "vue-router";
 import { useAuthStore } from '@/stores/auth'
+import { useUiStore } from '@/stores/ui'
 
 
 export default {
@@ -277,6 +280,8 @@ export default {
     const isUserMenuOpen = ref(false);
 
     const auth = useAuthStore();
+
+    const ui = useUiStore();
 
     const isAuthenticated = computed(() => !!auth.user);
     const user = computed(() => auth.user || { name: '', email: '', firstName: '', lastName: '' });
@@ -417,6 +422,7 @@ export default {
       toggleMobileMenu,
       toggleUserMenu,
       logout,
+      ui,
       // fonctions exposées pour compatibilité
 
     };

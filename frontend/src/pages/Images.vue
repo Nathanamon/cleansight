@@ -24,6 +24,17 @@
               <i class="fas fa-th"></i>
             </button>
           </div>
+          <button
+            @click="refreshImages"
+            :disabled="isLoading"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          >
+            <i :class="['fas fa-sync-alt mr-2', { 'animate-spin': isLoading }]"></i>
+            Actualiser
+          </button>
+          <div class="text-sm text-gray-500">
+            Dernière mise à jour: {{ lastUpdate }}
+          </div>
         </div>
       </div>
 
@@ -192,6 +203,8 @@ const selectedDate = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 12
 const images = ref([])
+const isLoading = ref(false)
+const lastUpdate = ref(new Date().toLocaleString('fr-FR'))
 const auth = useAuthStore()
 
 function formatAddress(address) {
@@ -222,14 +235,20 @@ function getWeatherIcon(description) {
   if (!description) return '❓'
   const d = description.toLowerCase()
 
-  if (d.includes('soleil') || d.includes('ensoleillé')) return '☀️'
-  if (d.includes('nuage')) return '☁️'
-  if (d.includes('pluie') || d.includes('pluvieux')) return '🌧️'
-  if (d.includes('averse') || d.includes('pluvieux')) return '🌧️'
-  if (d.includes('orage') || d.includes('tonnerre')) return '🌩️'
-  if (d.includes('neige')) return '❄️'
-  if (d.includes('brume') || d.includes('brouillard')) return '🌫️'
-  if (d.includes('vent')) return '💨'
+  const mappings = [
+    { icon: '☀️', keywords: ['soleil', 'ensoleillé', 'clear'] },
+    { icon: '⛅', keywords: ['partiellement', 'variable', 'eclaircie', 'partly', 'scattered'] },
+    { icon: '☁️', keywords: ['nuage', 'nuageux', 'couvert', 'cloud', 'cloudy', 'overcast'] },
+    { icon: '🌧️', keywords: ['pluie', 'pluvieux', 'averse', 'shower', 'rain'] },
+    { icon: '🌩️', keywords: ['orage', 'tonnerre', 'storm', 'thunder'] },
+    { icon: '❄️', keywords: ['neige', 'snow'] },
+    { icon: '🌫️', keywords: ['brume', 'brouillard', 'fog', 'mist'] },
+    { icon: '💨', keywords: ['vent', 'wind'] }
+  ]
+
+  for (const { icon, keywords } of mappings) {
+    if (keywords.some(k => d.includes(k))) return icon
+  }
 
   return '🌈' // défaut sympa
 }
@@ -280,6 +299,13 @@ async function loadImages() {
   } catch (e) {
     console.error('Erreur chargement images:', e)
   }
+}
+
+async function refreshImages() {
+  isLoading.value = true
+  await loadImages()
+  lastUpdate.value = new Date().toLocaleString('fr-FR')
+  isLoading.value = false
 }
 function openUploadModal() {
   console.log("Ouvrir modal d'upload")
@@ -363,6 +389,6 @@ watch(filteredImages, () => {
 
 onMounted(() => {
   if (auth.restoreFromLocalStorage) auth.restoreFromLocalStorage()
-  loadImages()
+  refreshImages()
 })
 </script>

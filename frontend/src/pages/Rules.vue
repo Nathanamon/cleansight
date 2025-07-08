@@ -7,7 +7,10 @@
     <div class="flex-1 p-6 overflow-y-auto">
       <div class="max-w-7xl mx-auto">
         <!-- En-tête -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div
+          class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6"
+          v-show="!isModalOpen"
+        >
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 text-green-600">
@@ -196,9 +199,9 @@
       <!-- Modal -->
       <div
         v-if="isModalOpen"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        class="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       >
-        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto mx-auto">
           <div class="p-6 border-b border-gray-200">
             <div class="flex items-center justify-between">
               <h3 class="text-lg font-semibold text-gray-900">
@@ -342,6 +345,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
+import { useUiStore } from '@/stores/ui'
 
 export default {
     components: {
@@ -349,6 +353,7 @@ export default {
     },
   name: 'RulesManagement',
   setup() {
+    const ui = useUiStore()
     const rules = ref([])
     const isModalOpen = ref(false)
     const editingRule = ref(null)
@@ -421,10 +426,12 @@ export default {
         }
       }
       isModalOpen.value = true
+      ui.showHeader = false
     }
 
     const closeModal = () => {
       isModalOpen.value = false
+      ui.showHeader = true
       editingRule.value = null
       newRule.value = {
         name: '',
@@ -531,7 +538,8 @@ export default {
       saveRulesToServer,
       getRuleTypeColor,
       getRuleTypeIcon,
-      getRuleTypeLabel
+      getRuleTypeLabel,
+      ui
     }
   }
 }
