@@ -337,32 +337,45 @@ export default {
         if (res.ok) {
           const auth = useAuthStore()
 
-          if (data.csrf_token) {
-            auth.login(
-              {
+          // Met à jour le store même si le backend ne renvoie pas de token
+          auth.login(
+            {
+              email: data.user.email,
+              firstName: data.user.first_name,
+              lastName: data.user.last_name,
+            },
+            data.csrf_token
+          )
+
+          // Mise à jour immédiate du header
+          window.dispatchEvent(new CustomEvent('auth-changed', {
+            detail: {
+              authenticated: true,
+              user: {
                 email: data.user.email,
                 firstName: data.user.first_name,
                 lastName: data.user.last_name,
               },
-              data.csrf_token
-            )
-          }
+            },
+          }))
+
+          // Mise à jour immédiate du header
+          window.dispatchEvent(new CustomEvent('auth-changed', {
+            detail: {
+              authenticated: true,
+              user: {
+                email: data.user.email,
+                firstName: data.user.first_name,
+                lastName: data.user.last_name,
+              },
+            },
+          }))
 
           this.messageType = "success"
           this.message = "Connexion réussie !"
 
           setTimeout(() => {
             this.$router.push("/dashboard")
-            window.dispatchEvent(new CustomEvent('auth-changed', {
-              detail: {
-                authenticated: true,
-                user: {
-                  email: data.user.email,
-                  firstName: data.user.first_name,
-                  lastName: data.user.last_name,
-                },
-              },
-            }))
           }, 1000)
         } else {
           console.error("Login error", res.status, data);
