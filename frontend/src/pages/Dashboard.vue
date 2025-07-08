@@ -649,7 +649,9 @@ hasClassificationAccuracyData() {
   methods: {
     async loadDashboardData() {
       try {
-        const res = await fetch(import.meta.env.VITE_API_URL + '/dashboard/summary')
+        const res = await fetch(import.meta.env.VITE_API_URL + '/dashboard/summary', {
+          credentials: 'include'
+        })
         if (res.ok) {
           const data = await res.json()
           this.statistics.totalImages = data.total_images
@@ -657,7 +659,9 @@ hasClassificationAccuracyData() {
           this.statistics.fullBins = data.full_bins
           this.statistics.emptiedBins = data.emptied_bins || 0
         }
-        const rec = await fetch(import.meta.env.VITE_API_URL + '/dashboard/recent')
+          const rec = await fetch(import.meta.env.VITE_API_URL + '/dashboard/recent', {
+            credentials: 'include'
+          })
         if (rec.ok) {
           const imgs = await rec.json()
             this.recentImages = imgs.map(img => ({
@@ -675,23 +679,34 @@ hasClassificationAccuracyData() {
               })(),
             }))
         }
-        const daily = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}`)
+          const daily = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}` , {
+            credentials: 'include'
+          })
         if (daily.ok) {
           this.dailyData = await daily.json()
         }
         const acc = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/accuracy`)
+          const acc = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/accuracy`, {
+            credentials: 'include'
+          })
         if (acc.ok) {
           this.accuracyData = await acc.json()
         }
-                const weather = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/weather_trash?days=${this.selectedPeriod}`)
+                const weather = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/weather_trash?days=${this.selectedPeriod}`, {
+                  credentials: 'include'
+                })
         if (weather.ok) {
           this.weatherData = await weather.json()
         }
-        const fill = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/fill_rate`)
+          const fill = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/fill_rate`, {
+            credentials: 'include'
+          })
         if (fill.ok) {
           this.fillRateData = await fill.json()
         }
-        const peak = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/peak_hours`)
+          const peak = await fetch(`${import.meta.env.VITE_API_URL}/dashboard/peak_hours`, {
+            credentials: 'include'
+          })
         if (peak.ok) {
           this.peakHoursData = await peak.json()
         }
@@ -704,7 +719,9 @@ hasClassificationAccuracyData() {
     },
     async loadMapData() {
       try {
-        const res = await fetch(import.meta.env.VITE_API_URL + '/dashboard/map')
+        const res = await fetch(import.meta.env.VITE_API_URL + '/dashboard/map', {
+          credentials: 'include'
+        })
         if (res.ok) {
           const items = await res.json()
           this.mapPoubelles = items
@@ -748,10 +765,10 @@ hasClassificationAccuracyData() {
       }
     },
     async updateChartData() {
-      const [daily, weather] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}`),
-        fetch(`${import.meta.env.VITE_API_URL}/dashboard/weather_trash?days=${this.selectedPeriod}`)
-      ])
+        const [daily, weather] = await Promise.all([
+          fetch(`${import.meta.env.VITE_API_URL}/dashboard/daily?days=${this.selectedPeriod}`, { credentials: 'include' }),
+          fetch(`${import.meta.env.VITE_API_URL}/dashboard/weather_trash?days=${this.selectedPeriod}`, { credentials: 'include' })
+        ])
 
       if (daily.ok) {
         this.dailyData = await daily.json()

@@ -283,9 +283,8 @@ export default {
         : 'bg-green-50 border-green-200 text-green-600';
     },
     passwordStrength() {
-      // Simple strength: length + number + letter
-      let score = 0;
-      if (this.password.length >= 8) score += 40;
+      // Progressively build score as the user types
+      let score = Math.min(this.password.length * 5, 40); // up to 40 for length
       if (/[A-Z]/.test(this.password)) score += 20;
       if (/[a-z]/.test(this.password)) score += 20;
       if (/\d/.test(this.password)) score += 10;
