@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 import json
 
 # Configuration de la base de données
-DATABASE_URL = "postgresql://postgres:123456@localhost:5432/poubelle_db"
+DATABASE_URL = "postgresql://postgres1:dww3PXKZHq6HSBYukXOEmSRWjdWceVzy@dpg-d1mjq50dl3ps73dk987g-a.frankfurt-postgres.render.com/poubelle_db_u8pi"
 
 # Connexion à PostgreSQL
 engine = create_engine(DATABASE_URL)
