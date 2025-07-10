@@ -1,4 +1,4 @@
-from cleansight.backend.main import db
+from main import db
 from datetime import datetime
 
 class Image(db.Model):

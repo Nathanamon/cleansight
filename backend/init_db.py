@@ -1,4 +1,4 @@
-from cleansight.backend.main import create_app, db
+from main import create_app, db
 from models.image import Image
 
 app = create_app()

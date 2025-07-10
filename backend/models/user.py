@@ -1,6 +1,6 @@
 # backend/models/user.py
 from datetime import datetime
-from cleansight.backend.main import db
+from main import db
 from models.image import Image
 from werkzeug.security import generate_password_hash, check_password_hash
 

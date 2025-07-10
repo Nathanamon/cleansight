@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from flask import Blueprint, jsonify, request
 from sqlalchemy import func, case
-from cleansight.backend.main import db
+from main import db
 from models.image import Image
 import os
 import json

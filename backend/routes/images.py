@@ -47,7 +47,7 @@ def get_images():
 @jwt_required()
 def delete_image(image_id):
     """Delete an uploaded image and its record."""
-    from cleansight.backend.main import db
+    from main import db
     from models.image import Image
 
     user_id = get_jwt_identity()
@@ -67,7 +67,7 @@ def delete_image(image_id):
 
 @images_bp.route("/images/<int:image_id>", methods=["PATCH"])
 def update_image(image_id):
-    from cleansight.backend.main import db
+    from main import db
     from models.image import Image
 
     data = request.get_json() or {}
