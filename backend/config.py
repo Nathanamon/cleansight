@@ -18,7 +18,7 @@ class Config:
     # IMPORTANT: l'env doit définir DATABASE_URL, pas DB_URL
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get("DATABASE_URL")
-        or "postgresql://postgres:123456@localhost:5432/poubelle_db"
+        or "postgresql://postgres1:dww3PXKZHq6HSBYukXOEmSRWjdWceVzy@dpg-d1mjq50dl3ps73dk987g-a/poubelle_db_u8pi"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
