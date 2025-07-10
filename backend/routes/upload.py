@@ -27,7 +27,14 @@ def upload():
     filename   = secure_filename(file.filename)
     folder     = current_app.config['UPLOAD_FOLDER']
     os.makedirs(folder, exist_ok=True)
-    path       = os.path.join(folder, filename)
+    base, ext = os.path.splitext(filename)
+    unique_name = filename
+    counter = 1
+    while os.path.exists(os.path.join(folder, unique_name)):
+        unique_name = f"{base}_{counter}{ext}"
+        counter += 1
+
+    path = os.path.join(folder, unique_name)
     file.save(path)
 
     features = extract_features(path)
@@ -37,7 +44,7 @@ def upload():
 
 
     img = Image(
-        filename=filename,
+        filename=unique_name,
         user_id=user_id,
         date_upload=datetime.utcnow(),
         annotation=manual_ann,
@@ -56,5 +63,5 @@ def upload():
         "message": "Image enregistrée avec succès",
         "annotation_auto": auto_ann,
         "metadata": metadata,
-        "log": f"Image {filename} enregistrée avec annotation: {manual_ann}, auto-annotation: {auto_ann}, metadata: {metadata}"
+        "log": f"Image {unique_name} enregistrée avec annotation: {manual_ann}, auto-annotation: {auto_ann}, metadata: {metadata}"
     }), 201

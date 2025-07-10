@@ -26,7 +26,15 @@ def validate():
 
     folder = current_app.config["UPLOAD_FOLDER"]
     os.makedirs(folder, exist_ok=True)  # ensure folder exists
-    fullpath = os.path.join(folder, fname)
+    
+    base, ext = os.path.splitext(fname)
+    unique_name = fname
+    counter = 1
+    while os.path.exists(os.path.join(folder, unique_name)):
+        unique_name = f"{base}_{counter}{ext}"
+        counter += 1
+
+    fullpath = os.path.join(folder, unique_name)
     img_file.save(fullpath)
 
     features = extract_features(fullpath)
@@ -41,7 +49,7 @@ def validate():
     try:
         record = Image(
             user_id     = user_id,
-            filename    = fname,
+            filename    = unique_name,
             date_upload = datetime.utcnow(),
             annotation  = label,
             largeur     = features.get("width"),
