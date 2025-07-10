@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: cleansight-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    rootDir: backend
+    pythonVersion: 3.11.9
