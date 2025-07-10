@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from werkzeug.utils import secure_filename
-from app import db
+from cleansight.backend.main import db
 from models.image import Image
 from utils.feature_extraction import extract_features
 from utils.metadata_generator import generate_metadata

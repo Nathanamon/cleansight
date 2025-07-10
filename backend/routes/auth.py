@@ -10,7 +10,7 @@ from flask_jwt_extended import (
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
-from app import db, mail
+from cleansight.backend.main import db, mail
 from models.user import User
 from config import Config
 
