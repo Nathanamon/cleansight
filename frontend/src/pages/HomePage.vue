@@ -1,7 +1,7 @@
 <template>
   <div class="home-page font-sans text-gray-800 leading-relaxed">
     <!-- Hero Section -->
-    <section class="relative min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center pt-20 overflow-hidden">
+    <section class="hero-section relative min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center pt-20 overflow-hidden">
       <div class="max-w-6xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div>
           <h1 class="text-6xl font-extrabold leading-tight mb-6 text-slate-800">
@@ -23,6 +23,7 @@
             </button>
             <button
               class="hidden md:flex items-center gap-2 bg-white text-green-600 border-2 border-green-600 py-4 px-8 rounded-full text-lg font-semibold cursor-pointer transition-all duration-300 hover:bg-green-600 hover:text-white hover:-translate-y-1"
+
               @click="scrollToSection('features')"
             >
               <span class="text-xl">🔍</span>
@@ -293,7 +294,7 @@ export default {
       animateCard,
       resetCard,
     };
-  },
+  }
 };
 </script>
 
@@ -326,4 +327,11 @@ export default {
   .impact-content {
     grid-template-columns: 1fr;
   }
-}</style>
+  /* ✅ Augmenter la hauteur de la hero section sur mobile */
+  .hero-section {
+    min-height: 120vh; /* ou 130vh selon ce que tu veux */
+    padding-top: 6rem;
+    padding-bottom: 4rem;
+  }
+}
+</style>
