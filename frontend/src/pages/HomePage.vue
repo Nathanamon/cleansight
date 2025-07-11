@@ -21,8 +21,8 @@
               <span class="text-xl">📷</span>
               Analyser une Image
             </button>
-            <button 
-              class="flex items-center gap-2 bg-white text-green-600 border-2 border-green-600 py-4 px-8 rounded-full text-lg font-semibold cursor-pointer transition-all duration-300 hover:bg-green-600 hover:text-white hover:-translate-y-1"
+            <button
+              class="hidden md:flex items-center gap-2 bg-white text-green-600 border-2 border-green-600 py-4 px-8 rounded-full text-lg font-semibold cursor-pointer transition-all duration-300 hover:bg-green-600 hover:text-white hover:-translate-y-1"
               @click="scrollToSection('features')"
             >
               <span class="text-xl">🔍</span>
